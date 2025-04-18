@@ -24,13 +24,30 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+{
+    $validated = $request->validated();
 
+    if (Auth::attempt($validated, $request->boolean('remember'))) {
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        // Refetch lại user để lấy bản mới nhất từ database
+        $user = Auth::user()->fresh();
+
+        // Nếu chưa xác minh email → chuyển hướng đến trang nhắc xác minh
+        if (!$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')->withErrors([
+                'email' => 'Bạn cần xác minh email trước khi đăng nhập.',
+            ]);
+        }
+
+        return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Đăng nhập thành công');
     }
+
+    return back()->withErrors([
+        'email' => 'Thông tin đăng nhập không chính xác.',
+    ]);
+}
+
 
     /**
      * Destroy an authenticated session.

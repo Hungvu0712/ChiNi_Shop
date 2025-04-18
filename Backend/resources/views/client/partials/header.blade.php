@@ -6,7 +6,7 @@
                 <div class="headerInner01">
                     <div class="logo">
                         <a href="index.html">
-                            <img src="{{ asset('client/images/logo.png') }}" alt="Ulina"/>
+                            <img src="{{ asset('client/images/logo.png') }}" alt="Ulina" />
                         </a>
                     </div>
                     <div class="mainMenu">
@@ -48,9 +48,11 @@
                                                 <div class="lbContent">
                                                     <h3>Be Stylish</h3>
                                                     <h2>Girl’s Latest Fashion</h2>
-                                                    <a href="shop_left_sidebar.html" class="ulinaLink"><i class="fa-solid fa-angle-right"></i>Shop Now</a>
+                                                    <a href="shop_left_sidebar.html" class="ulinaLink"><i
+                                                            class="fa-solid fa-angle-right"></i>Shop Now</a>
                                                 </div>
-                                                <img src="{{ asset('client/images/home1/3.png') }}" alt="Mans Latest Collection">
+                                                <img src="{{ asset('client/images/home1/3.png') }}"
+                                                    alt="Mans Latest Collection">
                                             </div>
                                         </div>
                                     </div>
@@ -98,12 +100,14 @@
                         </ul>
                     </div>
                     <div class="accessNav">
-                        <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i> <span>Menu</span></a>
+                        <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
+                            <span>Menu</span></a>
                         <div class="anSocial">
                             <div class="ansWrap">
                                 <a class="fac" href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
                                 <a class="twi" href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
-                                <a class="lin" href="javascript:void(0);"><i class="fa-brands fa-linkedin-in"></i></a>
+                                <a class="lin" href="javascript:void(0);"><i
+                                        class="fa-brands fa-linkedin-in"></i></a>
                                 <a class="ins" href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>
                             </div>
                             <a class="tog" href="javascript:void(0);"><i class="fa-solid fa-share-alt"></i></a>
@@ -127,10 +131,13 @@
                             </div>
                         </div>
                         <div class="anItems">
-                            <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a></div>
-                            <div class="anUser"><a href="javascript:void(0);"><i class="fa-solid fa-user"></i></a></div>
+                            <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
+                            </div>
+                            <div class="anUser"><a href="javascript:void(0);"><i class="fa-solid fa-user"></i></a>
+                            </div>
                             <div class="anCart">
-                                <a href="javascript:void(0);"><i class="fa-solid fa-shopping-cart"></i><span>3</span></a>
+                                <a href="javascript:void(0);"><i
+                                        class="fa-solid fa-shopping-cart"></i><span>3</span></a>
                                 <div class="cartWidgetArea">
                                     <div class="cartWidgetProduct">
                                         <img src="{{ asset('client/images/cart/1.jpg') }}" alt="Marine Design">
@@ -138,7 +145,8 @@
                                         <div class="cartProductPrice clearfix">
                                             <span class="price"><span><span>$</span>19.00</span></span>
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i class="fa-solid fa-xmark"></i></a>
+                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
+                                                class="fa-solid fa-xmark"></i></a>
                                     </div>
                                     <div class="cartWidgetProduct">
                                         <img src="{{ asset('client/images/cart/2.jpg') }}" alt="Draped Neck">
@@ -146,7 +154,8 @@
                                         <div class="cartProductPrice clearfix">
                                             <span class="price"><span><span>$</span>41.00</span></span>
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i class="fa-solid fa-xmark"></i></a>
+                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
+                                                class="fa-solid fa-xmark"></i></a>
                                     </div>
                                     <div class="cartWidgetProduct">
                                         <img src="{{ asset('client/images/cart/3.jpg') }}" alt="Long Pleated">
@@ -154,9 +163,11 @@
                                         <div class="cartProductPrice clearfix">
                                             <span class="price"><span><span>$</span>52.00</span></span>
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i class="fa-solid fa-xmark"></i></a>
+                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
+                                                class="fa-solid fa-xmark"></i></a>
                                     </div>
-                                    <div class="totalPrice">Subtotal: <span class="price"><span><span>$</span>112.00</span></span></div>
+                                    <div class="totalPrice">Subtotal: <span
+                                            class="price"><span><span>$</span>112.00</span></span></div>
                                     <div class="cartWidgetBTN clearfix">
                                         <a class="cart" href="cart.html">View Cart</a>
                                         <a class="checkout" href="checkout.html">Checkout</a>
@@ -165,14 +176,38 @@
                             </div>
                         </div>
                         <div class="anSupport">
-                            <i class="fa-solid fa-headset"></i>
-                            <h3>Helpline</h3>
-                            <h3>+123 - 456 - 7890</h3>
+                            <div class="" style="margin-top: 7px">
+                                @auth
+                                    <div class="dropdown">
+                                        <p class="dropdown-toggle"
+                                            id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ Auth::user()->name }}
+                                    </p>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownUser">
+                                            <li><a class="dropdown-item" href="#">Thông tin cá
+                                                    nhân</a></li>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+
+                                                <x-responsive-nav-link :href="route('logout')"
+                                                    onclick="event.preventDefault();
+                                                                this.closest('form').submit();">
+                                                    Đăng xuất
+                                                </x-responsive-nav-link>
+                                            </form>
+                                        </ul>
+                                    </div>
+                                @else
+                                    <a href="{{ route('login') }}">Đăng nhập |</a>
+                                    <a href="{{ route('register') }}">Đăng ký</a>
+                                @endauth
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+
 </header>
 <!-- END: Header 01 Section -->

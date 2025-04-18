@@ -11,7 +11,7 @@
         <meta name="author" content="uiuxom">
 
         <!-- BEGIN: CSS -->
-        <link rel="stylesheet" href="{{ asset('client/css/bootstrap.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('client/css/animate.css') }}">
         <link rel="stylesheet" href="{{ asset('client/css/fontawesome-all.css') }}">
         <link rel="stylesheet" href="{{ asset('client/css/owl.theme.default.min.css') }}">
@@ -25,6 +25,7 @@
         <link rel="stylesheet" href="{{ asset('client/css/preset.css') }}">
         <link rel="stylesheet" href="{{ asset('client/css/theme.css') }}">
         <link rel="stylesheet" href="{{ asset('client/css/responsive.css') }}">
+
         @yield('css')
         <!-- END: CSS -->
 
@@ -55,7 +56,7 @@
         <!-- BEGIN: JS -->
         <script src="{{ asset('client/js/jquery.js') }}"></script>
         <script src="{{ asset('client/js/jquery-ui.js') }}"></script>
-        <script src="{{ asset('client/js/bootstrap.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="{{ asset('client/js/shuffle.min.js') }}"></script>
         <script src="{{ asset('client/js/owl.carousel.min.js') }}"></script>
         <script src="{{ asset('client/js/owl.carousel.filter.js') }}"></script>
@@ -66,7 +67,6 @@
         <script src="{{ asset('client/js/jquery.plugin.min.js') }}"></script>
         <script src="{{ asset('client/js/jquery.countdown.min.js') }}"></script>
         <script src="{{ asset('client/js/circle-progress.js') }}"></script>
-
         <script src="{{ asset('client/js/gmaps.js') }}"></script>
         <script src="https://maps.google.com/maps/api/js?key=AIzaSyCA_EDGVQleQtHIp2fZ-V56QFRbRL8cXT8"></script>
 
