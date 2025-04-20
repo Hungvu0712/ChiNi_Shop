@@ -6,7 +6,7 @@
                 <div class="headerInner01">
                     <div class="logo">
                         <a href="index.html">
-                            <img src="{{ asset('client/images/logoshop.png') }}" alt="ChiniShop"/>
+                            <img src="{{ asset('client/images/logoshop.png') }}" alt="ChiniShop" />
                         </a>
                     </div>
                     <div class="mainMenu">
@@ -179,13 +179,14 @@
                             <div class="" style="margin-top: 7px">
                                 @auth
                                     <div class="dropdown">
-                                        <p class="dropdown-toggle"
-                                            id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <p class="dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
                                             {{ Auth::user()->name }}
-                                    </p>
+                                        </p>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
+                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf
 

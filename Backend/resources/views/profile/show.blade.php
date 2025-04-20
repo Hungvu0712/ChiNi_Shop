@@ -1,8 +1,6 @@
 @extends('client.layouts.master')
 @section('title', 'Thông tin tài khoản')
 @section('css')
-
-@endsection
 <style>
     .profile-container {
         max-width: 800px;
@@ -158,6 +156,8 @@
     /* Font Awesome icons (you can include the actual library or use SVG) */
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 </style>
+@endsection
+
 @section('content')
     <div class="profile-container">
 
