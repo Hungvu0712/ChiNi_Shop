@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('avatar')->nullable();
+            $table->string('avatar_public_id')->nullable();
             $table->string('role')->default('user');
             $table->string('status')->default('active');
-            $table->enum('sex', ['Nam', 'Nữ', 'Khác']);
+            $table->enum('sex', ['Nam', 'Nữ', 'Khác'])->nullable();
             $table->date('birthday')->nullable();
             $table->string('google_id')->nullable();
             $table->rememberToken();

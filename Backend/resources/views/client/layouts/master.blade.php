@@ -49,9 +49,11 @@
 
         @include('client.partials.search')
 
-        @include('client.partials.banner')
+
 
         @yield('content')
+
+        @include('client.partials.footer')
 
         <!-- BEGIN: JS -->
         <script src="{{ asset('client/js/jquery.js') }}"></script>

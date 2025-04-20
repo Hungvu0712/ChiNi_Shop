@@ -6,7 +6,7 @@
                 <div class="headerInner01">
                     <div class="logo">
                         <a href="index.html">
-                            <img src="{{ asset('client/images/logo.png') }}" alt="Ulina" />
+                            <img src="{{ asset('client/images/logoshop.png') }}" alt="ChiniShop"/>
                         </a>
                     </div>
                     <div class="mainMenu">
@@ -184,7 +184,7 @@
                                             {{ Auth::user()->name }}
                                     </p>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
-                                            <li><a class="dropdown-item" href="#">Thông tin cá
+                                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf

@@ -3,6 +3,7 @@
 @section('css')
 
 @endsection
+@include('client.partials.banner')
 @section('content')
     <!-- BEGIN: Feature Section -->
     <section class="featureSection">
@@ -3116,7 +3117,6 @@
     </section>
     <!-- END: Brand Section -->
 
-    @include('client.partials.footer')
 
     <!-- BEGIN: Back To Top -->
     <a href="javascript:void(0);" id="backtotop"><i class="fa-solid fa-angles-up"></i></a>
