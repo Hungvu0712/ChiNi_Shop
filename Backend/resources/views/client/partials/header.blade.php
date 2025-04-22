@@ -5,7 +5,7 @@
             <div class="col-lg-12">
                 <div class="headerInner01">
                     <div class="logo">
-                        <a href="index.html">
+                        <a href="/">
                             <img src="{{ asset('client/images/logoshop.png') }}" alt="ChiniShop" />
                         </a>
                     </div>
@@ -104,7 +104,7 @@
                             <span>Menu</span></a>
                         <div class="anSocial">
                             <div class="ansWrap">
-                                <a class="fac" href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a class="fac" href="https://www.youtube.com/"><i class="fa-brands fa-facebook-f"></i></a>
                                 <a class="twi" href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
                                 <a class="lin" href="javascript:void(0);"><i
                                         class="fa-brands fa-linkedin-in"></i></a>
@@ -121,19 +121,9 @@
                                     <option value="SPA">SP</option>
                                 </select>
                             </div>
-                            <div class="anSelect">
-                                <select name="currency">
-                                    <option value="USD">USD</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="OMR">OMR</option>
-                                </select>
-                            </div>
                         </div>
                         <div class="anItems">
                             <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
-                            </div>
-                            <div class="anUser"><a href="javascript:void(0);"><i class="fa-solid fa-user"></i></a>
                             </div>
                             <div class="anCart">
                                 <a href="javascript:void(0);"><i
