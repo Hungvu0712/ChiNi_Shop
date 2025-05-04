@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProfileController extends Controller
 {
+    public function show(Request $request): View
+    {
+        return view('profile.show', [
+            'user' => $request->user(),
+        ]);
+    }
     /**
      * Display the user's profile form.
      */
@@ -26,15 +33,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+    $user->fill($request->validated());
+
+    if ($user->isDirty('email')) {
+        $user->email_verified_at = null;
+    }
+
+    // Xử lý avatar nếu có gửi lên
+    if ($request->hasFile('avatar')) {
+        // Xóa ảnh cũ nếu cần
+        if ($user->avatar_public_id) {
+            Cloudinary::destroy($user->avatar_public_id);
         }
 
-        $request->user()->save();
+        $uploaded = Cloudinary::upload($request->file('avatar')->getRealPath(), [
+            'folder' => 'avatars',
+        ]);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user->avatar = $uploaded->getSecurePath();
+        $user->avatar_public_id = $uploaded->getPublicId();
+    }
+
+    $user->save();
+
+    return Redirect::route('profile.show')->with('success', 'Thay đổi thông tin thành công');
     }
 
     /**

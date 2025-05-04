@@ -35,7 +35,7 @@ class RegisterRequest extends FormRequest
                 'lowercase',
                 'email:rfc,dns',
                 'max:255','unique:users,email,',
-                'regex:/^[\w\.\-]+@((gmail\.com)|([a-zA-Z0-9\-]+\.(edu)))$/'
+                'regex:/^[\w\.\-]+@((gmail\.com)|([a-zA-Z0-9\-]+\.(edu)(\.[a-zA-Z]{2,})?))$/'
             ],
             'password' => [
                     'required',
