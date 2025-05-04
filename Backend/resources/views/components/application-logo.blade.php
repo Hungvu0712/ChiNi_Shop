@@ -1,1 +1,1 @@
-<h1>ChiNi</h1>
+<img src="{{ asset('client/images/logoshop.png') }}" alt="">
