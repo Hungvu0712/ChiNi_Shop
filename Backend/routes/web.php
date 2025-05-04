@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Hiển thị form đổi mật khẩu
+    Route::get('/password/change', [ChangePasswordController::class, 'showChangePasswordForm'])->name('password.change');
+
+    // Xử lý việc đổi mật khẩu
+    Route::put('/password/change', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
 require __DIR__.'/auth.php';
