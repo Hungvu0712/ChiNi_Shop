@@ -186,6 +186,8 @@
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
                                             <li><a class="dropdown-item" href="#">Thông tin cá
                                                     nhân</a></li>
+                                            <li><a class="dropdown-item" href="#">Nạp tiền
+                                                </a></li>
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf
 

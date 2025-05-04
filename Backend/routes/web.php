@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-
+//
 Route::get('/verify-email-prompt', function () {
     return view('auth.verify-email');
 })->name('verify.email.prompt');
