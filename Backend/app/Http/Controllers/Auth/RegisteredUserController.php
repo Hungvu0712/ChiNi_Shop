@@ -38,10 +38,7 @@ class RegisteredUserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
-        Auth::login($user);
 
-        event(new Registered($user));
-
-        return redirect()->route('verify.email.prompt')->with('status', 'Hãy kiểm tra email để xác nhận.');
+        return redirect()->route('login')->with('success', 'Đăng ký thành công.');
     }
 }

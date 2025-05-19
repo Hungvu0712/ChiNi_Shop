@@ -364,8 +364,8 @@
 
             <div class="profile-header">
                 <div class="profile-actions">
-                    <a href="{{ route('profile.show') }}" class="btn btn-dark">
-                        <i class="fas fa-edit"></i> Quay lại
+                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại
                     </a>
                     <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Cập nhật</button>
                 </div>

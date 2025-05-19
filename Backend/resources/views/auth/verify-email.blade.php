@@ -1,4 +1,3 @@
-<!-- resources/views/auth/verify-email.blade.php -->
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
         Vui lòng xác minh địa chỉ email của bạn bằng cách nhấn vào liên kết chúng tôi đã gửi qua email.
@@ -24,3 +23,5 @@
         </div>
     </form>
 </x-guest-layout>
+
+

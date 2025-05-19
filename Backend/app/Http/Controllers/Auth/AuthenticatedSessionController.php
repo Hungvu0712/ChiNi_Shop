@@ -25,28 +25,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
 {
+    // Xác thực dữ liệu đầu vào
     $validated = $request->validated();
 
+    // Thực hiện đăng nhập với thông tin đã xác thực
     if (Auth::attempt($validated, $request->boolean('remember'))) {
-        $request->session()->regenerate();
+        $request->session()->regenerate(); // Giữ phiên đăng nhập
 
-        // Refetch lại user để lấy bản mới nhất từ database
+        // Lấy thông tin người dùng mới nhất từ cơ sở dữ liệu
         $user = Auth::user()->fresh();
-
-        // Nếu chưa xác minh email → chuyển hướng đến trang nhắc xác minh
-        if (!$user->hasVerifiedEmail()) {
-            return redirect()->route('verification.notice')->withErrors([
-                'email' => 'Bạn cần xác minh email trước khi đăng nhập.',
-            ]);
-        }
 
         return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Đăng nhập thành công');
     }
 
+    // Nếu thông tin đăng nhập không đúng, quay lại trang đăng nhập và thông báo lỗi
     return back()->withErrors([
         'email' => 'Thông tin đăng nhập không chính xác.',
     ]);
 }
+
 
 
     /**

@@ -2,61 +2,113 @@
 @section('title', 'Thông tin tài khoản')
 @section('css')
 <style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary-color: #64748b;
+        --light-color: #f8fafc;
+        --dark-color: #1e293b;
+        --border-radius: 0.5rem;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --transition: all 0.3s ease;
+    }
+
     .profile-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
-        margin-top: 100px
+        max-width: 1200px;
+        margin: 6rem auto 2rem;
+        padding: 0 1rem;
     }
 
-    .profile-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
         margin-bottom: 2rem;
-        margin-top: 5px;
     }
 
-    .profile-title {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin: 0;
-    }
-
-    .edit-button {
-        background-color: #3498db;
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .edit-button:hover {
-        background-color: #2980b9;
-        transform: translateY(-2px);
+    @media (max-width: 992px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     .profile-card {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
         padding: 2rem;
+        transition: var(--transition);
     }
 
-    .profile-avatar-section {
+    .profile-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        transition: var(--transition);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: 1px solid var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+        border: 1px solid var(--secondary-color);
+    }
+
+    .btn-secondary:hover {
+        background-color: #475569;
+        transform: translateY(-1px);
+    }
+
+    .btn-dark {
+        background-color: var(--dark-color);
+        color: white;
+        border: 1px solid var(--dark-color);
+    }
+
+    .btn-dark:hover {
+        background-color: #334155;
+        transform: translateY(-1px);
+    }
+
+    .avatar-section {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     .avatar-container {
@@ -71,7 +123,7 @@
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid #ecf0f1;
+        border: 3px solid #e2e8f0;
     }
 
     .avatar-overlay {
@@ -80,13 +132,13 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.5);
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: var(--transition);
         color: white;
         cursor: pointer;
     }
@@ -96,192 +148,286 @@
     }
 
     .profile-name {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 600;
+        color: var(--dark-color);
         margin: 0;
-        color: #2c3e50;
     }
 
-    .profile-details {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+    .form-group {
+        margin-bottom: 1.25rem;
     }
 
-    .detail-item {
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-error {
+        font-size: 0.75rem;
+        color: #ef4444;
+        margin-top: 0.25rem;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    .activity-log {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .activity-item {
         display: flex;
         align-items: center;
-        gap: 1rem;
         padding: 1rem;
-        border-radius: 8px;
-        transition: background-color 0.2s ease;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
     }
 
-    .detail-item:hover {
-        background-color: #f8f9fa;
+    .activity-item:hover {
+        background-color: #f8fafc;
     }
 
-    .detail-icon {
+    .activity-icon {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: #e8f4fc;
+        background-color: #e0f2fe;
         display: flex;
         justify-content: center;
         align-items: center;
-        color: #3498db;
-        font-size: 1rem;
+        color: var(--primary-color);
+        margin-right: 1rem;
+        flex-shrink: 0;
     }
 
-    .detail-content {
-        display: flex;
-        flex-direction: column;
+    .activity-content {
         flex: 1;
     }
 
-    .detail-label {
-        font-size: 0.8rem;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+    .activity-description {
+        font-size: 0.875rem;
+        color: var(--dark-color);
     }
 
-    .detail-value {
-        font-size: 1rem;
-        font-weight: 500;
-        color: #2c3e50;
-        margin-top: 0.2rem;
+    .activity-time {
+        font-size: 0.75rem;
+        color: var(--secondary-color);
+        margin-top: 0.25rem;
     }
 
-    /* Font Awesome icons (you can include the actual library or use SVG) */
-    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
 </style>
 @endsection
 
 @section('content')
-    <div class="profile-container">
-
+<div class="profile-container">
+    <div class="profile-grid">
+        <!-- Profile Information Section -->
         <div class="profile-card">
-            <div class="profile-avatar-section">
-                <div class="avatar-container">
-                    {{-- <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile Avatar"
-                        class="profile-avatar"> --}}
-                    <img src="{{ Auth::user()->avatar ? Auth::user()->avatar : asset('https://cdn-icons-png.flaticon.com/512/149/149071.png') }}"
-                        alt="Profile Avatar"
-                        class="profile-avatar">
-                    <div class="avatar-overlay">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                </div>
-                <h2 class="profile-name">{{ $user->name }}</h2>
+            <div class="card-header">
+                <h2 class="card-title">Thông tin tài khoản</h2>
             </div>
 
-            <div class="profile-details">
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Full Name</span>
-                        @if ($user->name == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->name }}</span>
-                        @endif
+            <form action="{{ route('profile.update') }}" enctype="multipart/form-data" method="post">
+                @csrf
+                @method('patch')
+
+                <div class="avatar-section">
+                    <div class="avatar-container">
+                        <img src="{{ Auth::user()->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}"
+                             alt="Profile Avatar" class="profile-avatar" id="avatar-preview">
+                        <label for="avatar-upload" class="avatar-overlay">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="avatar-upload" name="avatar" accept="image/*" class="hidden-upload">
                     </div>
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Email</span>
-                        @if ($user->email == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->email }}</span>
-                        @endif
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" name="name" class="form-control" value="{{ $user->name }}" placeholder="Nhập họ tên">
+                    @error('name')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Phone Number</span>
-                        @if ($user->phone == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->phone }}</span>
-                        @endif
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ $user->email }}" placeholder="Email" disabled>
+                    @error('email')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Address</span>
-                        @if ($user->address == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->address }}</span>
-                        @endif
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" name="phone" class="form-control" value="{{ $user->phone }}" placeholder="Nhập số điện thoại">
+                    @error('phone')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fa-solid fa-genderless"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Giới tính</span>
-                        @if ($user->sex == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->sex }}</span>
-                        @endif
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" name="address" class="form-control" value="{{ $user->address }}" placeholder="Nhập địa chỉ">
+                    @error('address')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fa-solid fa-cake-candles"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Ngày sinh</span>
-                        @if ($user->birthday == null)
-                            <span class="detail-value">Chưa cập nhật</span>
-                        @else
-                            <span class="detail-value">{{ $user->birthday }}</span>
-                        @endif
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Giới tính</label>
+                    <select name="sex" class="form-control">
+                        <option value="Nam" {{ $user->sex == 'Nam' ? 'selected' : '' }}>Nam</option>
+                        <option value="Nữ" {{ $user->sex == 'Nữ' ? 'selected' : '' }}>Nữ</option>
+                    </select>
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fa-solid fa-plus"></i>
-                    </div>
-                    <div class="detail-content">
-                        <span class="detail-label">Ngày tạo </span>
-                        <span class="detail-value">{{ $user->created_at }}</span>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Ngày sinh</label>
+                    <input type="date" name="birthday" class="form-control" value="{{ $user->birthday }}">
+                    @error('birthday')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="action-buttons">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Password Change Section -->
+        <div class="profile-card">
+            <div class="card-header">
+                <h2 class="card-title">Thay đổi mật khẩu</h2>
+            </div>
+
+            <form action="{{ route('password.update') }}" method="POST">
+                @csrf
+                @method('put')
+                <div class="form-group">
+                    <label for="old_password" class="form-label">Mật khẩu hiện tại</label>
+                    <input type="password" class="form-control" id="old_password" name="old_password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password" class="form-label">Mật khẩu mới</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password_confirmation" class="form-label">Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fas fa-key mr-2"></i> Đổi mật khẩu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Activity Log Section -->
+    <div class="activity-log">
+        <div class="card-header">
+            <h2 class="card-title">Nhật ký hoạt động</h2>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-description">
+                    Đăng nhập thành công
+                </div>
+                <div class="activity-time">
+                    2 giờ trước
                 </div>
             </div>
         </div>
 
-        <div class="profile-header">
-            <div class="profile-actions">
-                <a href="{{ route('profile.edit') }}" class="edit-button">
-                    <i class="fas fa-edit"></i> Sửa thông tin
-                </a>
+        <div class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-description">
+                    Cập nhật thông tin tài khoản
+                </div>
+                <div class="activity-time">
+                    1 ngày trước
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-description">
+                    Thêm phương thức thanh toán mới
+                </div>
+                <div class="activity-time">
+                    3 ngày trước
+                </div>
             </div>
         </div>
     </div>
-@endsection
-@section('script')
+</div>
 
+<script>
+    // Preview avatar when selected
+    document.getElementById('avatar-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('avatar-preview').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection
