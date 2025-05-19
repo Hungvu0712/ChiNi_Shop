@@ -41,31 +41,25 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-//
-Route::get('/verify-email-prompt', function () {
-    return view('auth.verify-email');
-})->name('verify.email.prompt');
-
-// Route để xác minh email (đã có sẵn nếu dùng Breeze/Fortify/Jetstream)
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/')->with('status', 'Email đã được xác minh!');
-})->middleware(['auth', 'signed'])->name('verification.verify');
 
 
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Đã gửi lại email xác nhận!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+// // Route yêu cầu xác minh email
+// Route::get('/email/verify', function () {
+//     return view('auth.verify-email');
+// })->middleware('auth')->name('verification.notice');
 
+// // Route để gửi lại email xác nhận
+// Route::post('/email/verification-notification', function (Request $request) {
+//     $request->user()->sendEmailVerificationNotification();
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-});
+//     return back()->with('status', 'Đã gửi lại email xác nhận!');
+// })->middleware('auth')->name('verification.send');
+
+// // Route đăng nhập và xác minh email
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::get('/', [HomeController::class, 'index']);
+//     // Thêm các route khác yêu cầu xác minh email ở đây
+// });
 
 
 //Đăng nhập bằng google
