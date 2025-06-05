@@ -15,7 +15,8 @@
                     <div class="input-wrapper">
                         <i class="bi bi-person input-icon"></i>
                         <input id="name" class="form-input" type="text" name="name"
-                            value="{{ old('name') }}" placeholder="Nhập tên đăng nhập" autofocus autocomplete="name" required>
+                            value="{{ old('name') }}" placeholder="Nhập tên đăng nhập" autofocus autocomplete="name"
+                            required>
                     </div>
                     @error('name')
                         <div class="form-error">{{ $message }}</div>
@@ -67,9 +68,12 @@
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
+                <small class="form-text text-muted">
+                    <span style="color: rgb(10, 10, 10); font-size: 12px">Lưu ý : Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt</span>
+                </small>
 
 
-                <div class="form-actions">
+                <div class="form-actions mt-3">
                     <button type="submit" class="auth-button">
                         Đăng ký
                     </button>

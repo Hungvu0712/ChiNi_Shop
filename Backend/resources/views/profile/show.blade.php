@@ -268,7 +268,7 @@
 
                 <div class="avatar-section">
                     <div class="avatar-container">
-                        <img src="{{ Auth::user()->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}"
+                        <img src="{{ Auth::user()->profile->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}"
                              alt="Profile Avatar" class="profile-avatar" id="avatar-preview">
                         <label for="avatar-upload" class="avatar-overlay">
                             <i class="fas fa-camera"></i>
@@ -295,7 +295,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
-                    <input type="text" name="phone" class="form-control" value="{{ $user->phone }}" placeholder="Nhập số điện thoại">
+                    <input type="text" name="phone" class="form-control" value="{{ optional($user->profile)->phone ?? 'Chưa có' }}" placeholder="Nhập số điện thoại">
                     @error('phone')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -303,7 +303,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Địa chỉ</label>
-                    <input type="text" name="address" class="form-control" value="{{ $user->address }}" placeholder="Nhập địa chỉ">
+                    <input type="text" name="address" class="form-control" value="{{ optional($user->profile)->address ?? 'Chưa có' }}" placeholder="Nhập địa chỉ">
                     @error('address')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -311,15 +311,16 @@
 
                 <div class="form-group">
                     <label class="form-label">Giới tính</label>
-                    <select name="sex" class="form-control">
-                        <option value="Nam" {{ $user->sex == 'Nam' ? 'selected' : '' }}>Nam</option>
-                        <option value="Nữ" {{ $user->sex == 'Nữ' ? 'selected' : '' }}>Nữ</option>
-                    </select>
+                    <input type="text" name="gender" class="form-control" value="{{ optional($user->profile)->gender ?? 'Chưa có' }}"
+                                placeholder="Giới tính">
+                            @error('gender')
+                                <div class="form-error" style="color: red">{{ $message }}</div>
+                            @enderror
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Ngày sinh</label>
-                    <input type="date" name="birthday" class="form-control" value="{{ $user->birthday }}">
+                    <input type="date" name="birthday" class="form-control" value="{{ optional($user->profile)->birthday ?? 'Chưa có' }}">
                     @error('birthday')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,7 +22,7 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'string',
                 'regex:/^(03|05|07|08|09)[0-9]{8}$/',
-                Rule::unique(User::class)->ignore($this->user()->id)
+                Rule::unique(Profile::class)->ignore($this->user()->id)
             ],
             'address' => ['nullable', 'string', 'max:255'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],

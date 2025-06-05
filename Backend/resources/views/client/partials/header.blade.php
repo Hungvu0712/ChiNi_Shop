@@ -174,6 +174,9 @@
                                             {{ Auth::user()->name }}
                                         </p>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
+                                            @role('admin')
+                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản trị</a></li>
+                                            @endrole
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
                                             <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>

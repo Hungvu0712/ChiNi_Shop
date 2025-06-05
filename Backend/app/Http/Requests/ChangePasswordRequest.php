@@ -37,14 +37,12 @@ class ChangePasswordRequest extends FormRequest
         ];
     }
 
-/*************  ✨ Windsurf Command ⭐  *************/
     /**
      * Get custom attributes for validator errors.
      *
      * @return array<string, string>
      */
 
-/*******  f8d13621-77ed-4b10-a451-a33dad9e2cfb  *******/
     public function attributes(): array
     {
         return [
