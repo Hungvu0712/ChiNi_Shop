@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin'])->name('dashboard');
+
 
 
 
@@ -41,25 +42,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-
-
-// // Route yêu cầu xác minh email
-// Route::get('/email/verify', function () {
-//     return view('auth.verify-email');
-// })->middleware('auth')->name('verification.notice');
-
-// // Route để gửi lại email xác nhận
-// Route::post('/email/verification-notification', function (Request $request) {
-//     $request->user()->sendEmailVerificationNotification();
-
-//     return back()->with('status', 'Đã gửi lại email xác nhận!');
-// })->middleware('auth')->name('verification.send');
-
-// // Route đăng nhập và xác minh email
-// Route::middleware(['auth', 'verified'])->group(function () {
-//     Route::get('/', [HomeController::class, 'index']);
-//     // Thêm các route khác yêu cầu xác minh email ở đây
-// });
 
 
 //Đăng nhập bằng google

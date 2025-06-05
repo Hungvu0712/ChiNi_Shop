@@ -1,4 +1,4 @@
-@extends('client.layouts.master')
+{{-- @extends('client.layouts.master')
 @section('title', 'Thay đổi thông tin tài khoản')
 @section('css')
 
@@ -339,10 +339,11 @@
                         </div>
                         <div class="detail-content">
                             <span class="detail-label">Giới tính</span>
-                            <select name="sex" id="" class="form-control">
-                                <option value="Nam" {{ $user->sex == 'Nam' ? 'selected' : '' }}>Nam</option>
-                                <option value="Nữ" {{ $user->sex == 'Nữ' ? 'selected' : '' }}>Nữ</option>
-                            </select>
+                            <input type="text" name="gender" class="form-control" value="{{ $user->gender }}"
+                                placeholder="Giới tính">
+                            @error('gender')
+                                <div class="form-error" style="color: red">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -388,4 +389,4 @@
             }
         });
     </script>
-@endsection
+@endsection --}}
