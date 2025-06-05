@@ -295,7 +295,13 @@
 
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
-                    <input type="text" name="phone" class="form-control" value="{{ optional($user->profile)->phone ?? 'Chưa có' }}" placeholder="Nhập số điện thoại">
+                    <input
+    type="text"
+    name="phone"
+    class="form-control"
+    value="{{ optional($user->profile)->phone ?? '' }}"
+    placeholder="{{ optional($user->profile)->phone ? '' : 'Nhập số điện thoại' }}"
+>
                     @error('phone')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -303,7 +309,13 @@
 
                 <div class="form-group">
                     <label class="form-label">Địa chỉ</label>
-                    <input type="text" name="address" class="form-control" value="{{ optional($user->profile)->address ?? 'Chưa có' }}" placeholder="Nhập địa chỉ">
+                    <input
+    type="text"
+    name="address"
+    class="form-control"
+    value="{{ optional($user->profile)->address ?? '' }}"
+    placeholder="{{ optional($user->profile)->address ? '' : 'Nhập địa chỉ' }}"
+>
                     @error('address')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -311,8 +323,8 @@
 
                 <div class="form-group">
                     <label class="form-label">Giới tính</label>
-                    <input type="text" name="gender" class="form-control" value="{{ optional($user->profile)->gender ?? 'Chưa có' }}"
-                                placeholder="Giới tính">
+                    <input type="text" name="gender" class="form-control" value="{{ optional($user->profile)->gender ?? '' }}"
+                                placeholder="{{ optional($user->profile)->gender ? '' : 'Nhập giới tính' }}">
                             @error('gender')
                                 <div class="form-error" style="color: red">{{ $message }}</div>
                             @enderror

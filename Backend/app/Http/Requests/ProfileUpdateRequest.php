@@ -22,7 +22,7 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'string',
                 'regex:/^(03|05|07|08|09)[0-9]{8}$/',
-                Rule::unique(Profile::class)->ignore($this->user()->id)
+                Rule::unique('profiles', 'phone')->ignore($this->user()->id, 'user_id')
             ],
             'address' => ['nullable', 'string', 'max:255'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
