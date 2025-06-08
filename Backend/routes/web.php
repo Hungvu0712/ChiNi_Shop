@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -24,6 +28,16 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin'])->name('dashboard');
+
+//QL User
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
+    //users
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    //roles
+    Route::resource('roles', RoleController::class);
+    //permissions
+    Route::resource('permissions', PermissionController::class);
+});
 
 
 
