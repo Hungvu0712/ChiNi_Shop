@@ -13,10 +13,9 @@ class UserController extends Controller
      */
     public function index()
     {
-         $listAdmins = User::role('admin')->get(); // Lấy tất cả user có role admin
-    $listUsers  = User::role('user')->get();  // Lấy tất cả user có role user
+    $users  = User::all();
 
-    return view('admin.pages.users.index', compact('listAdmins', 'listUsers'));
+    return view('admin.pages.users.index', compact('users'));
     }
 
     /**

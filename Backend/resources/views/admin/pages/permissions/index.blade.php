@@ -10,12 +10,12 @@
 @section('content')
     <div class="card" style="width: 100%">
         <div class="card-header">
-            <div class="card-title">Danh sách Vai trò</div>
+            <div class="card-title">Danh sách Quyền trị</div>
         </div>
 
         <div class="card-body">
-            <a href="{{ route('roles.create') }}" class="btn btn-success mb-5">Thêm Role</a>
-            <table id="listrole" class="display" style="width:100%">
+            <a href="{{ route('permissions.create') }}" class="btn btn-success mb-5">Thêm Permissions</a>
+            <table id="listpermissions" class="display" style="width:100%">
                 <thead>
                     <tr>
                         <th>STT</th>
@@ -26,22 +26,22 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($roles as $role)
+                    @foreach ($permissions as $permission)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $role->name }}</td>
-                            <td>{{ $role->guard_name }}</td>
+                            <td>{{ $permission->name }}</td>
+                            <td>{{ $permission->guard_name }}</td>
                             <td class="d-flex gap-2">
-                                <form action="{{ route('roles.destroy',$role->id) }}"
-                                    id="delete-form-{{ $role->id }}" method="post">
+                                <form action="{{ route('permissions.destroy',$permission->id) }}"
+                                    id="delete-form-{{ $permission->id }}" method="post">
                                     @csrf
                                     @method('delete')
-                                    <button type="button" data-id="{{ $role->id }}"
+                                    <button type="button" data-id="{{ $permission->id }}"
                                         class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
 
-                                <a href="{{ route('roles.edit',$role->id) }}" class="btn btn-info">
+                                <a href="{{ route('permissions.edit',$permission->id) }}" class="btn btn-info">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                             </td>
@@ -59,7 +59,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        new DataTable('#listrole');
+        new DataTable('#listpermissions');
 
 
         document.querySelectorAll('.delete-button').forEach(button => {

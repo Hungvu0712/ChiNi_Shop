@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Permission\StoreRequest;
+use App\Http\Requests\Permission\UpdateRequest;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -12,7 +15,9 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        //
+        $permissions = Permission::all();
+
+        return view ('admin.pages.permissions.index', compact('permissions'));
     }
 
     /**
@@ -20,15 +25,25 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.pages.permissions.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $request->validated();
+
+        $permission = Permission::create($request->all());
+
+        if($permission){
+            toastr()->success('Khởi tạo quyền thành công');
+            return redirect()->route('permissions.index');
+        }else{
+            toastr()->error('Vui lòng thử lại');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -44,15 +59,27 @@ class PermissionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $permissionID = Permission::findOrFail($id);
+
+        return view('admin.pages.permissions.edit', compact('permissionID'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, string $id)
     {
-        //
+        $permissionID = Permission::findOrFail($id);
+
+        $permissionID->update($request->all());
+
+        if($permissionID){
+            toastr()->success('Cập nhật quyền thành công');
+            return redirect()->route('permissions.index');
+        }else{
+            toastr()->error('Vui lòng thử lại');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -60,6 +87,16 @@ class PermissionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $permissionID = Permission::findOrFail($id);
+
+        $permissionID->delete();
+
+        if($permissionID){
+            toastr()->success('Cập nhật quyền thành công');
+            return redirect()->route('permissions.index');
+        }else{
+            toastr()->error('Vui lòng thử lại');
+            return redirect()->back();
+        }
     }
 }
