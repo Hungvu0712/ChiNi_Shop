@@ -25,78 +25,38 @@
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
                 <li class="nav-item active">
-                    <a data-bs-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">
+                    <a href="{{ route('dashboard') }}" class="collapsed" aria-expanded="false">
                         <i class="fas fa-home"></i>
                         <p>Dashboard</p>
-                        <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="dashboard">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="#">
-                                    <span class="sub-item">Dashboard 1</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
-                    <h4 class="text-section">Components</h4>
+                    <h4 class="text-section">Trang quản trị</h4>
                 </li>
                 <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#base">
+                    <a data-bs-toggle="collapse" href="#users">
                         <i class="fas fa-layer-group"></i>
-                        <p>Base</p>
+                        <p>Quản lý tài khoản</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="base">
+                    <div class="collapse" id="users">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="components/avatars.html">
-                                    <span class="sub-item">Avatars</span>
+                                <a href="">
+                                    <span class="sub-item">Quyền truy cập</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="components/buttons.html">
-                                    <span class="sub-item">Buttons</span>
+                                <a href="{{ route('roles.index') }}">
+                                    <span class="sub-item">Vai trò</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="components/gridsystem.html">
-                                    <span class="sub-item">Grid System</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/panels.html">
-                                    <span class="sub-item">Panels</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/notifications.html">
-                                    <span class="sub-item">Notifications</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/sweetalert.html">
-                                    <span class="sub-item">Sweet Alert</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/font-awesome-icons.html">
-                                    <span class="sub-item">Font Awesome Icons</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/simple-line-icons.html">
-                                    <span class="sub-item">Simple Line Icons</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/typography.html">
-                                    <span class="sub-item">Typography</span>
+                                <a href="{{ route('admin.users.index') }}">
+                                    <span class="sub-item">Người dùng</span>
                                 </a>
                             </li>
                         </ul>
