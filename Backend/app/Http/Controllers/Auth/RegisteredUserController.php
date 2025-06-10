@@ -38,6 +38,7 @@ class RegisteredUserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
+        $user->assignRole('user');
 
         return redirect()->route('login')->with('success', 'Đăng ký thành công.');
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin'])->name('dashboard');
 
@@ -33,12 +34,17 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     //users
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit');
+    Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update');
     //roles
     Route::resource('roles', RoleController::class);
     //permissions
     Route::resource('permissions', PermissionController::class);
+    Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions');
+    Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
+    //profiles
+    Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
 });
-
 
 
 
