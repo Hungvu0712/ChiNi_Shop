@@ -32,8 +32,12 @@
                             <td>{{ $role->name }}</td>
                             <td>{{ $role->guard_name }}</td>
                             <td class="d-flex gap-2">
-                                <form action="{{ route('roles.destroy',$role->id) }}"
-                                    id="delete-form-{{ $role->id }}" method="post">
+                                <a href="{{ route('roles.editPermissions', $role->id) }}"
+                                    class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Assgin">
+                                    <i class="fa-brands fa-atlassian"></i>
+                                </a>
+                                <form action="{{ route('roles.destroy', $role->id) }}" id="delete-form-{{ $role->id }}"
+                                    method="post">
                                     @csrf
                                     @method('delete')
                                     <button type="button" data-id="{{ $role->id }}"
@@ -41,7 +45,7 @@
                                     </button>
                                 </form>
 
-                                <a href="{{ route('roles.edit',$role->id) }}" class="btn btn-info">
+                                <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-info">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                             </td>

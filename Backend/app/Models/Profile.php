@@ -19,9 +19,10 @@ class Profile extends Model
         'birthday',
     ];
 
-    public function user()
+ public function user()
 {
     return $this->belongsTo(User::class);
 }
+
 
 }
