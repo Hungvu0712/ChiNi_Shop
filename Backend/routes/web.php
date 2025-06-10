@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
@@ -39,7 +40,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::resource('permissions', PermissionController::class);
 });
 
-
+Route::resource('menus',MenuController::class);
 
 
 Route::middleware('auth')->group(function () {

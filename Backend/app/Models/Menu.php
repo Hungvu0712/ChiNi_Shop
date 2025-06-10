@@ -15,4 +15,14 @@ class Menu extends Model
         'slug',
         'url',
     ];
+
+    public function children()
+    {
+        return $this->hasMany(Menu::class, 'prant_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Menu::class, 'prant_id');
+    }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('prant_id');
+            $table->unsignedBigInteger('prant_id')->nullable();
             $table->foreign('prant_id')->references('id')->on('menus')->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
