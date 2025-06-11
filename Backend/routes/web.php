@@ -51,9 +51,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::resource('brands', BrandController::class);
     //profiles
     Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
+    //post-category
+    Route::resource('post-categories', PostCategoryController::class)->parameters(['post-categories' => 'post_category']);
 });
 
-Route::resource('post-categories', PostCategoryController::class);
 
 
 Route::middleware('auth')->group(function () {
@@ -69,7 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/password/change', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 //Đăng nhập bằng google
@@ -86,4 +87,3 @@ Route::group([
     Route::resource('permissions',  PermissionController::class);
     Route::resource('categories',   CategoryController::class);
 });
-

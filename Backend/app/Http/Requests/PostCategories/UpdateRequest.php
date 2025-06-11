@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\PostCategories;
 
+use App\Models\PostCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +23,17 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $slug = $this->route('post_category');
+        $pc = PostCategory::where('slug', $slug)->first();
+
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('post_categories', 'name')->ignore($pc?->id),
+            ],
+
         ];
     }
 }

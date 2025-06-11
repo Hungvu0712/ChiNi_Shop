@@ -33,13 +33,13 @@
                             <td>{{ $pc->slug }}</td>
                             <td>{{ $pc->description }}</td>
                             <td class="d-flex gap-2">
-                                <a href="{{ route('post-categories.edit', $pc->id) }}"
+                                <a href="{{ route('post-categories.edit', $pc->slug) }}"
                                     class="btn btn-info"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <form action="{{ route('categories.destroy',$pc->id) }}"
-                                    id="delete-form-{{ $pc->id }}" method="post">
+                                <form action="{{ route('post-categories.destroy',$pc->slug) }}"
+                                    id="delete-form-{{ $pc->slug }}" method="post">
                                     @csrf
                                     @method('delete')
-                                    <button type="button" data-id="{{ $pc->id }}"
+                                    <button type="button" data-slug="{{ $pc->slug }}"
                                         class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
@@ -62,7 +62,9 @@
 
         document.querySelectorAll('.delete-button').forEach(button => {
             button.addEventListener('click', function() {
-                const menuId = this.getAttribute('data-id');
+                const slug = this.getAttribute('data-slug');
+                console.log(slug);
+                
                 Swal.fire({
                     title: 'Bạn có chắc chắn?',
                     text: "Thông tin này xã bị xóa!",
@@ -74,7 +76,7 @@
                     cancelButtonText: 'Hủy'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${menuId}`).submit();
+                        document.getElementById(`delete-form-${slug}`).submit();
                     }
                 });
             });
