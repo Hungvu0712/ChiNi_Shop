@@ -48,12 +48,12 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Danh mục</label>
-                        <input type="number" name="category_id" class="form-control" value="{{ old('category_id') }}" required>
+                        <input type="text" name="category_id" class="form-control" value="{{ old('category_id') }}" required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Thương hiệu</label>
-                        <input type="number" name="brand_id" class="form-control" value="{{ old('brand_id') }}" required>
+                        <input type="text" name="brand_id" class="form-control" value="{{ old('brand_id') }}" required>
                     </div>
 
                     <div class="col-md-6">

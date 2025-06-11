@@ -62,6 +62,7 @@
                         </ul>
                     </div>
                 </li>
+
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#products" role="button" aria-expanded="false"
                         aria-controls="products">
@@ -79,6 +80,13 @@
                             <li>
                                 <a href="{{ route('products.create') }}">
                                     <span class="sub-item">Thêm mới sản phẩm</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#categories">
                         <i class="fas fa-th-large"></i>
                         <p>Quản lý danh mục</p>
@@ -99,7 +107,6 @@
                         </ul>
                     </div>
                 </li>
-
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#brand">
                         <i class="far fa-chart-bar"></i>
