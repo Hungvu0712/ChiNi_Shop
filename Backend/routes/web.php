@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
@@ -37,6 +38,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::resource('roles', RoleController::class);
     //permissions
     Route::resource('permissions', PermissionController::class);
+    //categories
+    Route::resource('categories', CategoryController::class);
 });
 
 
@@ -61,3 +64,15 @@ require __DIR__.'/auth.php';
 //Đăng nhập bằng google
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+//Danh muc
+Route::group([
+    'prefix'     => 'admin',
+    'middleware' => ['auth', 'role:admin']
+], function () {
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+
+    Route::resource('roles',        RoleController::class);
+    Route::resource('permissions',  PermissionController::class);
+    Route::resource('categories',   CategoryController::class);
+});
+

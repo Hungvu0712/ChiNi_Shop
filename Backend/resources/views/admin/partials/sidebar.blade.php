@@ -62,6 +62,27 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+    <a data-bs-toggle="collapse" href="#categories">
+        <i class="fas fa-th-large"></i>
+        <p>Quản lý danh mục</p>
+        <span class="caret"></span>
+    </a>
+    <div class="collapse" id="categories">
+        <ul class="nav nav-collapse">
+            <li>
+                <a href="{{ route('categories.index') }}">
+                    <span class="sub-item">Danh sách danh mục</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('categories.create') }}">
+                    <span class="sub-item">Thêm danh mục</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
             </ul>
         </div>
     </div>
