@@ -63,6 +63,22 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#products" role="button" aria-expanded="false"
+                        aria-controls="products">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Quản lý sản phẩm</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="products">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('products.index') }}">
+                                    <span class="sub-item">Danh sách sản phẩm</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('products.create') }}">
+                                    <span class="sub-item">Thêm mới sản phẩm</span>
                     <a data-bs-toggle="collapse" href="#categories">
                         <i class="fas fa-th-large"></i>
                         <p>Quản lý danh mục</p>
