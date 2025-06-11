@@ -32,6 +32,11 @@
                 <div class="mb-3">
                     <label for="" class="form-lable">Mô tả: </label>
                     <textarea name="description" id="summernote" cols="30" rows="10" class="form-control">{{ $category->description }}</textarea>
+                    @error('description')
+                        <div style="color: red">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <input type="submit" value="Submit" class="btn btn-primary mt-2">
