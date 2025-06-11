@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
@@ -45,6 +46,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
     //categories
     Route::resource('categories', CategoryController::class);
+    //brands
+    Route::resource('brands', BrandController::class);
     //profiles
     Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
 });
