@@ -35,21 +35,21 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 //QL User
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
     //users
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit');
-    Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update');
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index')->middleware('permission:user-list');
+    Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit')->middleware('permission:edit-roles');
+    Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update')->middleware('permission:update-roles');
     //roles
-    Route::resource('roles', RoleController::class);
+    Route::resource('roles', RoleController::class)->middleware('permission:role-list|role-create|role-edit|role-delete');
     //permissions
-    Route::resource('permissions', PermissionController::class);
-    Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions');
-    Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
+    Route::resource('permissions', PermissionController::class)->middleware('permission:permission-list|permission-create|permission-edit|permission-delete');
+    Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions')->middleware('permission:edit-permissions');
+    Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions')->middleware('permission:update-permissions');
     //categories
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->middleware('permission:category-list|category-create|category-edit|category-delete');
     //brands
-    Route::resource('brands', BrandController::class);
+    Route::resource('brands', BrandController::class)->middleware('permission:brand-list|brand-create|brand-edit|brand-delete');
     //profiles
-    Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
+    Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show')->middleware('permission:profile-show');
 });
 
 
@@ -73,15 +73,15 @@ require __DIR__.'/auth.php';
 //Đăng nhập bằng google
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-//Danh muc
-Route::group([
-    'prefix'     => 'admin',
-    'middleware' => ['auth', 'role:admin']
-], function () {
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+// //Danh muc
+// Route::group([
+//     'prefix'     => 'admin',
+//     'middleware' => ['auth', 'role:admin']
+// ], function () {
+//     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
 
-    Route::resource('roles',        RoleController::class);
-    Route::resource('permissions',  PermissionController::class);
-    Route::resource('categories',   CategoryController::class);
-});
+//     Route::resource('roles',        RoleController::class);
+//     Route::resource('permissions',  PermissionController::class);
+//     Route::resource('categories',   CategoryController::class);
+// });
 

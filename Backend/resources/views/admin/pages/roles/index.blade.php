@@ -21,6 +21,7 @@
                         <th>STT</th>
                         <th>NAME</th>
                         <th>GUARD_NAME</th>
+                        <th>ASGIN PERMSSION</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -31,6 +32,9 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $role->name }}</td>
                             <td>{{ $role->guard_name }}</td>
+                            <td>
+                                {{ $role->permissions->pluck('name')->implode(', ') }}
+                            </td>
                             <td class="d-flex gap-2">
                                 <a href="{{ route('roles.editPermissions', $role->id) }}"
                                     class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Assgin">
