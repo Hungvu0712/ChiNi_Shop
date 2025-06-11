@@ -79,15 +79,3 @@ require __DIR__.'/auth.php';
 //Đăng nhập bằng google
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-// //Danh muc
-// Route::group([
-//     'prefix'     => 'admin',
-//     'middleware' => ['auth', 'role:admin']
-// ], function () {
-//     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-
-//     Route::resource('roles',        RoleController::class);
-//     Route::resource('permissions',  PermissionController::class);
-//     Route::resource('categories',   CategoryController::class);
-// });
-
