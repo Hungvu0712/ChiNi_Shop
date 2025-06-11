@@ -105,6 +105,28 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#postCategories">
+                        <i class="far fa-chart-bar"></i>
+                        <p>Quản lý danh mục bài viết</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="postCategories">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('post-categories.index') }}">
+                                    <span class="sub-item">Danh sách danh mục bài viết</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('post-categories.create') }}">
+                                    <span class="sub-item">Thêm danh mục bài viết</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
