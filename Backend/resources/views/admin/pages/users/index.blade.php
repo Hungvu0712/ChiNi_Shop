@@ -30,10 +30,11 @@
                             <td>{{ $user->id }}</td>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
-                            <td class="p-2">{{ $user->roles->pluck('name')->join(', ') }}</td>
+                            <td class="p-2">{{ implode(', ', $user->getRoleNames()->toArray()) }}</td>
                             <td>
+                                <a href="{{ route('users.roles.edit', $user->id) }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Assgin"><i class="fa-brands fa-atlassian"></i></a>
                                 <a href="" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Stop"><i class="fa-solid fa-stop"></i></a>
-                                <a href="" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i class="fa-solid fa-trash"></i></a>
+                                <a href="{{ route('profiles.show', $user->id) }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile"><i class="fa-solid fa-address-card"></i></a>
                             </td>
                         </tr>
                     @endforeach

@@ -10,42 +10,38 @@
 @section('content')
     <div class="card" style="width: 100%">
         <div class="card-header">
-            <div class="card-title">Danh sách Vai trò</div>
+            <div class="card-title">Danh sách Category</div>
         </div>
 
         <div class="card-body">
-            <a href="{{ route('roles.create') }}" class="btn btn-success mb-5">Thêm Role</a>
-            <table id="listrole" class="display" style="width:100%">
+            <a href="{{ route('categories.create') }}" class="btn btn-success mb-5">Thêm Category</a>
+            <table id="listcategory" class="display" style="width:100%">
                 <thead>
                     <tr>
                         <th>STT</th>
                         <th>NAME</th>
-                        <th>GUARD_NAME</th>
+                        <th>DESCRIPTION</th>
                         <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach ($roles as $role)
+                    @foreach ($categories as $category)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $role->name }}</td>
-                            <td>{{ $role->guard_name }}</td>
+                            <td>{{ $category->name }}</td>
+                            <td>{!! $category->description !!}</td>
                             <td class="d-flex gap-2">
-                                <a href="{{ route('roles.editPermissions', $role->id) }}"
-                                    class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Assgin">
-                                    <i class="fa-brands fa-atlassian"></i>
-                                </a>
-                                <form action="{{ route('roles.destroy', $role->id) }}" id="delete-form-{{ $role->id }}"
-                                    method="post">
+                                <form action="{{ route('categories.destroy',$category->id) }}"
+                                    id="delete-form-{{ $category->id }}" method="post">
                                     @csrf
                                     @method('delete')
-                                    <button type="button" data-id="{{ $role->id }}"
+                                    <button type="button" data-id="{{ $category->id }}"
                                         class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
 
-                                <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-info">
+                                <a href="{{ route('categories.edit',$category->id) }}" class="btn btn-info">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                             </td>
@@ -63,7 +59,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        new DataTable('#listrole');
+        new DataTable('#listcategory');
 
 
         document.querySelectorAll('.delete-button').forEach(button => {

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Permission;
+namespace App\Http\Requests\Categories;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:permissions,name'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('categories')->ignore($this->route('category')->id)],
+            'description' => ['nullable', 'string'],
         ];
     }
 
@@ -32,6 +34,8 @@ class StoreRequest extends FormRequest
             'name.string' => '*Tên phải là 1 chuỗi',
             'name.max' => '*Tên không được quá 255 ký tự',
             'name.unique' => '*Đã có trong CSDL',
+
+            'description.string' => '*Mô tả phải là 1 chuỗi',
         ];
     }
 }

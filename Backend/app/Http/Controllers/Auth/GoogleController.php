@@ -29,7 +29,8 @@ class GoogleController extends Controller
                     'password' => bcrypt("Vuhung@2206"),  // Mật khẩu tự động cho người dùng mới
                 ]
             );
-
+            $user->assignRole('user');
+            
             // Đăng nhập người dùng
             Auth::login($user);
 
