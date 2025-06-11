@@ -4,8 +4,8 @@
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
             <a href="#" class="logo">
-                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand"
-                    class="navbar-brand" height="20" />
+                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand"
+                    height="20" />
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar">
@@ -21,7 +21,7 @@
         </div>
         <!-- End Logo Header -->
     </div>
-<div class="sidebar-wrapper scrollbar scrollbar-inner">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
                 <li class="nav-item active">
@@ -63,26 +63,48 @@
                     </div>
                 </li>
                 <li class="nav-item">
-    <a data-bs-toggle="collapse" href="#categories">
-        <i class="fas fa-th-large"></i>
-        <p>Quản lý danh mục</p>
-        <span class="caret"></span>
-    </a>
-    <div class="collapse" id="categories">
-        <ul class="nav nav-collapse">
-            <li>
-                <a href="{{ route('categories.index') }}">
-                    <span class="sub-item">Danh sách danh mục</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('categories.create') }}">
-                    <span class="sub-item">Thêm danh mục</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</li>
+                    <a data-bs-toggle="collapse" href="#categories">
+                        <i class="fas fa-th-large"></i>
+                        <p>Quản lý danh mục</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="categories">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('categories.index') }}">
+                                    <span class="sub-item">Danh sách danh mục</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('categories.create') }}">
+                                    <span class="sub-item">Thêm danh mục</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#brand">
+                        <i class="far fa-chart-bar"></i>
+                        <p>Quản lý thương hiệu</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="brand">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('brands.index') }}">
+                                    <span class="sub-item">Danh sách thương hiệu</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('brands.create') }}">
+                                    <span class="sub-item">Thêm thương hiệu</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
