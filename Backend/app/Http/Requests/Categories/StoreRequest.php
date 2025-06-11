@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Permission;
+namespace App\Http\Requests\Categories;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,7 +22,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:permissions,name'],
+            'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
+            'description' => ['nullable', 'string'],
         ];
     }
 
@@ -32,6 +33,8 @@ class StoreRequest extends FormRequest
             'name.string' => '*Tên phải là 1 chuỗi',
             'name.max' => '*Tên không được quá 255 ký tự',
             'name.unique' => '*Đã có trong CSDL',
+
+            'description.string' => '*Mô tả phải là 1 chuỗi',
         ];
     }
 }

@@ -6,13 +6,14 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Categories\StoreRequest;
+use App\Http\Requests\Categories\UpdateRequest;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('name')->get();
-        // ⬇️  Đổi đường dẫn view để khớp thư mục mới
+        $categories = Category::all();
         return view('admin.pages.categories.index', compact('categories'));
     }
 
@@ -21,23 +22,20 @@ class CategoryController extends Controller
         return view('admin.pages.categories.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $request->validate([
-            'name'        => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-        ]);
+        $request->validated();
 
         Category::create($request->only(['name', 'description']));
 
         return redirect()
             ->route('categories.index')
-            ->with('success', 'Category created successfully!');
+            ->with('success', 'Thêm thành công');
     }
 
     public function show(Category $category)
     {
-        return view('admin.pages.categories.show', compact('category'));
+        //
     }
 
     public function edit(Category $category)
@@ -45,18 +43,15 @@ class CategoryController extends Controller
         return view('admin.pages.categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateRequest $request, Category $category)
     {
-        $request->validate([
-            'name'        => ['required','string','max:255', Rule::unique('categories')->ignore($category->id)],
-            'description' => 'nullable|string',
-        ]);
+        $request->validated();
 
         $category->update($request->only(['name', 'description']));
 
         return redirect()
             ->route('categories.index')
-            ->with('success', 'Category updated successfully!');
+            ->with('success', 'Sửa thành công');
     }
 
     public function destroy(Category $category)
@@ -65,7 +60,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('categories.index')
-            ->with('success', 'Category deleted successfully!');
+            ->with('success', 'Xóa thành công');
     }
 }
 

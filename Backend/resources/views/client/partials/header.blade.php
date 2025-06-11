@@ -177,12 +177,11 @@
                                             @role('admin')
                                             <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản trị</a></li>
                                             @endrole
+
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
                                             <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
-                                            <li><a class="dropdown-item" href="#">Nạp tiền
-                                                </a></li>
-                                                {{-- nạp tiền --}}
+
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\StoreRequest;
 use App\Http\Requests\Role\UpdateRequest;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -92,6 +93,12 @@ class RoleController extends Controller
     {
         $roleID = Role::findOrFail($id);
 
+        if($roleID->name == 'admin'){
+            toastr()->error('Không thể xóa vai trò admin');
+
+            return redirect()->back();
+        }
+
         $roleID->delete();
 
         if($roleID){
@@ -104,4 +111,31 @@ class RoleController extends Controller
             return redirect()->back();
         }
     }
+
+    public function editPermissions($id)
+{
+    $role = Role::findOrFail($id);
+    $permissions = Permission::all();
+    $rolePermissions = $role->permissions->pluck('id')->toArray();
+
+    return view('admin.pages.roles.edit-permissions', compact('role', 'permissions', 'rolePermissions'));
+}
+
+
+public function updatePermissions(Request $request, $id)
+{
+    $role = Role::findOrFail($id);
+
+    // Lấy mảng ID từ form
+    $permissionIds = $request->input('permissions', []);
+
+    // Chuyển ID thành name
+    $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
+
+    // Gán permission bằng tên
+    $role->syncPermissions($permissionNames);
+
+    return redirect()->route('roles.index')->with('success', 'Gán quyền thành công cho vai trò');
+}
+
 }

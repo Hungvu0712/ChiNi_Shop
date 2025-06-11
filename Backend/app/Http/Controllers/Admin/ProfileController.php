@@ -5,19 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 
-class UserController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-
-    $users = User::with('roles')->get();
-
-    return view('admin.pages.users.index', compact('users'));
+        //
     }
 
     /**
@@ -41,7 +37,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::with('profile')->findOrFail($id); // Eager load profile
+        $roles = $user->roles()->get();
+    return view('admin.pages.profiles.show', compact('user', 'roles'));
     }
 
     /**
@@ -49,13 +47,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $user = User::findOrFail($id);
-
-        $roles = Role::all();
-
-        $userRoles = $user->roles->pluck('name')->toArray();
-
-        return view('admin.pages.users.edit-roles', compact('user', 'roles', 'userRoles'));
+        //
     }
 
     /**
@@ -63,20 +55,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-                $user = User::findOrFail($id);
-
-                if($user->id == '1'){
-                    toastr()->error('Không thể cập nhập vai trò của người dùng này');
-                    return redirect()->back();
-                }
-
-                $request->validate([
-            'roles' => 'required|array',
-        ]);
-
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật vai trò cho người dùng.');
+        //
     }
 
     /**
