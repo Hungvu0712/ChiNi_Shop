@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductAttachmentController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
@@ -37,6 +39,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::resource('roles', RoleController::class);
     //permissions
     Route::resource('permissions', PermissionController::class);
+
+    Route::resource('products', ProductController::class);
+    Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
+        ->name('product-attachments.destroy');
 });
 
 

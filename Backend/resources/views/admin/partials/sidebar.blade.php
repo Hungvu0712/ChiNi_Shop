@@ -4,8 +4,8 @@
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
             <a href="#" class="logo">
-                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand"
-                    class="navbar-brand" height="20" />
+                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand"
+                    height="20" />
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar">
@@ -62,6 +62,29 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#products" role="button" aria-expanded="false"
+                        aria-controls="products">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Quản lý sản phẩm</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="products">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('products.index') }}">
+                                    <span class="sub-item">Danh sách sản phẩm</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('products.create') }}">
+                                    <span class="sub-item">Thêm mới sản phẩm</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
             </ul>
         </div>
     </div>
