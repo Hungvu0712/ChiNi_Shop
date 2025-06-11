@@ -18,12 +18,20 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Tên menu:</label><br>
-                    <input type="text" name="name" value="{{ old('name') }}" class="form-control mb-2" placeholder="Nhập tên menu">
+                    <label for="name" class="form-label">Tên menu:</label>
+                    <input type="text" name="name" value="{{ old('name') }}" class="form-control"
+                        placeholder="Nhập tên menu">
                     @error('name')
-                        <div style="color: red">
-                            {{ $message }}
-                        </div>
+                        <div style="color: red">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="url" class="form-label">Đường dẫn URL:</label>
+                    <input type="text" name="url" value="{{ old('url') }}" class="form-control"
+                        placeholder="Nhập URL menu">
+                    @error('url')
+                        <div style="color: red">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -38,14 +46,19 @@
                         @endforeach
                     </select>
                     @error('prant_id')
-                        <div style="color: red">
-                            {{ $message }}
-                        </div>
+                        <div style="color: red">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <input type="submit" value="Submit" class="btn btn-primary mt-2">
+                <div class="d-flex justify-content-between mt-2">
+                    <a href="{{ route('menus.index') }}" class="btn btn-secondary">
+                        Quay lại
+                    </a>
+
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
             </form>
+
         </div>
     </div>
 @endsection

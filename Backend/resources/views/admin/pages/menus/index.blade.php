@@ -19,6 +19,7 @@
                     <tr>
                         <th>ID</th>
                         <th>NAME</th>
+                        <th>SLUG</th>
                         <th>URL</th>
                         <th>Action</th>
                     </tr>
@@ -39,6 +40,7 @@
                                     </ul>
                                 @endif
                             </td>
+                            <td>{{$menu->slug}}</td>
                             <td>{{ $menu->url }}</td>
                             <td class="d-flex gap-2">
                                 <form action="{{ route('menus.destroy',$menu->id) }}"
