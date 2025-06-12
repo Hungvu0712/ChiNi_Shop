@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-2">
-                    <a href="{{ route('menus.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('menus.index') }}" onclick="return confirm('bạn chắc chắn muốn quay lại?')" class="btn btn-secondary">
                         Quay lại
                     </a>
 

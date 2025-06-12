@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-2">
-                    <a href="{{ route('menus.index') }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('menus.index') }}" onclick="return confirm('bạn chắc chắn muốn quay lại?')" class="btn btn-secondary">Quay lại</a>
                     <input type="submit" value="Cập nhật" class="btn btn-primary">
                 </div>
             </form>
