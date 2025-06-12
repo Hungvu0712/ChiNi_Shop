@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>404</title>
+    <title>Trang 404</title>
     <meta name="description" content="Fashion Ecommerce Responsive HTML Template.">
     <meta name="keywords"
         content="HTML, CSS, JavaScript, jQuery, Animation, Bootstrap, Font Awesome, Revolution Slider, Fasion, Ecommerce, Shop, WooCommerce">
