@@ -10,11 +10,11 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     public function __construct(){
-        $this->middleware('permission:user-list')->only('index', 'show');
-        $this->middleware('permission:user-create')->only('create', 'store');
-        $this->middleware('permission:user-edit')->only('edit', 'update');
-        $this->middleware('permission:user-delete')->only('destroy');
-        $this->middleware('permission:user-assign')->only('editRoles', 'updateRoles');
+        $this->middleware('permission.404:user-list')->only('index', 'show');
+        $this->middleware('permission.404:user-create')->only('create', 'store');
+        $this->middleware('permission.404:user-edit')->only('edit', 'update');
+        $this->middleware('permission.404:user-delete')->only('destroy');
+        $this->middleware('permission.404:user-assign')->only('editRoles', 'updateRoles');
     }
     /**
      * Display a listing of the resource.
