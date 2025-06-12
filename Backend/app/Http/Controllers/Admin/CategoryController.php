@@ -12,10 +12,10 @@ use App\Http\Requests\Categories\UpdateRequest;
 class CategoryController extends Controller
 {
     public function __construct(){
-        $this->middleware('permission:category-list')->only('index', 'show');
-        $this->middleware('permission:category-create')->only('create', 'store');
-        $this->middleware('permission:category-edit')->only('edit', 'update');
-        $this->middleware('permission:category-delete')->only('destroy');
+        $this->middleware('permission.404:category-list')->only('index', 'show');
+        $this->middleware('permission.404:category-create')->only('create', 'store');
+        $this->middleware('permission.404:category-edit')->only('edit', 'update');
+        $this->middleware('permission.404:category-delete')->only('destroy');
     }
     public function index()
     {
