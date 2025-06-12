@@ -27,4 +27,19 @@ class UpdateRequest extends FormRequest
             'prant_id' => 'nullable|exists:menus,id',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Tên menu là bắt buộc.',
+            'name.string' => 'Tên menu phải là một chuỗi ký tự.',
+            'name.max' => 'Tên menu không được vượt quá 255 ký tự.',
+
+            'url.required' => 'Đường dẫn là bắt buộc.',
+            'url.string' => 'Đường dẫn phải là một chuỗi ký tự.',
+            'url.max' => 'Đường dẫn không được vượt quá 255 ký tự.',
+
+            'prant_id.exists' => 'Menu cha được chọn không tồn tại.',
+        ];
+    }
 }

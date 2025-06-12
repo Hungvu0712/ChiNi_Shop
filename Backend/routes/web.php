@@ -38,9 +38,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::resource('roles', RoleController::class);
     //permissions
     Route::resource('permissions', PermissionController::class);
+
+    Route::resource('menus',MenuController::class);
+
 });
 
-Route::resource('menus',MenuController::class);
 
 
 Route::middleware('auth')->group(function () {
