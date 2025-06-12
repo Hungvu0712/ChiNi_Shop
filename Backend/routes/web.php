@@ -33,20 +33,20 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
 //QL User
-Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']], function () {
     //users
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit');
     Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update');
     //roles
     Route::resource('roles', RoleController::class);
-    //permissions
-    Route::resource('permissions', PermissionController::class);
     Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions');
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
+    //permissions
+    Route::resource('permissions', PermissionController::class);
     //categories
     Route::resource('categories', CategoryController::class);
     //brands

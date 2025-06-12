@@ -178,6 +178,11 @@
                                             <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản trị</a></li>
                                             @endrole
 
+                                            @role('staff')
+                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a></li>
+                                            @endrole
+
+
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
                                             <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>

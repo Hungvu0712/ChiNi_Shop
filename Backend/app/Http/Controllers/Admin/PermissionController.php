@@ -10,6 +10,12 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
+    public function __construct(){
+        $this->middleware('permission:permssion-list')->only('index', 'show');
+        $this->middleware('permission:permssion-create')->only('create', 'store');
+        $this->middleware('permission:permssion-edit')->only('edit', 'update');
+        $this->middleware('permission:permssion-delete')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -92,7 +98,7 @@ class PermissionController extends Controller
         $permissionID->delete();
 
         if($permissionID){
-            toastr()->success('Cập nhật quyền thành công');
+            toastr()->success('Xóa quyền thành công');
             return redirect()->route('permissions.index');
         }else{
             toastr()->error('Vui lòng thử lại');

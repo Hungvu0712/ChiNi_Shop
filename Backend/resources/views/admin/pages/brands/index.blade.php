@@ -8,52 +8,62 @@
 
 @endsection
 @section('content')
-    <div class="card" style="width: 100%">
-        <div class="card-header">
-            <div class="card-title">Danh sách Brands</div>
-        </div>
+    @can('brand-list')
+        <div class="card" style="width: 100%">
+            <div class="card-header">
+                <div class="card-title">Danh sách Brands</div>
+            </div>
 
-        <div class="card-body">
-            <a href="{{ route('brands.create') }}" class="btn btn-success mb-5">Thêm Brands</a>
-            <table id="listbrand" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>NAME</th>
-                        <th>IMAGE</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+            <div class="card-body">
+                @can('brand-create')
+                    <a href="{{ route('brands.create') }}" class="btn btn-success mb-5">Thêm Brands</a>
+                @endcan
 
-                <tbody>
-                    @foreach ($brands as $brand)
+                <table id="listbrand" class="display" style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $brand->name }}</td>
-                            <td>
-                                <img src="{{ asset($brand->brand_image) }}" alt="" width="100px" height="100px">
-                            </td>
-                            <td class="d-flex gap-2">
-                                <form action="{{ route('brands.destroy',$brand->id) }}"
-                                    id="delete-form-{{ $brand->id }}" method="post">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="button" data-id="{{ $brand->id }}"
-                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('brands.edit',$brand->id) }}" class="btn btn-info">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                            </td>
+                            <th>STT</th>
+                            <th>NAME</th>
+                            <th>IMAGE</th>
+                            <th>Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
 
-            </table>
+                    <tbody>
+                        @foreach ($brands as $brand)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $brand->name }}</td>
+                                <td>
+                                    <img src="{{ asset($brand->brand_image ?? 'images/default.jpg') }}" alt="brand"
+                                        width="100px" height="100px">
+                                </td>
+                                <td class="d-flex gap-2">
+                                    @can('brand-delete')
+                                        <form action="{{ route('brands.destroy', $brand->id) }}"
+                                            id="delete-form-{{ $brand->id }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="button" data-id="{{ $brand->id }}"
+                                                class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+
+                                    @can('brand-edit')
+                                        <a href="{{ route('brands.edit', $brand->id) }}" class="btn btn-info">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+            </div>
         </div>
-    </div>
+    @endcan
 @endsection
 @section('script')
 
