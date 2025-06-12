@@ -62,6 +62,30 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#products" role="button" aria-expanded="false"
+                        aria-controls="products">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Quản lý sản phẩm</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="products">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('products.index') }}">
+                                    <span class="sub-item">Danh sách sản phẩm</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('products.create') }}">
+                                    <span class="sub-item">Thêm mới sản phẩm</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#categories">
                         <i class="fas fa-th-large"></i>
@@ -83,7 +107,6 @@
                         </ul>
                     </div>
                 </li>
-
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#brand">
                         <i class="far fa-chart-bar"></i>
@@ -100,6 +123,28 @@
                             <li>
                                 <a href="{{ route('brands.create') }}">
                                     <span class="sub-item">Thêm thương hiệu</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#postCategories">
+                        <i class="far fa-chart-bar"></i>
+                        <p>Quản lý danh mục bài viết</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="postCategories">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('post-categories.index') }}">
+                                    <span class="sub-item">Danh sách danh mục bài viết</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('post-categories.create') }}">
+                                    <span class="sub-item">Thêm danh mục bài viết</span>
                                 </a>
                             </li>
                         </ul>
