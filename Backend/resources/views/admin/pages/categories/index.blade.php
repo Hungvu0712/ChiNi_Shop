@@ -8,50 +8,58 @@
 
 @endsection
 @section('content')
-    <div class="card" style="width: 100%">
-        <div class="card-header">
-            <div class="card-title">Danh sách Category</div>
-        </div>
+    @can('category-list')
+        <div class="card" style="width: 100%">
+            <div class="card-header">
+                <div class="card-title">Danh sách Category</div>
+            </div>
 
-        <div class="card-body">
-            <a href="{{ route('categories.create') }}" class="btn btn-success mb-5">Thêm Category</a>
-            <table id="listcategory" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>NAME</th>
-                        <th>DESCRIPTION</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($categories as $category)
+            <div class="card-body">
+                @can('category-create')
+                    <a href="{{ route('categories.create') }}" class="btn btn-success mb-5">Thêm Category</a>
+                @endcan
+                <table id="listcategory" class="display" style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $category->name }}</td>
-                            <td>{!! $category->description !!}</td>
-                            <td class="d-flex gap-2">
-                                <form action="{{ route('categories.destroy',$category->id) }}"
-                                    id="delete-form-{{ $category->id }}" method="post">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="button" data-id="{{ $category->id }}"
-                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('categories.edit',$category->id) }}" class="btn btn-info">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                            </td>
+                            <th>STT</th>
+                            <th>NAME</th>
+                            <th>DESCRIPTION</th>
+                            <th>Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
 
-            </table>
+                    <tbody>
+                        @foreach ($categories as $category)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $category->name }}</td>
+                                <td>{!! $category->description !!}</td>
+                                <td class="d-flex gap-2">
+                                    @can('category-delete')
+                                        <form action="{{ route('categories.destroy', $category->id) }}"
+                                            id="delete-form-{{ $category->id }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="button" data-id="{{ $category->id }}"
+                                                class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+
+                                    @can('category-edit')
+                                        <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+            </div>
         </div>
-    </div>
+    @endcan
 @endsection
 @section('script')
 

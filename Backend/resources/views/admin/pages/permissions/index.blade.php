@@ -8,50 +8,58 @@
 
 @endsection
 @section('content')
-    <div class="card" style="width: 100%">
-        <div class="card-header">
-            <div class="card-title">Danh sách Quyền trị</div>
-        </div>
+    @can('permssion-list')
+        <div class="card" style="width: 100%">
+            <div class="card-header">
+                <div class="card-title">Danh sách Quyền trị</div>
+            </div>
 
-        <div class="card-body">
-            <a href="{{ route('permissions.create') }}" class="btn btn-success mb-5">Thêm Permissions</a>
-            <table id="listpermissions" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>NAME</th>
-                        <th>GUARD_NAME</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($permissions as $permission)
+            <div class="card-body">
+                @can('permssion-create')
+                    <a href="{{ route('permissions.create') }}" class="btn btn-success mb-5">Thêm Permissions</a>
+                @endcan
+                <table id="listpermissions" class="display" style="width:100%">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $permission->name }}</td>
-                            <td>{{ $permission->guard_name }}</td>
-                            <td class="d-flex gap-2">
-                                <form action="{{ route('permissions.destroy',$permission->id) }}"
-                                    id="delete-form-{{ $permission->id }}" method="post">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="button" data-id="{{ $permission->id }}"
-                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('permissions.edit',$permission->id) }}" class="btn btn-info">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                            </td>
+                            <th>STT</th>
+                            <th>NAME</th>
+                            <th>GUARD_NAME</th>
+                            <th>Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
 
-            </table>
+                    <tbody>
+                        @foreach ($permissions as $permission)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $permission->name }}</td>
+                                <td>{{ $permission->guard_name }}</td>
+                                <td class="d-flex gap-2">
+                                    @can('permssion-delete')
+                                        <form action="{{ route('permissions.destroy', $permission->id) }}"
+                                            id="delete-form-{{ $permission->id }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="button" data-id="{{ $permission->id }}"
+                                                class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+
+                                    @can('permssion-edit')
+                                        <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-info">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+            </div>
         </div>
-    </div>
+    @endcan
 @endsection
 @section('script')
 
