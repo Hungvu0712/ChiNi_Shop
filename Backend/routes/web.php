@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductAttachmentController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
@@ -50,6 +53,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::resource('brands', BrandController::class);
     //profiles
     Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
+
+    //post-category
+    Route::resource('post-categories', PostCategoryController::class)->parameters(['post-categories' => 'post_category']);
+
+    //products
+     Route::resource('products', ProductController::class);
+    Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
+        ->name('product-attachments.destroy');
+
 });
 
 //Trang 404
@@ -71,9 +83,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/password/change', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 //Đăng nhập bằng google
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
