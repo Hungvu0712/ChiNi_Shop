@@ -32,19 +32,17 @@
                             <td>{{ $products->firstItem() + $index }}</td>
                             <td>
                                 @if ($product->product_image)
-                                    <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px" alt="brand"
-                                @endif
+                                    <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px"
+                                        alt="brand" @endif
                             </td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }}₫</td>
                             <td>{{ $product->quantity }}</td>
                             <td>{{ $product->attachments_count }}</td>
                             <td>
-                                @if ($product->active === '1')
-                                    <span class="badge bg-success">Hiện</span>
-                                @else
-                                    <span class="badge bg-secondary">Ẩn</span>
-                                @endif
+                                <span class="badge {{ $product->active ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ $product->active ? 'Hiện' : 'Ẩn' }}
+                                </span>
                             </td>
                             <td>
                                 <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">Sửa</a>

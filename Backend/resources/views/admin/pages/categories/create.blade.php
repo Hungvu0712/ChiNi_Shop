@@ -25,7 +25,7 @@
                             placeholder="Mời nhập tên category">
                         @error('name')
                             <div style="color: red">
-                                {{ $messages }}
+                                {{ $message }}
                             </div>
                         @enderror
                     </div>
@@ -35,7 +35,7 @@
                         <textarea name="description" id="summernote" cols="30" rows="10" class="form-control"></textarea>
                         @error('description')
                             <div style="color: red">
-                                {{ $messages }}
+                                {{ $message }}
                             </div>
                         @enderror
                     </div>

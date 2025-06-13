@@ -89,7 +89,7 @@ class ProductController extends Controller
                 'quantity_warning' => $validated['quantity_warning'] ?? 0,
                 'tags' => $validated['tags'] ?? null,
                 'sku' => $validated['sku'] ?? null,
-                'active' => $request->boolean('active', true),
+                'active' => $request->has('active') ? 1 : 0,
             ]);
             Log::info('Tạo product thành công, ID: ' . $product->id);
 
@@ -165,94 +165,100 @@ class ProductController extends Controller
 
 
 
+
     public function update(Request $request, $id)
     {
-        Log::info('Bắt đầu update()');
+        Log::info("Bắt đầu cập nhật sản phẩm ID: $id");
 
-        $product = Product::with('attachments')->findOrFail($id);
+        $product = Product::findOrFail($id);
+        Log::info("Tìm thấy sản phẩm: {$product->name}");
 
-        $request->validate([
-            'name' => 'required|unique:products,name,' . $product->id,
-            'category_id' => 'required',
-            'brand_id' => 'required',
-            'price' => 'required|numeric',
+        // Validate dữ liệu đầu vào
+        Log::info("Bắt đầu validate dữ liệu");
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
             'weight' => 'nullable|string',
-            'quantity' => 'required|integer',
-            'quantity_warning' => 'required|integer',
-            'sku' => 'required',
-            'active' => 'boolean',
-            'product_image' => 'nullable|image|max:2048',
-            'attachments.*' => 'nullable|image|max:2048',
-
+            'quantity' => 'required|integer|min:0',
+            'quantity_warning' => 'nullable|integer|min:0',
+            'tags' => 'nullable|string',
+            'sku' => 'nullable|string|max:255',
+            'active' => 'nullable|boolean',
         ]);
+        Log::info("Validate thành công", $validated);
 
-        $product->fill($request->only([
-            'name',
-            'category_id',
-            'brand_id',
-            'price',
-            'description',
-            'weight',
-            'quantity',
-            'quantity_warning',
-            'tags',
-            'sku',
-            'active'
-        ]));
+        // Sinh slug duy nhất từ name
+        $slug = Str::slug($request->name);
+        $originalSlug = $slug;
+        $count = 1;
+        while (Product::where('slug', $slug)->where('id', '!=', $product->id)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+        Log::info("Slug sinh ra: $slug");
 
-        $product->slug = Str::slug($product->name);
+        // Cập nhật các trường cơ bản
+        $product->update([
+            'name' => $request->name,
+            'slug' => $slug,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'brand_id' => $request->brand_id,
+            'weight' => $request->weight,
+            'quantity' => $request->quantity,
+            'quantity_warning' => $request->quantity_warning,
+            'tags' => $request->tags,
+            'sku' => $request->sku,
+            'active' => $request->has('active') ? 1 : 0,
+        ]);
+        Log::info("Đã cập nhật thông tin cơ bản cho sản phẩm ID: $id");
 
-        // ✅ Xử lý ảnh chính nếu có
+        // Xử lý ảnh đại diện nếu người dùng chọn ảnh mới
         if ($request->hasFile('product_image')) {
+            Log::info("Người dùng chọn ảnh đại diện mới");
             if ($product->public_product_image_id) {
-                try {
-                    Cloudinary::destroy($product->public_product_image_id);
-                } catch (\Exception $e) {
-                    Log::warning("Không thể xoá ảnh chính cũ: " . $e->getMessage());
-                }
+                Cloudinary::destroy($product->public_product_image_id);
+                Log::info("Đã xoá ảnh đại diện cũ trên Cloudinary: {$product->public_product_image_id}");
             }
 
-            $result = Cloudinary::upload($request->file('product_image')->getRealPath(), [
-                'folder' => 'products'
+            $uploaded = Cloudinary::upload($request->file('product_image')->getRealPath());
+            $product->update([
+                'product_image' => $uploaded->getSecurePath(),
+                'public_product_image_id' => $uploaded->getPublicId(),
             ]);
-
-            $product->product_image = $result->getSecurePath();
-            $product->public_product_image_id = $result->getPublicId();
+            Log::info("Đã upload ảnh đại diện mới: " . $uploaded->getSecurePath());
         }
 
-        $product->save();
-
-        // ✅ Xoá toàn bộ ảnh đính kèm cũ → upload ảnh mới
-        if ($request->hasFile('attachments')) {
-            $publicIds = $product->attachments
-                ->pluck('public_attachment_image_id')
-                ->filter()
-                ->toArray();
-
-            if (!empty($publicIds)) {
-                try {
-                    Cloudinary::destroy($publicIds);
-                } catch (\Exception $e) {
-                    Log::warning("Không thể xoá ảnh đính kèm cũ: " . $e->getMessage());
-                }
+        // Xử lý ảnh đính kèm bị người dùng loại bỏ khỏi form
+        $removedAttachmentIds = explode(',', $request->input('removed_attachments', ''));
+        foreach ($removedAttachmentIds as $id) {
+            if (!$id) continue;
+            $attachment = ProductAttachment::find($id);
+            if ($attachment) {
+                Cloudinary::destroy($attachment->public_attachment_image_id);
+                $attachment->delete();
+                Log::info("Đã xoá ảnh đính kèm ID: $id - public_id: {$attachment->public_attachment_image_id}");
             }
+        }
 
-            $product->attachments()->delete();
-
-            foreach ($request->file('attachments') as $file) {
-                $uploaded = Cloudinary::upload($file->getRealPath(), [
-                    'folder' => 'product_attachments'
-                ]);
+        // Xử lý ảnh đính kèm mới
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $uploaded = Cloudinary::upload($image->getRealPath());
 
                 ProductAttachment::create([
                     'product_id' => $product->id,
                     'attachment_image' => $uploaded->getSecurePath(),
                     'public_attachment_image_id' => $uploaded->getPublicId(),
                 ]);
+                Log::info("Đã thêm ảnh đính kèm mới: " . $uploaded->getSecurePath());
             }
         }
 
-        Log::info('Cập nhật sản phẩm thành công: ' . $product->id);
+        Log::info("Hoàn tất cập nhật sản phẩm ID: $id");
 
         return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }
