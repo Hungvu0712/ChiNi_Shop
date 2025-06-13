@@ -8,60 +8,54 @@
 
 @endsection
 @section('content')
-    <div class="card">
+     <div class="card">
         <div class="card-header">
-            <div class="card-title">Danh sách menu</div>
+            <div class="card-title">Danh sách Menu</div>
         </div>
-        <div class="card-body">
-            <a href="{{ route('menus.create') }}" class="btn btn-success mb-5">Thêm menu</a>
-            <table id="listmenu" class="table table-striped display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>NAME</th>
-                        <th>SLUG</th>
-                        <th>URL</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+        <div class="p-4 border rounded shadow-sm bg-light">
+            <a href="{{ route('menus.create') }}" class="btn btn-primary mb-3">Create Menu</a>
+            <ul class="list-group">
+                @foreach ($menus as $menu)
+                    <li class="list-group-item" style="display: block !important; border-width: 1px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ $menu->name }}</span>
+                            <div>
+                                <a href="{{ route('menus.edit', $menu->id) }}" class="btn btn-info me-2"><i
+                                        class="fas fa-pen-square"></i></a>
 
-                <tbody>
-                    @foreach ($menus as $menu)
-                        <tr>
-                            <td>{{ $menu->id }}</td>
-                            <td>
-                                <div><strong>{{ $menu->name }}</strong></div>
-
-                                @if ($menu->children->count())
-                                    <ul style="margin-left: 20px;">
-                                        @foreach ($menu->children as $child)
-                                            <li>{{ $child->name }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </td>
-                            <td>{{$menu->slug}}</td>
-                            <td>{{ $menu->url }}</td>
-                            <td class="d-flex gap-2">
-                                <form action="{{ route('menus.destroy',$menu->id) }}"
-                                    id="delete-form-{{ $menu->id }}" method="post">
+                                <form action="{{ route('menus.destroy', $menu->id) }}" method="POST"
+                                    class="d-inline" id="delete-form-{{ $menu->id }}">
                                     @csrf
-                                    @method('delete')
-                                    <button type="button" data-id="{{ $menu->id }}"
-                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
-                                    </button>
+                                    @method('DELETE')
+                                    <button type="button" data-id="{{ $menu->id }}" class="btn btn-danger delete-button-menu"><i
+                                        class="fas fa-times-circle"></i></button>
                                 </form>
+                            </div>
+                        </div>
 
-                                <a href="{{ route('menus.edit',$menu->id) }}" class="btn btn-info">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-
-                </tbody>
-
-            </table>
+                        @if ($menu->children->count())
+                            @foreach ($menu->children as $child)
+                    <li class="list-group-item" style="display: block !important; margin-left: 30px; border-width: 1px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>{{ $child->name }} <span class="sub-menu">(sub menu)</span></span>
+                            <div>
+                                <a href="{{ route('menus.edit', $child->id) }}" class="btn btn-info me-2"><i
+                                        class="fas fa-pen-square"></i></a>
+                                <form action="{{ route('menus.destroy', $child->id) }}" method="POST"
+                                    class="d-inline" id="delete-form-{{ $child->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" data-id="{{ $child->id }}" class="btn btn-danger delete-button"><i
+                                        class="fas fa-times-circle"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                @endforeach
+                @endif
+                </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 @endsection
@@ -72,26 +66,46 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        new DataTable('#listmenu');
-
-         document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const menuId = this.getAttribute('data-id');
-                Swal.fire({
-                    title: 'Bạn có chắc chắn?',
-                    text: "Thông tin này xã bị xóa!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Có, xóa nó!',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${menuId}`).submit();
-                    }
-                });
+    document.querySelectorAll('.delete-button-menu').forEach(button => {
+        button.addEventListener('click', function() {
+            const menuId = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Menu này sẽ bị xóa",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${menuId}`).submit();
+                }
             });
         });
-    </script>
+    });
+</script>
+
+<script>
+    document.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const childId = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Menu con này sẽ bị xóa",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${childId}`).submit();
+                }
+            });
+        });
+    });
+</script>
 @endsection

@@ -36,19 +36,28 @@
                     @enderror
                 </div>
 
+                 <div class="mb-3">
+                    <label for="order_index" class="form-label">Thứ tự hiển thị:</label>
+                    <input type="number" name="order_index" value="{{ old('order_index', $menu->order_index  ) }}" value="1" class="form-control"
+                        placeholder="Nhập thứ tự hiển thị">
+                    @error('order_index')
+                        <div style="color: red">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="mb-3">
-                    <label for="prant_id" class="form-label">Menu cha (nếu có):</label>
-                    <select name="prant_id" class="form-control">
+                    <label for="parent_id" class="form-label">Menu cha (nếu có):</label>
+                    <select name="parent_id" class="form-control">
                         <option value="">-- Không có --</option>
                         @foreach ($menus as $item)
                             @if ($item->id !== $menu->id)
-                                <option value="{{ $item->id }}" {{ old('prant_id', $menu->prant_id) == $item->id ? 'selected' : '' }}>
+                                <option value="{{ $item->id }}" {{ old('parent_id', $menu->parent_id) == $item->id ? 'selected' : '' }}>
                                     {{ $item->name }}
                                 </option>
                             @endif
                         @endforeach
                     </select>
-                    @error('prant_id')
+                    @error('parent_id')
                         <div style="color: red">{{ $message }}</div>
                     @enderror
                 </div>

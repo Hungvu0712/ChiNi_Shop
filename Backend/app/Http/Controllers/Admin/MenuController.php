@@ -37,7 +37,8 @@ class MenuController extends Controller
             'name' => $request->name,
             'slug' => \Str::slug($request->name),
             'url' => $request->url,
-            'prant_id' => $request->prant_id,
+            'parent_id' => $request->parent_id,
+            'order_index' => $request->order_index ,
         ]);
 
         return redirect()->back()->with('success', 'Thêm menu thành công!');
@@ -65,7 +66,8 @@ class MenuController extends Controller
             'name' => $request->name,
             'slug' => \Str::slug($request->name),
             'url' => $request->url,
-            'prant_id' => $request->prant_id,
+            'parent_id' => $request->parent_id,
+            'order_index' => $request->order_index,
         ]);
 
         return redirect()->route('menus.index')->with('success', 'Cập nhật menu thành công.');

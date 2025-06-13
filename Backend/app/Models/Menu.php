@@ -10,19 +10,20 @@ class Menu extends Model
     use HasFactory;
 
     protected $fillable = [
-        'prant_id',
+        'parent_id',
         'name',
         'slug',
         'url',
+        'order_index'
     ];
 
     public function children()
     {
-        return $this->hasMany(Menu::class, 'prant_id');
+        return $this->hasMany(Menu::class, 'parent_id');
     }
 
     public function parent()
     {
-        return $this->belongsTo(Menu::class, 'prant_id');
+        return $this->belongsTo(Menu::class, 'parent_id');
     }
 }
