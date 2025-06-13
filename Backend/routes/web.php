@@ -35,7 +35,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
-//QL User
+//QL Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']], function () {
     //users
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
@@ -64,6 +64,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
 
 });
 
+//Trang 404
+Route::get('/404', function () {
+    return view('404')->name('pagenotfound');
+});
 
 
 Route::middleware('auth')->group(function () {

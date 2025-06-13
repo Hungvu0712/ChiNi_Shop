@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ProfileController extends Controller
 {
     public function __construct(){
-        $this->middleware('permission:profile-show')->only('index', 'show');
+        $this->middleware('permission.404:profile-show')->only('index', 'show');
     }
     /**
      * Display a listing of the resource.
