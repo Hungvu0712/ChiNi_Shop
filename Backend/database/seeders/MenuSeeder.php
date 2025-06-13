@@ -17,18 +17,21 @@ class MenuSeeder extends Seeder
             'name' => 'Trang chủ',
             'slug' => 'trang-chu',
             'url' => '/',
+            'order_index' => 1,
         ]);
 
         Menu::create([
             'name' => 'Giới thiệu',
             'slug' => 'gioi-thieu',
             'url' => '/gioi-thieu',
+            'order_index' => 2,
         ]);
 
         Menu::create([
             'name' => 'Liên hệ',
             'slug' => 'lien-he',
             'url' => '/lien-he',
+            'order_index' => 3,
         ]);
     }
 }
