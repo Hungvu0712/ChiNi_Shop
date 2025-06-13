@@ -32,7 +32,7 @@
                             <td>{{ $products->firstItem() + $index }}</td>
                             <td>
                                 @if ($product->product_image)
-                                    <img src="{{ asset('storage/' . $product->product_image) }}" width="60">
+                                    <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px" alt="brand"
                                 @endif
                             </td>
                             <td>{{ $product->name }}</td>

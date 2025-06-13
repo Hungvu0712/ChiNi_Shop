@@ -22,7 +22,7 @@
                             placeholder="Mời nhập tên brand">
                         @error('name')
                         <div style="color: red">
-                            {{ $message }}
+                            {{ $messages }}
                         </div>
                         @enderror
                     </div>
@@ -32,7 +32,7 @@
                         <input type="file" name="brand_image" id="" class="form-control">
                         @error('brand_image')
                         <div style="color: red">
-                            {{ $message }}
+                            {{ $messages }}
                         </div>
                         @enderror
                     </div>
