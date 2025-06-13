@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\HomeController;
@@ -62,6 +63,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
         ->name('product-attachments.destroy');
 
+     Route::resource('vouchers', VoucherController::class);
+    
 });
 
 //Trang 404
