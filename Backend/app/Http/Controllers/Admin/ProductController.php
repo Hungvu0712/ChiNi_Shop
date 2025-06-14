@@ -173,7 +173,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         Log::info("Tìm thấy sản phẩm: {$product->name}");
 
-        // Validate dữ liệu đầu vào
+        // Validate dữ liệu
         Log::info("Bắt đầu validate dữ liệu");
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -186,11 +186,11 @@ class ProductController extends Controller
             'quantity_warning' => 'nullable|integer|min:0',
             'tags' => 'nullable|string',
             'sku' => 'nullable|string|max:255',
-            'active' => 'nullable|boolean',
+            'active' => 'boolean',
         ]);
         Log::info("Validate thành công", $validated);
 
-        // Sinh slug duy nhất từ name
+        // Tạo slug không trùng
         $slug = Str::slug($request->name);
         $originalSlug = $slug;
         $count = 1;
@@ -199,7 +199,7 @@ class ProductController extends Controller
         }
         Log::info("Slug sinh ra: $slug");
 
-        // Cập nhật các trường cơ bản
+        // Cập nhật thông tin cơ bản
         $product->update([
             'name' => $request->name,
             'slug' => $slug,
@@ -209,19 +209,20 @@ class ProductController extends Controller
             'brand_id' => $request->brand_id,
             'weight' => $request->weight,
             'quantity' => $request->quantity,
-            'quantity_warning' => $request->quantity_warning,
+            'quantity_warning' => $request->quantity_warning ?? 0,
             'tags' => $request->tags,
             'sku' => $request->sku,
-            'active' => $request->has('active') ? 1 : 0,
+            'active' => $request->input('active', 0), // ✅ nhận đúng giá trị checkbox
         ]);
-        Log::info("Đã cập nhật thông tin cơ bản cho sản phẩm ID: $id");
+        Log::info("Cập nhật dữ liệu sản phẩm xong");
 
-        // Xử lý ảnh đại diện nếu người dùng chọn ảnh mới
+        // Xử lý ảnh đại diện mới nếu có
         if ($request->hasFile('product_image')) {
-            Log::info("Người dùng chọn ảnh đại diện mới");
+            Log::info("Có ảnh đại diện mới");
+
             if ($product->public_product_image_id) {
                 Cloudinary::destroy($product->public_product_image_id);
-                Log::info("Đã xoá ảnh đại diện cũ trên Cloudinary: {$product->public_product_image_id}");
+                Log::info("Đã xoá ảnh đại diện cũ Cloudinary");
             }
 
             $uploaded = Cloudinary::upload($request->file('product_image')->getRealPath());
@@ -229,10 +230,10 @@ class ProductController extends Controller
                 'product_image' => $uploaded->getSecurePath(),
                 'public_product_image_id' => $uploaded->getPublicId(),
             ]);
-            Log::info("Đã upload ảnh đại diện mới: " . $uploaded->getSecurePath());
+            Log::info("Upload ảnh đại diện mới thành công");
         }
 
-        // Xử lý ảnh đính kèm bị người dùng loại bỏ khỏi form
+        // Xử lý ảnh đính kèm bị xoá (từ input hidden)
         $removedAttachmentIds = explode(',', $request->input('removed_attachments', ''));
         foreach ($removedAttachmentIds as $id) {
             if (!$id) continue;
@@ -240,12 +241,13 @@ class ProductController extends Controller
             if ($attachment) {
                 Cloudinary::destroy($attachment->public_attachment_image_id);
                 $attachment->delete();
-                Log::info("Đã xoá ảnh đính kèm ID: $id - public_id: {$attachment->public_attachment_image_id}");
+                Log::info("Xoá ảnh đính kèm ID $id thành công");
             }
         }
 
-        // Xử lý ảnh đính kèm mới
+        // Upload ảnh đính kèm mới
         if ($request->hasFile('images')) {
+            Log::info("Đang thêm ảnh đính kèm mới");
             foreach ($request->file('images') as $image) {
                 $uploaded = Cloudinary::upload($image->getRealPath());
 
@@ -254,14 +256,15 @@ class ProductController extends Controller
                     'attachment_image' => $uploaded->getSecurePath(),
                     'public_attachment_image_id' => $uploaded->getPublicId(),
                 ]);
-                Log::info("Đã thêm ảnh đính kèm mới: " . $uploaded->getSecurePath());
+                Log::info("Thêm ảnh đính kèm mới: " . $uploaded->getSecurePath());
             }
         }
 
-        Log::info("Hoàn tất cập nhật sản phẩm ID: $id");
+        Log::info("Cập nhật sản phẩm ID $id hoàn tất");
 
         return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }
+
 
 
     public function destroy($id)

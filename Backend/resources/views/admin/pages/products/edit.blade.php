@@ -145,13 +145,11 @@
                     </div>
 
                     <div class="mb-3 form-check">
-                        <input type="hidden" name="active" value="0"> <!-- Luôn gửi 0 nếu không tick -->
-                        <input class="form-check-input" type="checkbox" name="active" id="active" value="1"
+                        <input type="hidden" name="active" value="0">
+                        <input type="checkbox" class="form-check-input" name="active" id="active" value="1"
                             {{ $product->active ? 'checked' : '' }}>
                         <label class="form-check-label" for="active">Kích hoạt sản phẩm</label>
                     </div>
-
-
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('products.index') }}" class="btn btn-secondary">⬅ Quay lại</a>

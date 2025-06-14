@@ -33,7 +33,8 @@
                             <td>
                                 @if ($product->product_image)
                                     <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px"
-                                        alt="brand" @endif
+                                        alt="brand">
+                                @endif
                             </td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price, 0, ',', '.') }}₫</td>
@@ -44,14 +45,22 @@
                                     {{ $product->active ? 'Hiện' : 'Ẩn' }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                            <td style="background-color: #f9f9f9;" class="px-3 py-2">
+                                <div class="d-flex gap-2 align-items-center h-100">
+                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
 
-                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Xóa</button>
-                                </form>
+                                    <form action="{{ route('products.destroy', $product->id) }}"
+                                        id="delete-form-{{ $product->id }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" data-id="{{ $product->id }}"
+                                            class="btn btn-danger delete-button">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -76,5 +85,27 @@
 
     <script>
         new DataTable('#listproduct');
+    </script>
+    <script>
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn xoá?',
+                    text: 'Thao tác này không thể hoàn tác!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Xoá',
+                    cancelButtonText: 'Huỷ bỏ'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(`delete-form-${id}`).submit();
+                    }
+                });
+            });
+        });
     </script>
 @endsection
