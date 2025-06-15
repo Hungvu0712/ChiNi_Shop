@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Vouchers\StoreRequest;
+use App\Http\Requests\Vouchers\UpdateRequest;
 use App\Models\Voucher;
-use Illuminate\Http\Request;
 
 class VoucherController extends Controller
 {
@@ -22,23 +23,31 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        //
+        return view("admin.pages.vouchers.create");
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
-    }
+        Voucher::create([
+            'code' => $request->code,
+            'title' => $request->title,
+            'voucher_type' => $request->voucher_type,
+            'value' => $request->value,
+            'discount_type' => $request->discount_type,
+            'min_order_value' => $request->min_order_value,
+            'max_discount_value' => $request->max_discount_value,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'limit' => $request->limit,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return redirect()
+            ->route('vouchers.index')
+            ->with('success', 'Tạo voucher thành công!');
     }
 
     /**
@@ -46,15 +55,34 @@ class VoucherController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $voucher = Voucher::findOrFail($id);
+        return view('admin.pages.vouchers.edit', compact('voucher'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, string $id)
     {
-        //
+        $voucher = Voucher::findOrFail($id);
+
+        $voucher->update([
+            'code' => $request->code,
+            'title' => $request->title,
+            'voucher_type' => $request->voucher_type,
+            'value' => $request->value,
+            'discount_type' => $request->discount_type,
+            'min_order_value' => $request->min_order_value,
+            'max_discount_value' => $request->max_discount_value,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'limit' => $request->limit,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
+
+        return redirect()
+            ->route('vouchers.index')
+            ->with('success', 'Cập nhật voucher thành công!');
     }
 
     /**
@@ -62,9 +90,9 @@ class VoucherController extends Controller
      */
     public function destroy(string $id)
     {
-        $voucher = Voucher::findOrFail($id); 
+        $voucher = Voucher::findOrFail($id);
 
-        $voucher->delete(); 
+        $voucher->delete();
 
         return redirect()
             ->route('vouchers.index')
