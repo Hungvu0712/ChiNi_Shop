@@ -9,64 +9,59 @@
 @endsection
 @section('content')
     <div class="card">
-    <div class="card-header">
-        <div class="card-title">Danh sách bài viết</div>
-    </div>
-    <div class="card-body">
-        <a href="{{ route('posts.create') }}" class="btn btn-success mb-5">Thêm bài viết</a>
-        <table id="listPosts" class="table table-striped display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tiêu đề</th>
-                    <th>Slug</th>
-                    <th>Danh mục</th>
-                    <th>Tóm tắt</th>
-                    <th>Trạng thái</th>
-                    <th>Ảnh đại diện</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach ($posts as $post)
+        <div class="card-header">
+            <div class="card-title">Danh sách bài viết</div>
+        </div>
+        <div class="card-body">
+            <a href="{{ route('posts.create') }}" class="btn btn-success mb-5">Thêm bài viết</a>
+            <table id="listPosts" class="table table-striped display" style="width:100%">
+                <thead>
                     <tr>
-                        <td>{{ $post->id }}</td>
-                        <td>{{ $post->title }}</td>
-                        <td>{{ $post->slug }}</td>
-                        <td>{{ $post->category?->name ?? 'Không có' }}</td>
-                        <td>{{ $post->excerpt }}</td>
-                        <td>
-                            <span class="badge bg-{{ $post->status === 'published' ? 'success' : 'secondary' }}">
-                                {{ $post->status }}
-                            </span>
-                        </td>
-                        <td>
-                            @if ($post->featured_image)
-                                <img src="{{ asset($post->featured_image) }}" alt="" width="60">
-                            @else
-                                Không có ảnh
-                            @endif
-                        </td>
-                        <td class="d-flex gap-2">
-                            <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-info">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Slug</th>
+                        <th>Danh mục</th>
+                        <th>Tóm tắt</th>
+                        <th>Trạng thái</th>
+                        <th>Ảnh đại diện</th>
+                        <th>Action</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    @foreach ($posts as $post)
+                        <tr>
+                            <td>{{ $post->id }}</td>
+                            <td>{{ $post->title }}</td>
+                            <td>{{ $post->slug }}</td>
+                            <td>{{ $post->postCategory?->name }}</td>
+                            <td>{{ $post->excerpt }}</td>
+                            <td>
+                                <span class="badge bg-{{ $post->status === 'published' ? 'success' : 'secondary' }}">
+                                    {{ $post->status }}
+                                </span>
+                            </td>
+                            <td>
+                                <img src="{{ $post->featured_image }}" alt="" width="60">
+                            </td>
+                            <td class="d-flex gap-2">
+                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-info"><i
+                                        class="fa-solid fa-pen-to-square"></i></a>
+                                <form action="{{ route('posts.destroy', $post->id) }}" id="delete-form-{{ $post->id }}"
+                                    method="post">
+                                    @csrf
+                                    @method('delete')
+                                    <button type="submit" data-slug="{{ $post->id }}"
+                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
 @endsection
 @section('script')
@@ -80,9 +75,7 @@
 
         document.querySelectorAll('.delete-button').forEach(button => {
             button.addEventListener('click', function() {
-                const slug = this.getAttribute('data-slug');
-                console.log(slug);
-                
+                const id = this.getAttribute('data-post');
                 Swal.fire({
                     title: 'Bạn có chắc chắn?',
                     text: "Thông tin này xã bị xóa!",
@@ -94,7 +87,7 @@
                     cancelButtonText: 'Hủy'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${slug}`).submit();
+                        document.getElementById(`delete-form-${id}`).submit();
                     }
                 });
             });

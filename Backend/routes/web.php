@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
@@ -61,6 +62,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
      Route::resource('products', ProductController::class);
     Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
         ->name('product-attachments.destroy');
+    Route::resource('posts', PostController::class);
+
 
 });
 
