@@ -39,15 +39,22 @@
                     <h5 class="mb-0">Cập nhật sản phẩm</h5>
                 </div>
                 <div class="card-body">
+                    {{-- Các trường input: name, price, category, brand, description, ảnh, số lượng, v.v. --}}
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Tên sản phẩm</label>
                             <input type="text" name="name" class="form-control" value="{{ $product->name }}" required>
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Giá</label>
                             <input type="number" step="0.01" name="price" class="form-control"
                                 value="{{ $product->price }}" required>
+                            @error('price')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
@@ -61,6 +68,9 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('category_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Thương hiệu (Brand)</label>
@@ -71,24 +81,34 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('brand_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Mô tả</label>
                         <textarea name="description" id="summernote" class="form-control" rows="4">{{ $product->description }}</textarea>
+                        @error('description')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Ảnh chính</label>
                             <input type="file" name="product_image" id="product_image" class="form-control">
+                            @error('product_image')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+
                             <div class="mt-2 position-relative d-inline-block" id="preview-thumbnail-wrapper">
                                 <img id="preview-thumbnail" src="#" width="120" style="display:none;">
                                 <button type="button" id="remove-preview-thumbnail"
                                     class="btn-close position-absolute top-0 end-0" style="display:none;"
                                     aria-label="Close"></button>
                             </div>
+
                             <div id="current-thumbnail-wrapper" class="position-relative d-inline-block mt-2">
                                 @if ($product->product_image)
                                     <img src="{{ $product->product_image }}" width="120" id="current-thumbnail">
@@ -99,9 +119,17 @@
                                 @endif
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <label class="form-label">Ảnh đính kèm</label>
                             <input type="file" name="images[]" id="image-input" class="form-control mb-2" multiple>
+                            @error('images')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                            @error('images.*')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+
                             <div id="preview-images" class="mt-2"></div>
                             <div id="current-images" class="mb-2">
                                 @foreach ($product->attachments as $attachment)
@@ -113,23 +141,34 @@
                                 @endforeach
                             </div>
                             <input type="hidden" name="removed_attachments" id="removed_attachments">
+                            @error('removed_attachments')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
-
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Trọng lượng</label>
                             <input type="text" name="weight" class="form-control" value="{{ $product->weight }}">
+                            @error('weight')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Số lượng</label>
                             <input type="number" name="quantity" class="form-control"
                                 value="{{ $product->quantity }}">
+                            @error('quantity')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Cảnh báo tồn kho</label>
                             <input type="number" name="quantity_warning" class="form-control"
                                 value="{{ $product->quantity_warning }}">
+                            @error('quantity_warning')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
@@ -137,10 +176,16 @@
                         <div class="col-md-6">
                             <label class="form-label">Tags (phân cách bởi dấu phẩy)</label>
                             <input type="text" name="tags" class="form-control" value="{{ $product->tags }}">
+                            @error('tags')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">SKU</label>
                             <input type="text" name="sku" class="form-control" value="{{ $product->sku }}">
+                            @error('sku')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
@@ -149,6 +194,9 @@
                         <input type="checkbox" class="form-check-input" name="active" id="active" value="1"
                             {{ $product->active ? 'checked' : '' }}>
                         <label class="form-check-label" for="active">Kích hoạt sản phẩm</label>
+                        @error('active')
+                            <br><small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="d-flex justify-content-between">
@@ -159,9 +207,7 @@
             </div>
         </form>
     </div>
-
 @endsection
-
 @section('script')
     <script>
         let removedIds = [];
@@ -230,6 +276,7 @@
             });
         }
     </script>
+
     <script>
         $(document).ready(function() {
             $('#summernote').summernote({
