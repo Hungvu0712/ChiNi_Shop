@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductAttachmentController;
 use App\Http\Controllers\Admin\ProductController;
@@ -47,6 +48,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
     //permissions
     Route::resource('permissions', PermissionController::class);
+
+    Route::resource('menus',MenuController::class);
+
     //categories
     Route::resource('categories', CategoryController::class);
     //brands

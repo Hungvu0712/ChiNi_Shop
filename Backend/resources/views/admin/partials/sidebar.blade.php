@@ -132,6 +132,28 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#menu">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Quản lý menus</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="menu">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('menus.index') }}">
+                                    <span class="sub-item">Danh sách</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('menus.create') }}">
+                                    <span class="sub-item">Thêm mới</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
