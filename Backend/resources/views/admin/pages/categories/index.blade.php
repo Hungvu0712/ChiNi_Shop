@@ -8,46 +8,46 @@
 
 @endsection
 @section('content')
-    @can('permssion-list')
+    @can('category-list')
         <div class="card" style="width: 100%">
             <div class="card-header">
-                <div class="card-title">Danh sách Quyền trị</div>
+                <div class="card-title">Danh sách Category</div>
             </div>
 
             <div class="card-body">
-                @can('permssion-create')
-                    <a href="{{ route('permissions.create') }}" class="btn btn-success mb-5">Thêm Permissions</a>
+                @can('category-create')
+                    <a href="{{ route('categories.create') }}" class="btn btn-success mb-5">Thêm Category</a>
                 @endcan
-                <table id="listpermissions" class="display" style="width:100%">
+                <table id="listcategory" class="display" style="width:100%">
                     <thead>
                         <tr>
                             <th>STT</th>
                             <th>NAME</th>
-                            <th>GUARD_NAME</th>
+                            <th>DESCRIPTION</th>
                             <th>Action</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @foreach ($permissions as $permission)
+                        @foreach ($categories as $category)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $permission->name }}</td>
-                                <td>{{ $permission->guard_name }}</td>
+                                <td>{{ $category->name }}</td>
+                                <td>{!! $category->description !!}</td>
                                 <td class="d-flex gap-2">
-                                    @can('permssion-delete')
-                                        <form action="{{ route('permissions.destroy', $permission->id) }}"
-                                            id="delete-form-{{ $permission->id }}" method="post">
+                                    @can('category-delete')
+                                        <form action="{{ route('categories.destroy', $category->id) }}"
+                                            id="delete-form-{{ $category->id }}" method="post">
                                             @csrf
                                             @method('delete')
-                                            <button type="button" data-id="{{ $permission->id }}"
+                                            <button type="button" data-id="{{ $category->id }}"
                                                 class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
                                             </button>
                                         </form>
                                     @endcan
 
-                                    @can('permssion-edit')
-                                        <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-info">
+                                    @can('category-edit')
+                                        <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
                                     @endcan
@@ -67,7 +67,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        new DataTable('#listpermissions');
+        new DataTable('#listcategory');
 
 
         document.querySelectorAll('.delete-button').forEach(button => {

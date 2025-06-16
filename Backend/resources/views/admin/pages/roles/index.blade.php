@@ -8,19 +8,23 @@
 
 @endsection
 @section('content')
+    @can('role-list')
     <div class="card" style="width: 100%">
         <div class="card-header">
             <div class="card-title">Danh sách Vai trò</div>
         </div>
 
         <div class="card-body">
-            <a href="{{ route('roles.create') }}" class="btn btn-success mb-5">Thêm Role</a>
+            @can('role-create')
+                <a href="{{ route('roles.create') }}" class="btn btn-success mb-5">Thêm Role</a>
+            @endcan
             <table id="listrole" class="display" style="width:100%">
                 <thead>
                     <tr>
                         <th>STT</th>
                         <th>NAME</th>
                         <th>GUARD_NAME</th>
+                        <th>ASGIN PERMSSION</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -31,19 +35,32 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $role->name }}</td>
                             <td>{{ $role->guard_name }}</td>
+                            <td>
+                                {{ $role->permissions->pluck('name')->implode(', ') }}
+                            </td>
                             <td class="d-flex gap-2">
-                                <form action="{{ route('roles.destroy',$role->id) }}"
-                                    id="delete-form-{{ $role->id }}" method="post">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="button" data-id="{{ $role->id }}"
-                                        class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('roles.edit',$role->id) }}" class="btn btn-info">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                @can('role-assign')
+                                <a href="{{ route('roles.editPermissions', $role->id) }}" class="btn btn-primary"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Assgin">
+                                    <i class="fa-brands fa-atlassian"></i>
                                 </a>
+                                @endcan
+                                @can('role-delete')
+                                    <form action="{{ route('roles.destroy', $role->id) }}" id="delete-form-{{ $role->id }}"
+                                        method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="button" data-id="{{ $role->id }}"
+                                            class="btn btn-danger delete-button"><i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endcan
+
+                                @can('role-edit')
+                                    <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-info">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
@@ -52,6 +69,7 @@
             </table>
         </div>
     </div>
+    @endcan
 @endsection
 @section('script')
 

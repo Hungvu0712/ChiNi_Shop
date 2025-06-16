@@ -25,4 +25,8 @@ class Product extends Model
         'sku',
         'active',
     ];
+    public function attachments()
+    {
+        return $this->hasMany(ProductAttachment::class);
+    }
 }

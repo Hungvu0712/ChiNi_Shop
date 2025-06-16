@@ -5,15 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function __construct(){
+        $this->middleware('permission.404:user-list')->only('index', 'show');
+        $this->middleware('permission.404:user-create')->only('create', 'store');
+        $this->middleware('permission.404:user-edit')->only('edit', 'update');
+        $this->middleware('permission.404:user-delete')->only('destroy');
+        $this->middleware('permission.404:user-assign')->only('editRoles', 'updateRoles');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-    $users  = User::all();
+
+    $users = User::with('roles')->get();
 
     return view('admin.pages.users.index', compact('users'));
     }
@@ -47,7 +56,13 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $roles = Role::all();
+
+        $userRoles = $user->roles->pluck('name')->toArray();
+
+        return view('admin.pages.users.edit-roles', compact('user', 'roles', 'userRoles'));
     }
 
     /**
@@ -55,7 +70,20 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+                $user = User::findOrFail($id);
+
+                if($user->id == '1'){
+                    toastr()->error('Không thể cập nhập vai trò của người dùng này');
+                    return redirect()->back();
+                }
+
+                $request->validate([
+            'roles' => 'required|array',
+        ]);
+
+        $user->syncRoles($request->roles);
+
+        return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật vai trò cho người dùng.');
     }
 
     /**
