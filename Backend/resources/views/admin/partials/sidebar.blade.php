@@ -151,6 +151,9 @@
                                     <span class="sub-item">Thêm bài viết</span>
                                 </a>
                             </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#menu">
                         <i class="fas fa-layer-group"></i>
@@ -169,7 +172,7 @@
                                     <span class="sub-item">Thêm mới</span>
                                 </a>
                             </li>
-                            
+
                         </ul>
                     </div>
                 </li>
