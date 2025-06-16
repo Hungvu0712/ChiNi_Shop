@@ -35,9 +35,11 @@ class ProductController extends Controller
     {
         // Bỏ try-catch quanh validated() để Laravel tự xử lý lỗi validate
         $validated = $request->validated();
+        Log::info('Bắt đầu xử lý tạo sản phẩm', ['validated_data' => $validated]);
 
         try {
             $slug = Str::slug($validated['name']);
+            Log::info('Tạo slug từ tên sản phẩm', ['slug' => $slug]);
 
             $productImageUrl = null;
             $productImageId = null;
@@ -59,21 +61,27 @@ class ProductController extends Controller
                 'sku' => $validated['sku'] ?? null,
                 'active' => $request->has('active') ? 1 : 0,
             ]);
+            Log::info('Tạo sản phẩm thành công', ['product_id' => $product->id]);
 
             // Upload ảnh chính nếu có
             if ($request->hasFile('product_image')) {
+                Log::info('Bắt đầu upload ảnh chính');
                 $uploaded = Cloudinary::upload($request->file('product_image')->getRealPath(), [
                     'folder' => 'products',
                 ]);
-
                 $product->update([
                     'product_image' => $uploaded->getSecurePath(),
                     'public_product_image_id' => $uploaded->getPublicId()
+                ]);
+                Log::info('Upload ảnh chính thành công', [
+                    'url' => $uploaded->getSecurePath(),
+                    'public_id' => $uploaded->getPublicId()
                 ]);
             }
 
             // Upload ảnh đính kèm nếu có
             if ($request->hasFile('attachments')) {
+                Log::info('Bắt đầu upload các tệp đính kèm');
                 foreach ($request->file('attachments') as $image) {
                     $uploaded = Cloudinary::upload($image->getRealPath(), [
                         'folder' => 'product_attachments',
@@ -83,12 +91,22 @@ class ProductController extends Controller
                         'attachment_image' => $uploaded->getSecurePath(),
                         'public_attachment_image_id' => $uploaded->getPublicId(),
                     ]);
+
+                    Log::info('Upload tệp đính kèm thành công', [
+                        'url' => $uploaded->getSecurePath(),
+                        'public_id' => $uploaded->getPublicId()
+                    ]);
                 }
             }
 
+            Log::info('Hoàn tất tạo sản phẩm và đính kèm', ['product_id' => $product->id]);
             return redirect()->route('products.index')->with('success', 'Tạo sản phẩm thành công!');
         } catch (\Exception $e) {
-            // Nếu lỗi xử lý logic/upload
+            Log::error('Lỗi khi tạo sản phẩm', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->back()
                 ->withErrors(['error' => 'Đã xảy ra lỗi: ' . $e->getMessage()])
                 ->withInput();

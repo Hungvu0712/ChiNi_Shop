@@ -41,21 +41,11 @@
             <div class="card-body">
                 <form action="{{ route('products.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
-                    @if ($errors->any())
-                        <div class="alert alert-danger mt-3">
-                            <strong>Đã có lỗi xảy ra:</strong>
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Tên sản phẩm</label>
-                            <input class="form-control" name="name" required type="text"
+                            <input class="form-control" name="name" type="text"
                                 value="{{ old('name') }}" />
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
@@ -63,7 +53,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="price">Giá</label>
-                            <input class="form-control" name="price" required step="0.01" type="number"
+                            <input class="form-control" name="price" step="0.01" type="number"
                                 value="{{ old('price') }}" />
                             @error('price')
                                 <small class="text-danger">{{ $message }}</small>
@@ -143,14 +133,14 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Số lượng</label>
-                            <input class="form-control" name="quantity" required type="number"
+                            <input class="form-control" name="quantity" type="number"
                                 value="{{ old('quantity') }}" />
                             @error('quantity')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Cảnh báo tồn kho</label>
+                            <label class="form-label">Số lượng tồn kho</label>
                             <input class="form-control" name="quantity_warning" type="number"
                                 value="{{ old('quantity_warning') }}" />
                             @error('quantity_warning')

@@ -43,7 +43,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Tên sản phẩm</label>
-                            <input type="text" name="name" class="form-control" value="{{ $product->name }}" required>
+                            <input type="text" name="name" class="form-control" value="{{ $product->name }}">
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -51,7 +51,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Giá</label>
                             <input type="number" step="0.01" name="price" class="form-control"
-                                value="{{ $product->price }}" required>
+                                value="{{ $product->price }}">
                             @error('price')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
