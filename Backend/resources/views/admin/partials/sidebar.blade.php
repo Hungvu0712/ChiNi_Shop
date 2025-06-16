@@ -132,6 +132,25 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#posts">
+                        <i class="far fa-chart-bar"></i>
+                        <p>Quản lý bài viết</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="posts">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('posts.index') }}">
+                                    <span class="sub-item">Danh sách bài viết</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('posts.create') }}">
+                                    <span class="sub-item">Thêm bài viết</span>
+                                </a>
+                            </li>
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#menu">
                         <i class="fas fa-layer-group"></i>
