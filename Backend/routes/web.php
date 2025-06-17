@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -68,6 +69,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
         ->name('product-attachments.destroy');
     Route::resource('posts', PostController::class);
 
+    //attributes
+    Route::resource('attributes', AttributeController::class);
 
 });
 
