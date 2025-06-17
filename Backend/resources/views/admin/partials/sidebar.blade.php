@@ -176,6 +176,24 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#attributes" aria-expanded="{{ request()->routeIs('attributes.*') ? 'true' : 'false' }}">
+                        <i class="fas fa-th-large"></i>
+                        <p>Quản lý Attribute</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('attributes.*') ? 'show' : '' }}" id="attributes">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('attributes.index') ? 'active' : '' }}">
+                                <a href="{{ route('attributes.index') }}"><span class="sub-item">Danh sách</span></a>
+                            </li>
+                            <li class="{{ request()->routeIs('attributes.create') ? 'active' : '' }}">
+                                <a href="{{ route('attributes.create') }}"><span class="sub-item">Thêm</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
