@@ -19,4 +19,9 @@ class Post extends Model
         'public_featured_image_id',
         'status',
     ];
+
+    public function postCategory()
+    {
+        return $this->belongsTo(PostCategory::class, 'post_category_id');
+    }
 }

@@ -1,10 +1,24 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductAttachmentController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\PostCategoryController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -21,11 +35,52 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
+//QL Admin
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']], function () {
+    //users
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit');
+    Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update');
+    //roles
+    Route::resource('roles', RoleController::class);
+    Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions');
+    Route::put('/roles/{id}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.updatePermissions');
+    //permissions
+    Route::resource('permissions', PermissionController::class);
 
+    Route::resource('menus',MenuController::class);
+
+    //categories
+    Route::resource('categories', CategoryController::class);
+    //brands
+    Route::resource('brands', BrandController::class);
+    //profiles
+    Route::get('/profiles/show/{profile}', [AdminProfileController::class, 'show'])->name('profiles.show');
+
+    //post-category
+    Route::resource('post-categories', PostCategoryController::class)->parameters(['post-categories' => 'post_category']);
+
+    //products
+     Route::resource('products', ProductController::class);
+    Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
+        ->name('product-attachments.destroy');
+    Route::resource('posts', PostController::class);
+
+    //attributes
+    Route::resource('attributes', AttributeController::class);
+    //attribute_values
+    Route::resource('attribute_values', AttributeValueController::class);
+
+});
+
+//Trang 404
+Route::get('/404', function () {
+    return view('404')->name('pagenotfound');
+});
 
 
 Route::middleware('auth')->group(function () {
@@ -41,13 +96,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/password/change', [ChangePasswordController::class, 'changePassword'])->name('password.update');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 //Đăng nhập bằng google
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+<<<<<<< HEAD
 
 
 
@@ -55,3 +111,5 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
 });
+=======
+>>>>>>> a15b76d8adf5a5b0008e8f6998ff8131f061fb07

@@ -179,8 +179,15 @@
                                                 <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản
                                                         trị</a></li>
                                             @endrole
+
+                                            @role('staff')
+                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a></li>
+                                            @endrole
+
+
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
+<<<<<<< HEAD
                                             <li><a class="dropdown-item" href="{{ route('address') }}">Địa chỉ
                                                 </a></li>
                                             <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật
@@ -188,6 +195,10 @@
                                             <li><a class="dropdown-item" href="#">Nạp tiền
                                                 </a></li>
                                             {{-- nạp tiền --}}
+=======
+                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
+
+>>>>>>> a15b76d8adf5a5b0008e8f6998ff8131f061fb07
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf
 

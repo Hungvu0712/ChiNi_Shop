@@ -10,7 +10,7 @@
     <!-- Fonts and icons -->
     <script src="{{ asset('admin/assets/js/plugin/webfont/webfont.min.js') }}"></script>
 
-
+    <script src="{{ asset('admin/assets/js/core/jquery-3.7.1.min.js') }}"></script>
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('admin/assets/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('admin/assets/css/plugins.min.css') }}" />
@@ -29,7 +29,9 @@
             <div class="main-header">
                 @include('admin.partials.navbar')
             </div>
-            @yield('content')
+            <div style="margin-top: 100px;">
+                @yield('content')
+            </div>
 
             @include('admin.partials.footer')
         </div>
@@ -37,7 +39,6 @@
         @include('admin.partials.custom-template')
     </div>
     <!--   Core JS Files   -->
-    <script src="{{ asset('admin/assets/js/core/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('admin/assets/js/core/popper.min.js') }}"></script>
     <script src="{{ asset('admin/assets/js/core/bootstrap.min.js') }}"></script>
 
