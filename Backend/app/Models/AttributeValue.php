@@ -14,8 +14,19 @@ class AttributeValue extends Model
         'value',
     ];
 
+    public function variant()
+    {
+        return $this->belongsTo(Variant::class);
+    }
+
     public function attribute()
     {
         return $this->belongsTo(Attribute::class);
     }
+
+    public function attributeValue()
+    {
+        return $this->belongsTo(AttributeValue::class, 'attribute_value_id');
+    }
+
 }

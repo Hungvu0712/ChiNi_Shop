@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Log;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Http\Requests\Products\StoreProductRequest;
 use App\Http\Requests\Products\UpdateProductRequest;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\Variant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -25,19 +30,27 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
+        $attribute = Attribute::get();
+        $attributevalue = AttributeValue::with('attribute')->get();
+        // dd($attributes);
         return view('admin.pages.products.create', [
             'categories' => $categories,
-            'brands' => $brands
+            'brands' => $brands,
+            'attributes' => $attribute,
+            'attributevalue' => $attributevalue,
         ]);
     }
 
     public function store(StoreProductRequest $request)
     {
+        // dd($request->all());
+
         // Bỏ try-catch quanh validated() để Laravel tự xử lý lỗi validate
         $validated = $request->validated();
         Log::info('Bắt đầu xử lý tạo sản phẩm', ['validated_data' => $validated]);
 
         try {
+
             $slug = Str::slug($validated['name']);
             Log::info('Tạo slug từ tên sản phẩm', ['slug' => $slug]);
 
@@ -61,6 +74,8 @@ class ProductController extends Controller
                 'sku' => $validated['sku'] ?? null,
                 'active' => $request->has('active') ? 1 : 0,
             ]);
+
+
             Log::info('Tạo sản phẩm thành công', ['product_id' => $product->id]);
 
             // Upload ảnh chính nếu có
@@ -98,6 +113,67 @@ class ProductController extends Controller
                     ]);
                 }
             }
+
+            // Gán thuộc tính sản phẩm (nhiều giá trị)
+            if ($request->has('attributes')) {
+                foreach ($request->attributes as $attributeId => $valueIds) {
+                    foreach ($valueIds as $valueId) {
+                        DB::table('attribute_product')->insert([
+                            'product_id' => $product->id,
+                            'attribute_id' => $attributeId,
+                            'attribute_value_id' => $valueId,
+                        ]);
+                    }
+                }
+            }
+
+            // Gán thuộc tính sản phẩm (nhiều giá trị)
+            if ($request->has('attributes')) {
+                foreach ($request->attributes as $attributeId => $valueIds) {
+                    foreach ($valueIds as $valueId) {
+                        DB::table('attribute_product')->insert([
+                            'product_id' => $product->id,
+                            'attribute_id' => $attributeId,
+                            'attribute_value_id' => $valueId,
+                        ]);
+                    }
+                }
+            }
+
+            // Gán biến thể
+            if ($request->filled('variants_json')) {
+                $variants = json_decode($request->variants_json, true);
+                foreach ($variants as $index => $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $request->input("variants.$index.sku"),
+                        'price' => $request->input("variants.$index.price"),
+                        'quantity' => $request->input("variants.$index.quantity"),
+                        'weight' => $request->input("variants.$index.weight"),
+                        'active' => 1,
+                    ]);
+
+                    // Ảnh riêng cho từng biến thể
+                    if ($request->hasFile("variants.$index.variant_image")) {
+                        $file = $request->file("variants.$index.variant_image");
+                        $upload = Cloudinary::upload($file->getRealPath(), ['folder' => 'variants']);
+                        $variant->update([
+                            'variant_image' => $upload->getSecurePath(),
+                            'public_variant_image_id' => $upload->getPublicId()
+                        ]);
+                    }
+
+                    // Gán thuộc tính cho biến thể
+                    $attrValueIds = explode(',', $variantData['ids']);
+                    foreach ($attrValueIds as $valueId) {
+                        DB::table('attribute_value_variant')->insert([
+                            'variant_id' => $variant->id,
+                            'attribute_value_id' => $valueId,
+                            'attribute_id' => \App\Models\AttributeValue::find($valueId)?->attribute_id ?? null,
+                        ]);
+                    }
+                }
+            }
+
 
             Log::info('Hoàn tất tạo sản phẩm và đính kèm', ['product_id' => $product->id]);
             return redirect()->route('products.index')->with('success', 'Tạo sản phẩm thành công!');
