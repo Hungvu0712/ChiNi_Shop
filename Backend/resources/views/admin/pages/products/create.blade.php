@@ -210,8 +210,6 @@
                         <button class="btn btn-success" type="submit">Tạo sản phẩm</button>
                     </div>
                 </form>
-
-
             </div>
         </div>
     </div>
@@ -284,9 +282,6 @@
             });
         });
     </script>
-
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const variantList = document.getElementById('variant-list');
@@ -336,8 +331,32 @@
                 combos.forEach((combo, index) => {
                     const block = document.createElement('div');
                     block.className = 'border p-3 rounded mb-3';
-                    block.innerHTML =
-                        ` <strong>${combo.label}</strong> <input type="hidden" name="variant_keys[${index}]" value="${combo.ids}"> <div class="row mt-2"> <div class="col-md-4"> <label>SKU</label> <input type="text" name="variants[${index}][sku]" class="form-control" required> </div> <div class="col-md-4"> <label>Giá</label> <input type="number" step="0.01" name="variants[${index}][price]" class="form-control" required> </div> <div class="col-md-4"> <label>Số lượng</label> <input type="number" name="variants[${index}][quantity]" class="form-control" required> </div> <div class="col-md-6 mt-2"> <label>Trọng lượng</label> <input type="text" name="variants[${index}][weight]" class="form-control"> </div> <div class="col-md-6 mt-2"> <label>Ảnh biến thể</label> <input type="file" name="variants[${index}][variant_image]" class="form-control-file"> </div> </div> `;
+                    block.innerHTML = `
+                    <strong>${combo.label}</strong>
+                    <input type="hidden" name="variant_keys[${index}]" value="${combo.ids}">
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>SKU</label>
+                            <input type="text" name="variants[${index}][sku]" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Giá</label>
+                            <input type="number" step="0.01" name="variants[${index}][price]" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Số lượng</label>
+                            <input type="number" name="variants[${index}][quantity]" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label>Trọng lượng</label>
+                            <input type="text" name="variants[${index}][weight]" class="form-control">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label>Ảnh biến thể</label>
+                            <input type="file" name="variants[${index}][variant_image]" class="form-control-file">
+                        </div>
+                    </div>
+                `;
                     variantList.appendChild(block);
                     variantsData.push({
                         ids: combo.ids,
@@ -346,12 +365,10 @@
                 });
                 variantsJsonInput.value = JSON.stringify(variantsData);
             }
+
             document.querySelectorAll('.attr-checkbox').forEach(cb => {
                 cb.addEventListener('change', renderVariants);
             });
         });
     </script>
-
-
-
 @endsection
