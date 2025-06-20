@@ -2,6 +2,8 @@
 @section('title', 'Thêm mới')
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
     <style>
         .note-icon-caret:before {
@@ -147,14 +149,16 @@
                         </div>
                     </div>
 
-                    <div class="row g-3 mt-2">
+                    <div class="row g-3 mt-2">  
                         <div class="col-md-6">
-                            <label class="form-label">Tags (phân cách bởi dấu phẩy)</label>
-                            <input class="form-control" name="tags" type="text" value="{{ old('tags') }}" />
+                            <label class="form-label">Tags</label>
+                            <input id="tag-input" name="tags" class="form-control"
+                                value="{{ old('tags') }}">
                             @error('tags')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+
                         <div class="col-md-6">
                             <label class="form-label">SKU</label>
                             <input class="form-control" name="sku" type="text" value="{{ old('sku') }}" />
@@ -371,4 +375,17 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('#tag-input');
+            new Tagify(input, {
+                enforceWhitelist: false,
+                dropdown: {
+                    enabled: 0
+                }
+            });
+        });
+    </script>
+
 @endsection

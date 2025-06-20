@@ -2,7 +2,12 @@
 @section('title', 'Thêm mới')
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+    
+
     <style>
         .note-icon-caret:before {
             content: "" !important;
@@ -46,7 +51,8 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Tên sản phẩm</label>
-                            <input class="form-control" name="name" type="text" value="{{ old('name') }}" />
+                            <input class="form-control" name="name" type="text"
+                                value="{{ old('name', $product->name) }}" />
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -54,7 +60,7 @@
                         <div class="col-md-6">
                             <label class="form-label" for="price">Giá</label>
                             <input class="form-control" name="price" step="0.01" type="number"
-                                value="{{ old('price') }}" />
+                                value="{{ old('name', $product->price) }}" />
                             @error('price')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -67,7 +73,10 @@
                             <select class="form-control" name="category_id">
                                 <option value="">-- Chọn danh mục --</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('category_id')
@@ -79,7 +88,10 @@
                             <select class="form-control" name="brand_id">
                                 <option value="">-- Chọn thương hiệu --</option>
                                 @foreach ($brands as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    <option value="{{ $brand->id }}"
+                                        {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
+                                        {{ $brand->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('brand_id')
@@ -91,7 +103,7 @@
                     <div class="row g-3 mt-2">
                         <div class="col-md-12">
                             <label class="form-label">Mô tả</label>
-                            <textarea class="form-control" id="summernote" name="description" rows="10">{{ old('description') }}</textarea>
+                            <textarea class="form-control" id="summernote" name="description" rows="10">{{ old('description', $product->description) }}</textarea>
                             @error('description')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -102,6 +114,14 @@
                         <div class="col-md-6">
                             <label class="form-label">Ảnh chính</label>
                             <input class="form-control" id="product_image" name="product_image" type="file" />
+                            @if ($product->product_image)
+                                <div class="mt-2 position-relative d-inline-block" id="current-thumbnail-wrapper">
+                                    <img src="{{ $product->product_image }}" class="img-thumbnail"
+                                        style="max-width: 150px;" id="current-thumbnail">
+                                    <button type="button" class="btn-close position-absolute top-0 end-0"
+                                        aria-label="Close" id="remove-thumbnail"></button>
+                                </div>
+                            @endif
                             @error('product_image')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -114,26 +134,43 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Ảnh đính kèm</label>
-                            <input class="form-control" id="attachments" name="attachments[]" type="file" multiple />
-                            @error('attachments.*')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                            <div class="mt-2 d-flex flex-wrap gap-2" id="attachmentsPreview"></div>
-                        </div>
+    <label class="form-label">Ảnh đính kèm</label>
+    <input class="form-control" id="attachments" name="attachments[]" type="file" multiple />
+    @error('attachments.*')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+
+    {{-- Preview ảnh đính kèm mới --}}
+    <div class="mt-2 d-flex flex-wrap gap-2" id="attachmentsPreview"></div>
+
+    {{-- Ảnh đính kèm hiện tại --}}
+    <div id="current-images" class="d-flex flex-wrap gap-2 mt-2">
+        @foreach ($product->attachments as $attachment)
+            <div class="image-wrapper position-relative d-inline-block">
+                <img src="{{ $attachment->attachment_image }}" class="img-thumbnail" width="120">
+                <button type="button" class="btn-close position-absolute top-0 end-0 remove-image"
+                    aria-label="Close" data-id="{{ $attachment->id }}"></button>
+            </div>
+        @endforeach
+    </div>
+    <input type="hidden" name="removed_attachments" id="removed_attachments">
+</div>
+
                     </div>
 
                     <div class="row g-3 mt-2">
                         <div class="col-md-4">
                             <label class="form-label">Trọng lượng</label>
-                            <input class="form-control" name="weight" type="text" value="{{ old('weight') }}" />
+                            <input class="form-control" name="weight" type="text"
+                                value="{{ old('weight', $product->weight) }}" />
                             @error('weight')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Số lượng</label>
-                            <input class="form-control" name="quantity" type="number" value="{{ old('quantity') }}" />
+                            <input class="form-control" name="quantity" type="number"
+                                value="{{ old('quantity', $product->quantity) }}" />
                             @error('quantity')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -141,7 +178,7 @@
                         <div class="col-md-4">
                             <label class="form-label">Số lượng tồn kho</label>
                             <input class="form-control" name="quantity_warning" type="number"
-                                value="{{ old('quantity_warning') }}" />
+                                value="{{ old('quantity_warning', $product->quantity_warning) }}" />
                             @error('quantity_warning')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -150,15 +187,16 @@
 
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
-                            <label class="form-label">Tags (phân cách bởi dấu phẩy)</label>
-                            <input class="form-control" name="tags" type="text" value="{{ old('tags') }}" />
-                            @error('tags')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+    <label class="form-label">Tags (phân cách bởi dấu phẩy)</label>
+    <input id="tag-input" name="tags" class="form-control" value="{{ old('tags', $product->tags) }}">
+    @error('tags')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
                         <div class="col-md-6">
                             <label class="form-label">SKU</label>
-                            <input class="form-control" name="sku" type="text" value="{{ old('sku') }}" />
+                            <input class="form-control" name="sku" type="text"
+                                value="{{ old('sku', $product->sku) }}" />
                             @error('sku')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -263,6 +301,7 @@
 @endsection
 
 @section('script')
+
     <script>
         const productImageInput = document.getElementById('product_image');
         const mainImagePreview = document.getElementById('mainImagePreview');
@@ -418,4 +457,32 @@
             });
         });
     </script>
+
+<script>
+    let removedAttachmentIds = [];
+
+    document.querySelectorAll('.remove-image').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+            if (id) {
+                removedAttachmentIds.push(id);
+                document.getElementById('removed_attachments').value = removedAttachmentIds.join(',');
+                this.closest('.image-wrapper').remove();
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('#tag-input');
+        new Tagify(input, {
+            enforceWhitelist: false,
+            dropdown: {
+                enabled: 0
+            }
+        });
+    });
+</script>
+
+
 @endsection
