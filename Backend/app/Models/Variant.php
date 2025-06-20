@@ -14,6 +14,7 @@ class Variant extends Model
         'sku',
         'price',
         'quantity',
+        'weight',
         'variant_image',
         'public_variant_image_id',
         'active',
