@@ -601,6 +601,7 @@
                         <div class="col-md-12">
                             <label>Ảnh biến thể</label>
                             <input type="file" name="variants_new[${index}][variant_image]" class="form-control">
+                            <img src="${old?.variant_image || ''}" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">
                         </div>
                     </div>
                 `;

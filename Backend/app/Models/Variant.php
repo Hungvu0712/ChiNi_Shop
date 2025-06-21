@@ -11,7 +11,6 @@ class Variant extends Model
 
     protected $fillable = [
         'product_id',
-        'variant_key',
         'sku',
         'price',
         'quantity',
