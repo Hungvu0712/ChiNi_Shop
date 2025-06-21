@@ -104,7 +104,8 @@
                             <span>Menu</span></a>
                         <div class="anSocial">
                             <div class="ansWrap">
-                                <a class="fac" href="https://www.youtube.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a class="fac" href="https://www.youtube.com/"><i
+                                        class="fa-brands fa-facebook-f"></i></a>
                                 <a class="twi" href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
                                 <a class="lin" href="javascript:void(0);"><i
                                         class="fa-brands fa-linkedin-in"></i></a>
@@ -175,7 +176,8 @@
                                         </p>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
                                             @role('admin')
-                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản trị</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản
+                                                        trị</a></li>
                                             @endrole
 
                                             @role('staff')
@@ -185,6 +187,13 @@
 
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
+                                            <li><a class="dropdown-item" href="{{ route('address') }}">Địa chỉ
+                                                </a></li>
+                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật
+                                                    khẩu</a></li>
+                                            <li><a class="dropdown-item" href="#">Nạp tiền
+                                                </a></li>
+                                            {{-- nạp tiền --}}
                                             <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
 
                                             <form method="POST" action="{{ route('logout') }}">

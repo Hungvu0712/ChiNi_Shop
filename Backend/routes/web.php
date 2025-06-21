@@ -103,3 +103,12 @@ require __DIR__ . '/auth.php';
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+
+
+
+Route::controller(HomeController::class)->group(function () {
+    Route::get('diachi' ,  'danhsachdiachi')->name('address');
+    Route::post('add-address' , 'addAddress')->name('add-address');
+});
+
+

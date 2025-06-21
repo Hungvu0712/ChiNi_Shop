@@ -29,4 +29,11 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttachment::class);
     }
+
+    public function variants()
+    {
+    return $this->hasMany(Variant::class);
+    }
+
+
 }

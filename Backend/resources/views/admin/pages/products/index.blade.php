@@ -37,7 +37,7 @@
                                 @endif
                             </td>
                             <td>{{ $product->name }}</td>
-                            <td>{{ number_format($product->price, 0, ',', '.') }}₫</td>
+                            <td>{{ number_format($product->price, 0, ',', '.') }} vnđ</td>
                             <td>{{ $product->quantity }}</td>
                             <td>{{ $product->attachments_count }}</td>
                             <td>
