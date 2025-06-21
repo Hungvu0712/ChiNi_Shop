@@ -11,6 +11,7 @@ class Variant extends Model
 
     protected $fillable = [
         'product_id',
+        'variant_key',
         'sku',
         'price',
         'quantity',
@@ -25,8 +26,11 @@ class Variant extends Model
 return $this->belongsTo(Product::class);
 }
 
+
 public function attributeValues()
 {
-return $this->hasMany(VariantAttributeValue::class);
+    return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values', 'variant_id', 'attribute_value_id')
+                ->withPivot('attribute_id');
 }
+
 }
