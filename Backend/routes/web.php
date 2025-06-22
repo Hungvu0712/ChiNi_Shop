@@ -69,6 +69,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
         ->name('product-attachments.destroy');
     Route::resource('posts', PostController::class);
+    Route::post('/admin/summernote-upload', [PostController::class, 'uploadImageSummernote'])->name('admin.summernote.upload');
 
     //attributes
     Route::resource('attributes', AttributeController::class);
