@@ -69,7 +69,7 @@
 @endsection
 
 @section('content')
-    <div class="profile-container">
+    <div class="profile-container" style="margin-top: 100px">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card profile-card mb-4">
