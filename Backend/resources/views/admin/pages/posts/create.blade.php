@@ -2,11 +2,18 @@
 @section('title', 'Thêm mới')
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
-
     <style>
-        .note-icon-caret:before {
-            content: "" !important;
+        .note-modal .note-image-input {
+            z-index: 2051 !important;
+            position: relative;
+        }
+
+        .modal-backdrop.show {
+            z-index: 1049 !important;
+        }
+
+        .note-modal {
+            display: none;
         }
     </style>
 @endsection
@@ -26,8 +33,7 @@
                     <select name="post_category_id" class="form-select">
                         <option value="">-- Chọn danh mục --</option>
                         @foreach ($postCategories as $category)
-                            <option value="{{ $category->id }}"
-                                {{ old('post_category_id') == $category->id ? 'selected' : '' }}>
+                            <option value="{{ $category->id }}" {{ old('post_category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
@@ -60,7 +66,8 @@
                 {{-- Nội dung chi tiết --}}
                 <div class="mb-3">
                     <label for="content" class="form-label">Nội dung:</label>
-                    <textarea name="content" id="summernote" class="form-control" rows="6" placeholder="Nhập nội dung bài viết">{{ old('content') }}</textarea>
+                    <textarea name="content" id="summernote" class="form-control" rows="6"
+                        placeholder="Nhập nội dung bài viết">{{ old('content') }}</textarea>
                     @error('content')
                         <div style="color: red">{{ $message }}</div>
                     @enderror
@@ -96,11 +103,43 @@
     </div>
 @endsection
 @section('script')
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#summernote').summernote({
-                height: 300
+                height: 300,
+                placeholder: 'Nhập nội dung bài viết...',
+                callbacks: {
+                    onImageUpload: function (files) {
+                        uploadImage(files[0]);
+                    }
+                }
             });
+
+            function uploadImage(file) {
+                let data = new FormData();
+                data.append("file", file);
+
+                $.ajax({
+                    url: "{{ route('admin.summernote.upload') }}",
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    method: "POST",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function (url) {
+                        $('#summernote').summernote('insertImage', url, function ($image) {                            
+                            $image.css('width', '50%');
+                        });
+                    },
+                    error: function (xhr) {
+                        alert("Tải ảnh lên thất bại!");
+                    }
+                });
+            }
         });
     </script>
 @endsection
