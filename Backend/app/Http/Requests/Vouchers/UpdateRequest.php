@@ -26,10 +26,10 @@ class UpdateRequest extends FormRequest
             ],
             'title' => 'required|string|max:255',
             'voucher_type' => 'required|in:discount,freeship',
-            'value' => 'required|numeric|min:0',
+            'value' => 'required|numeric|min:0|max:100',
             'discount_type' => 'required|in:amount,percent',
-            'min_order_value' => 'nullable|numeric|min:0',
-            'max_discount_value' => 'nullable|numeric|min:0',
+            'min_order_value' => 'nullable|numeric|min:0|max:999999.99',
+            'max_discount_value' => 'nullable|numeric|min:0|max:999999.99',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'limit' => 'required|integer|min:1',
@@ -55,6 +55,9 @@ class UpdateRequest extends FormRequest
             'limit.required' => 'Vui lòng nhập số lượt sử dụng.',
             'limit.integer' => 'Lượt sử dụng phải là số nguyên.',
             'limit.min' => 'Lượt sử dụng phải ít nhất là 1.',
+            'value.max' => 'Phần trăm giảm giá tối đa là 100%.',
+            'min_order_value.max' => 'Giá trị đơn hàng tối thiểu không được vượt quá 999999.99.',
+            'max_discount_value.max' => 'Giá trị giảm tối đa không được vượt quá 999999.99.',
         ];
     }
 }
