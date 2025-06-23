@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
 use GuzzleHttp\Middleware;
@@ -107,9 +108,10 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 
 
-Route::controller(HomeController::class)->group(function () {
+Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
+    Route::put('/update-address/{id}', 'update')->name('update-address');
 });
 
 
