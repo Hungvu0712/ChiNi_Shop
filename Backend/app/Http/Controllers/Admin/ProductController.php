@@ -35,6 +35,7 @@ class ProductController extends Controller
     {
         // Bỏ try-catch quanh validated() để Laravel tự xử lý lỗi validate
         $validated = $request->validated();
+        // dd($validated); 
         Log::info('Bắt đầu xử lý tạo sản phẩm', ['validated_data' => $validated]);
 
         try {
