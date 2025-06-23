@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -110,6 +111,9 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 Route::controller(HomeController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
+});
+Route::prefix('client')->group(function () {
+    Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
 });
 
 

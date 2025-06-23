@@ -1,0 +1,96 @@
+.pi01VCItem label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Màu cơ bản */
+.pi01VCItem.red label {
+    background-color: #e74c3c;
+}
+
+.pi01VCItem.blue label {
+    background-color: #3498db;
+}
+
+.pi01VCItem.black label {
+    background-color: #2c3e50;
+}
+
+.pi01VCItem.white label {
+    background-color: #ffffff;
+    border: 1px solid #999;
+}
+
+.pi01VCItem.green label {
+    background-color: #27ae60;
+}
+
+.pi01VCItem.yellow label {
+    background-color: #f1c40f;
+}
+
+/* Màu tiếng Việt nếu bạn dùng class .đỏ, .xanh, v.v. */
+.pi01VCItem.đỏ label {
+    background-color: #e74c3c;
+}
+
+.pi01VCItem.xanh label {
+    background-color: #3498db;
+}
+
+.pi01VCItem.trắng label {
+    background-color: #ffffff;
+    border: 1px solid #999;
+}
+
+.pi01VCItem.đen label {
+    background-color: #2c3e50;
+}
+
+.pi01VCItem.vàng label {
+    background-color: #f1c40f;
+}
+
+.pi01VCItem.xanhla label {
+    background-color: #27ae60;
+}
+
+.pi01VCItem label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Các màu tiếng Việt và tiếng Anh */
+.pi01VCItem.Đỏ label,
+.pi01VCItem.Red label {
+    background-color: #e74c3c;
+}
+
+.pi01VCItem.Xanh label,
+.pi01VCItem.Blue label {
+    background-color: #3498db;
+}
+
+.pi01VCItem.Trắng label,
+.pi01VCItem.White label {
+    background-color: #ffffff;
+    border: 1px solid #999;
+}
+
+.pi01VCItem.Đen label,
+.pi01VCItem.Black label {
+    background-color: #000000;
+}
+
+.pi01VCItem.Vàng label,
+.pi01VCItem.Yellow label {
+    background-color: #f1c40f;
+}

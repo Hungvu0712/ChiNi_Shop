@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 @extends('client.layouts.master')
 @section('title', 'Trang chủ')
 @section('css')
@@ -62,351 +63,93 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="productCarousel owl-carousel">
-                        <div class="productItem01">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/1.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/1.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i class="fa-solid fa-heart"></i></a>
+                        @foreach ($products as $product)
+                            @php
+                                $firstVariant = $product->variants->first();
+                                $colors = [];
+                                $sizes = [];
+
+                                if ($firstVariant && $firstVariant->attributeValues) {
+                                    foreach ($firstVariant->attributeValues as $value) {
+                                        $attrName = strtolower($value->attribute->name ?? '');
+
+                                        if ($attrName === 'màu sắc') {
+                                            $colors[] = $value->value;
+                                        }
+
+                                        if ($attrName === 'size') {
+                                            $sizes[] = $value->value;
+                                        }
+                                    }
+                                }
+                            @endphp
+
+
+                            <div class="productItem01">
+                                <div class="pi01Thumb">
+                                    <img src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                        alt="{{ $product->name }}">
+                                    <img src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                        alt="{{ $product->name }}">
+                                    <!-- actions... -->
                                 </div>
-                                <div class="productLabels clearfix">
-                                    <span class="plDis">- $49</span>
-                                    <span class="plSale">Sale</span>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <div class="productRatings">
-                                    <div class="productRatingWrap">
-                                        <div class="star-rating"><span></span></div>
+
+                                <div class="pi01Details">
+                                    <h3>{{ $product->name }}</h3>
+                                    <div class="pi01Price">
+                                        <ins>{{ number_format($firstVariant->price ?? $product->price) }} VNĐ</ins>
                                     </div>
-                                    <div class="ratingCounts">10 Reviews</div>
-                                </div>
-                                <h3><a href="shop_details1.html">Men’s blue cotton t-shirt</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$49</ins>
-                                    <del>$60</del>
-                                </div>
-                                <div class="pi01Variations">
+
+                                    {{-- Màu sắc --}}
                                     <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color1" value="Blue" id="color1_blue" />
-                                            <label for="color1_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color1" value="Yellow" id="color1_yellow" />
-                                            <label for="color1_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color1" value="Red" id="color1_red" />
-                                            <label for="color1_red"></label>
-                                        </div>
-                                    </div>
+    @php
+        $colorMap = [
+            'Đỏ' => '#e74c3c',
+            'Xanh' => '#3498db',
+            'Trắng' => '#ffffff',
+            'Đen' => '#2c3e50',
+            'Vàng' => '#f1c40f',
+        ];
+    @endphp
+
+    @foreach ($colors as $colorRaw)
+        @php
+            $color = mb_convert_case(trim($colorRaw), MB_CASE_TITLE, 'UTF-8');
+            $hex = $colorMap[$color] ?? '#ccc';
+            $border = $hex === '#ffffff' ? '#999' : '#ccc';
+            $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
+        @endphp
+
+        <div style="margin-right: 10px;">
+            <label
+                style="background-color: {{ $hex }};
+                       width: 20px;
+                       height: 20px;
+                       display: inline-block;
+                       border-radius: 50%;
+                       border: 1px solid {{ $border }};
+                       {{ $boxShadow }}"
+                title="{{ $color }}">
+            </label>
+        </div>
+    @endforeach
+</div>
+
+                                    {{-- Size --}}
                                     <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size1" value="Blue" id="size1_s" />
-                                            <label for="size1_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size1" value="Yellow" id="size1_m" />
-                                            <label for="size1_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size1" value="Red" id="size1_xl" />
-                                            <label for="size1_xl">XL</label>
-                                        </div>
+                                        @foreach ($sizes as $size)
+                                            <div class="pi01VSItem">
+                                                <input type="radio" disabled>
+                                                <label>{{ $size }}</label>
+                                            </div>
+                                        @endforeach
                                     </div>
+
                                 </div>
                             </div>
-                        </div>
-                        <div class="productItem01 pi01NoRating">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/2.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/2.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                            class="fa-solid fa-heart"></i></a>
-                                </div>
-                                <div class="productLabels clearfix">
-                                    <span class="plHot">Hot</span>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <h3><a href="shop_details2.html">Ulina black clean t-shirt</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$14</ins>
-                                    <del>$30</del>
-                                </div>
-                                <div class="pi01Variations">
-                                    <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color2" value="Blue"
-                                                id="color2_blue" />
-                                            <label for="color2_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color2" value="Yellow" id="color2_yellow" />
-                                            <label for="color2_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color2" value="Red" id="color2_red" />
-                                            <label for="color2_red"></label>
-                                        </div>
-                                    </div>
-                                    <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size2" value="Blue" id="size2_s" />
-                                            <label for="size2_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size2" value="Yellow" id="size2_m" />
-                                            <label for="size2_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size2" value="Red" id="size2_xl" />
-                                            <label for="size2_xl">XL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="productItem01 pi01NoRating">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/3.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/3.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                            class="fa-solid fa-heart"></i></a>
-                                </div>
-                                <div class="productLabels clearfix">
-                                    <span class="plNew float-end">New</span>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <h3><a href="shop_details1.html">Apple white jacket</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$39</ins>
-                                    <del>$57</del>
-                                </div>
-                                <div class="pi01Variations">
-                                    <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color3" value="Blue"
-                                                id="color3_blue" />
-                                            <label for="color3_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color3" value="Yellow" id="color3_yellow" />
-                                            <label for="color3_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color3" value="Red" id="color3_red" />
-                                            <label for="color3_red"></label>
-                                        </div>
-                                    </div>
-                                    <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size3" value="Blue" id="size3_s" />
-                                            <label for="size3_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size3" value="Yellow" id="size3_m" />
-                                            <label for="size3_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size3" value="Red" id="size3_xl" />
-                                            <label for="size3_xl">XL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="productItem01 pi01NoRating">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/4.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/4.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                            class="fa-solid fa-heart"></i></a>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <h3><a href="shop_details2.html">One color cotton t-shirt</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$29</ins>
-                                </div>
-                                <div class="pi01Variations">
-                                    <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color4" value="Blue"
-                                                id="color4_blue" />
-                                            <label for="color4_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color1" value="Yellow" id="color4_yellow" />
-                                            <label for="color4_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color4" value="Red" id="color4_red" />
-                                            <label for="color4_red"></label>
-                                        </div>
-                                    </div>
-                                    <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size4" value="Blue" id="size4_s" />
-                                            <label for="size4_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size4" value="Yellow" id="size4_m" />
-                                            <label for="size4_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size4" value="Red" id="size4_xl" />
-                                            <label for="size4_xl">XL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="productItem01">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/5.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/5.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                            class="fa-solid fa-heart"></i></a>
-                                </div>
-                                <div class="productLabels clearfix">
-                                    <span class="plDis">- $49</span>
-                                    <span class="plSale">Sale</span>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <div class="productRatings">
-                                    <div class="productRatingWrap">
-                                        <div class="star-rating"><span></span></div>
-                                    </div>
-                                    <div class="ratingCounts">10 Reviews</div>
-                                </div>
-                                <h3><a href="shop_details1.html">Stylish white leather bag</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$29</ins>
-                                    <del>$56</del>
-                                </div>
-                                <div class="pi01Variations">
-                                    <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color5" value="Blue"
-                                                id="color5_blue" />
-                                            <label for="color5_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color5" value="Yellow" id="color5_yellow" />
-                                            <label for="color5_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color5" value="Red" id="color5_red" />
-                                            <label for="color5_red"></label>
-                                        </div>
-                                    </div>
-                                    <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size5" value="Blue" id="size5_s" />
-                                            <label for="size5_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size5" value="Yellow" id="size5_m" />
-                                            <label for="size5_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size5" value="Red" id="size5_xl" />
-                                            <label for="size5_xl">XL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="productItem01">
-                            <div class="pi01Thumb">
-                                <img src="{{ asset('client/images/products/6.jpg') }}" alt="Ulina Product" />
-                                <img src="{{ asset('client/images/products/6.1.jpg') }}" alt="Ulina Product" />
-                                <div class="pi01Actions">
-                                    <a href="javascript:void(0);" class="pi01Cart"><i
-                                            class="fa-solid fa-shopping-cart"></i></a>
-                                    <a href="javascript:void(0);" class="pi01QuickView"><i
-                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                    <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                            class="fa-solid fa-heart"></i></a>
-                                </div>
-                                <div class="productLabels clearfix">
-                                    <span class="plNew float-end">New</span>
-                                </div>
-                            </div>
-                            <div class="pi01Details">
-                                <div class="productRatings">
-                                    <div class="productRatingWrap">
-                                        <div class="star-rating"><span></span></div>
-                                    </div>
-                                    <div class="ratingCounts">13 Reviews</div>
-                                </div>
-                                <h3><a href="shop_details2.html">Luxury maroon sweater</a></h3>
-                                <div class="pi01Price">
-                                    <ins>$49</ins>
-                                    <del>$60</del>
-                                </div>
-                                <div class="pi01Variations">
-                                    <div class="pi01VColor">
-                                        <div class="pi01VCItem">
-                                            <input checked type="radio" name="color6" value="Blue"
-                                                id="color6_blue" />
-                                            <label for="color6_blue"></label>
-                                        </div>
-                                        <div class="pi01VCItem yellows">
-                                            <input type="radio" name="color6" value="Yellow" id="color6_yellow" />
-                                            <label for="color6_yellow"></label>
-                                        </div>
-                                        <div class="pi01VCItem reds">
-                                            <input type="radio" name="color6" value="Red" id="color6_red" />
-                                            <label for="color6_red"></label>
-                                        </div>
-                                    </div>
-                                    <div class="pi01VSize">
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size6" value="Blue" id="size6_s" />
-                                            <label for="size6_s">S</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size6" value="Yellow" id="size6_m" />
-                                            <label for="size6_m">M</label>
-                                        </div>
-                                        <div class="pi01VSItem">
-                                            <input type="radio" name="size6" value="Red" id="size6_xl" />
-                                            <label for="size6_xl">XL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
+
                 </div>
             </div>
         </div>
@@ -1095,8 +838,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="women-tab-pane" role="tabpanel"
-                                aria-labelledby="women-tab" tabindex="0">
+                            <div class="tab-pane fade" id="women-tab-pane" role="tabpanel" aria-labelledby="women-tab"
+                                tabindex="0">
                                 <div class="row">
                                     <div class="col-sm-6 col-lg-4 col-xl-3">
                                         <div class="productItem01 pi01NoRating">
@@ -1126,8 +869,8 @@
                                                 <div class="pi01Variations">
                                                     <div class="pi01VColor">
                                                         <div class="pi01VCItem">
-                                                            <input checked type="radio" name="color_2_5"
-                                                                value="Blue" id="color_2_5_1_blue" />
+                                                            <input checked type="radio" name="color_2_5" value="Blue"
+                                                                id="color_2_5_1_blue" />
                                                             <label for="color_2_5_1_blue"></label>
                                                         </div>
                                                         <div class="pi01VCItem yellows">
@@ -1193,8 +936,8 @@
                                                 <div class="pi01Variations">
                                                     <div class="pi01VColor">
                                                         <div class="pi01VCItem">
-                                                            <input checked type="radio" name="color_2_6"
-                                                                value="Blue" id="color_2_6_1_blue" />
+                                                            <input checked type="radio" name="color_2_6" value="Blue"
+                                                                id="color_2_6_1_blue" />
                                                             <label for="color_2_6_1_blue"></label>
                                                         </div>
                                                         <div class="pi01VCItem yellows">
@@ -1263,8 +1006,8 @@
                                                 <div class="pi01Variations">
                                                     <div class="pi01VColor">
                                                         <div class="pi01VCItem">
-                                                            <input checked type="radio" name="color_2_7"
-                                                                value="Blue" id="color_2_7_1_blue" />
+                                                            <input checked type="radio" name="color_2_7" value="Blue"
+                                                                id="color_2_7_1_blue" />
                                                             <label for="color_2_7_1_blue"></label>
                                                         </div>
                                                         <div class="pi01VCItem yellows">
@@ -1324,8 +1067,8 @@
                                                 <div class="pi01Variations">
                                                     <div class="pi01VColor">
                                                         <div class="pi01VCItem">
-                                                            <input checked type="radio" name="color_2_8"
-                                                                value="Blue" id="color_2_8_1_blue" />
+                                                            <input checked type="radio" name="color_2_8" value="Blue"
+                                                                id="color_2_8_1_blue" />
                                                             <label for="color_2_8_1_blue"></label>
                                                         </div>
                                                         <div class="pi01VCItem yellows">
@@ -1395,8 +1138,8 @@
                                                 <div class="pi01Variations">
                                                     <div class="pi01VColor">
                                                         <div class="pi01VCItem">
-                                                            <input checked type="radio" name="color_2_1"
-                                                                value="Blue" id="color_2_1_1_blue" />
+                                                            <input checked type="radio" name="color_2_1" value="Blue"
+                                                                id="color_2_1_1_blue" />
                                                             <label for="color_2_1_1_blue"></label>
                                                         </div>
                                                         <div class="pi01VCItem yellows">
