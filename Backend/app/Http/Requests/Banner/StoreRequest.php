@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Banner;
 
+use App\Models\Banner;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -22,10 +23,10 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255|unique:banners,title',     
+            'title' => 'required|string|max:255|unique:banners,title',
             'banner_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'link' => 'required|string|max:255',
-            'content' => 'nullable|string',
+            'content' => 'required|string',
             'active' => 'nullable|in:0,1,on,off,true,false',
         ];
     }
@@ -45,10 +46,29 @@ class StoreRequest extends FormRequest
             'link.required' => 'Link là bắt buộc',
             'link.string' => 'Link phải là chuỗi',
             'link.max' => 'Link không được vượt quá 255 ký tự',
-            
+
+            'content.required' => 'Nội dung là bắt buộc',
             'content.string' => 'Nội dung phải là chuỗi',
 
             'active.in' => 'Trạng thái không hợp lệ',
         ];
     }
+
+    public function withValidator($validator)
+{
+    $validator->after(function ($validator) {
+        if ($this->input('active') == 1) {
+            $exists = Banner::where('active', 1)
+                ->when($this->route('banner'), function ($query) {
+                    $query->where('id', '!=', $this->route('banner')->id);
+                })
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add('active', 'Đã có 1 banner đang hiển thị, vui lòng tắt trước khi bật cái mới.');
+            }
+        }
+    });
+}
+
 }

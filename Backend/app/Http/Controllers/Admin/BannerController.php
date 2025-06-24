@@ -24,38 +24,47 @@ class BannerController extends Controller
      */
     public function create()
     {
-        return view('admin.pages.banners.create');
+        $isBannerActive = Banner::where('active', 1)->exists();
+        return view('admin.pages.banners.create', compact('isBannerActive'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreRequest $request)
-    {
-        $validate = $request->validated();
+{
+    $validate = $request->validated();
 
-        //lưu ảnh lên cloud
-            $uploadImage = Cloudinary::upload($request->file('banner_image')->getRealPath(), [
-                'folder' => 'banners',
-                'overwrite' => true,
-            ]);
-
-            if(!$request->hasFile('banner_image')){
-                return redirect()->route('banners.create')->with('error', 'Không có hình ảnh nào!');
-            }
-
-            $banner = Banner::create([
-                'title' => $validate['title'],
-                'banner_image' => $uploadImage->getSecurePath(),
-                'public_banner_image_id' => $uploadImage->getPublicId(),
-                'link' => $validate['link'],
-                'content' => $validate['content'],
-                'active' => $request->active ? 1 : 0,
-            ]);
-
-            return redirect()->route('banners.index')->with('success', 'Khởi tạo thành công');
-            
+    // Kiểm tra có ảnh hay không
+    if (!$request->hasFile('banner_image')) {
+        return redirect()->route('banners.create')->with('error', 'Không có hình ảnh nào!');
     }
+
+    // Upload ảnh lên Cloudinary
+    $uploadImage = Cloudinary::upload($request->file('banner_image')->getRealPath(), [
+        'folder' => 'banners',
+        'overwrite' => true,
+    ]);
+
+    // Nếu banner này được chọn "active"
+    if ($request->has('active')) {
+        // Tắt các banner khác
+        Banner::where('active', 1)->update(['active' => 0]);
+    }
+
+    // Tạo mới banner
+    $banner = Banner::create([
+        'title' => $validate['title'],
+        'banner_image' => $uploadImage->getSecurePath(),
+        'public_banner_image_id' => $uploadImage->getPublicId(),
+        'link' => $validate['link'],
+        'content' => $validate['content'],
+        'active' => $request->input('active', 0),
+    ]);
+
+    return redirect()->route('banners.index')->with('success', 'Khởi tạo thành công');
+}
+
 
     /**
      * Display the specified resource.
@@ -81,7 +90,17 @@ class BannerController extends Controller
     {
         $banner = Banner::findOrFail($id);
 
-        $validate = $request->validated();
+        if ($request->input('active') == 1) {
+        // Nếu bật banner này, tắt các banner khác
+        Banner::where('id', '!=', $banner->id)->update(['active' => 0]);
+    }
+
+        $banner->update([
+            'title' => $request->title,
+            'link' => $request->link,
+            'content' => $request->content,
+             'active' => $request->input('active', 0),
+        ]);
 
         if($request->hasFile('banner_image')){
             if($banner->public_banner_image_id){

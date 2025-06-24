@@ -21,6 +21,7 @@
                             <th>STT</th>
                             <th>TITLE</th>
                             <th>IMAGE</th>
+                            <th>STATUS</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -33,6 +34,13 @@
                                 <td>
                                     <img src="{{ $banner->banner_image }}" alt="Banner Image" style="width: 200px; height: 100px;">
                                 </td>
+                                <td>
+                    @if ($banner->active)
+                        <span class="badge bg-success">Đang hiển thị</span>
+                    @else
+                        <span class="badge bg-secondary">Đang ẩn</span>
+                    @endif
+                </td>
                                 <td class="d-flex gap-2">
                                         <form action="{{ route('banners.destroy', $banner->id) }}"
                                             id="delete-form-{{ $banner->id }}" method="post">
