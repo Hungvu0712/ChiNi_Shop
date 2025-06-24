@@ -96,56 +96,58 @@
 
                                 <div class="pi01Details">
                                     <h3>{{ $product->name }}</h3>
+
                                     <div class="pi01Price">
                                         <ins>{{ number_format($firstVariant->price ?? $product->price) }} VNĐ</ins>
                                     </div>
 
-                                    {{-- Màu sắc --}}
-                                    <div class="pi01VColor">
-    @php
-        $colorMap = [
-            'Đỏ' => '#e74c3c',
-            'Xanh' => '#3498db',
-            'Trắng' => '#ffffff',
-            'Đen' => '#2c3e50',
-            'Vàng' => '#f1c40f',
-        ];
-    @endphp
+                                    @php
+                                        $colorMap = [
+                                            'do' => '#e74c3c',
+                                            'xanh' => '#3498db',
+                                            'trang' => '#ffffff',
+                                            'den' => '#2c3e50',
+                                            'vang' => '#f1c40f',
+                                            'black' => '#2c3e50',
+                                            'white' => '#ffffff',
+                                        ];
+                                    @endphp
 
-    @foreach ($colors as $colorRaw)
-        @php
-            $color = mb_convert_case(trim($colorRaw), MB_CASE_TITLE, 'UTF-8');
-            $hex = $colorMap[$color] ?? '#ccc';
-            $border = $hex === '#ffffff' ? '#999' : '#ccc';
-            $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
-        @endphp
+                                    {{-- Màu sắc và Size song song nhau --}}
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        {{-- Màu sắc bên trái --}}
+                                        <div class="d-flex gap-1">
+                                            @foreach ($product->colors ?? [] as $colorKey)
+                                                @php
+                                                    $hex = $colorMap[$colorKey] ?? '#ccc';
+                                                    $border = $hex === '#ffffff' ? '#999' : '#ccc';
+                                                    $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
+                                                @endphp
+                                                <span
+                                                    style="background-color: {{ $hex }};
+                           width: 16px;
+                           height: 16px;
+                           display: inline-block;
+                           border-radius: 50%;
+                           border: 1px solid {{ $border }};
+                           {{ $boxShadow }}"
+                                                    title="{{ $colorKey }}">
+                                                </span>
+                                            @endforeach
+                                        </div>
 
-        <div style="margin-right: 10px;">
-            <label
-                style="background-color: {{ $hex }};
-                       width: 20px;
-                       height: 20px;
-                       display: inline-block;
-                       border-radius: 50%;
-                       border: 1px solid {{ $border }};
-                       {{ $boxShadow }}"
-                title="{{ $color }}">
-            </label>
-        </div>
-    @endforeach
-</div>
-
-                                    {{-- Size --}}
-                                    <div class="pi01VSize">
-                                        @foreach ($sizes as $size)
-                                            <div class="pi01VSItem">
-                                                <input type="radio" disabled>
-                                                <label>{{ $size }}</label>
-                                            </div>
-                                        @endforeach
+                                        {{-- Size bên phải --}}
+                                        <div class="d-flex gap-1">
+                                            @foreach ($sizes as $size)
+                                                <div class="pi01VSItem">
+                                                    <input type="radio" disabled>
+                                                    <label>{{ $size }}</label>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
-
                                 </div>
+
                             </div>
                         @endforeach
                     </div>

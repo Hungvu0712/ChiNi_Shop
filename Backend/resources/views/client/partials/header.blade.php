@@ -26,11 +26,7 @@
                                         <div class="col-lg-4">
                                             <h3>List Pages</h3>
                                             <ul>
-                                                <li><a href="shop_left_sidebar.html">Shop Left Sidebar</a></li>
-                                                <li><a href="shop_full_width.html">Shop Full Width</a></li>
-                                                <li><a href="shop_right_sidebar.html">Shop Right Sidebar</a></li>
-                                                <li><a href="collections.html">Collections</a></li>
-                                                <li><a href="collection_list.html">Collection List</a></li>
+                                                <li><a href="{{ route('client.shop.index') }}">Shop</a></li>
                                             </ul>
                                         </div>
                                         <div class="col-lg-4">
@@ -181,7 +177,8 @@
                                             @endrole
 
                                             @role('staff')
-                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a>
+                                                </li>
                                             @endrole
 
 
@@ -194,7 +191,8 @@
                                             <li><a class="dropdown-item" href="#">Nạp tiền
                                                 </a></li>
                                             {{-- nạp tiền --}}
-                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
+                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật
+                                                    khẩu</a></li>
 
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf

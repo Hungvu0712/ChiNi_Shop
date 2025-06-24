@@ -24,7 +24,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'tags' => 'required|string|max:255',
-            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:5120',
             'removed_attachments' => 'nullable|string',
@@ -36,7 +36,7 @@ class StoreProductRequest extends FormRequest
             'variants.*.price' => 'required|numeric|min:0',
             'variants.*.quantity' => 'required|integer|min:0',
             'variants.*.weight' => 'nullable|string|max:50',
-            'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
 
             // Khóa phân biệt biến thể (optional)
             'variant_keys' => 'nullable|array',
