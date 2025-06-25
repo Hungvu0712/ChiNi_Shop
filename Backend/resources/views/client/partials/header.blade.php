@@ -32,8 +32,6 @@
                                         <div class="col-lg-4">
                                             <h3>Details & Utility</h3>
                                             <ul>
-                                                <li><a href="shop_details1.html">Shop Details 01</a></li>
-                                                <li><a href="shop_details2.html">Shop Details 02</a></li>
                                                 <li><a href="cart.html">Shopping Cart</a></li>
                                                 <li><a href="checkout.html">Checkout</a></li>
                                                 <li><a href="wishlist.html">Wishlist</a></li>

@@ -41,6 +41,19 @@
             background-color: #7b9691;
             color: #fffeff;
         }
+
+        .product-preview {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .main-image {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .color-picker.active {
+            outline: 2px solid black;
+            outline-offset: 1px;
+        }
     </style>
 @endsection
 @include('client.partials.banner')
@@ -122,13 +135,13 @@
                                     }
                                 }
                             @endphp
-
-
                             <div class="productItem01">
                                 <div class="pi01Thumb">
-                                    <img src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                    <img class="product-preview main-image"
+                                        src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
                                         alt="{{ $product->name }}">
-                                    <img src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                    <img class="hover-image"
+                                        src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
                                         alt="{{ $product->name }}">
                                     <div class="pi01Actions">
                                         <a href="#" class="pi01Cart"><i class="fa-solid fa-shopping-cart"></i></a>
@@ -139,7 +152,11 @@
                                 </div>
 
                                 <div class="pi01Details">
-                                    <h3>{{ $product->name }}</h3>
+                                    <h3>
+                                        <a href="{{ route('client.shop.show', $product->slug) }}">
+                                            {{ $product->name }}
+                                        </a>
+                                    </h3>
 
                                     <div class="pi01Price">
                                         <ins>{{ number_format($firstVariant->price ?? $product->price) }} VNĐ</ins>
@@ -166,20 +183,23 @@
                                                     $hex = $colorMap[$colorKey] ?? '#ccc';
                                                     $border = $hex === '#ffffff' ? '#999' : '#ccc';
                                                     $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
+                                                    $imageUrl =
+                                                        $product->colorVariants[$colorKey] ??
+                                                        ($firstVariant->variant_image ?? $product->product_image);
                                                 @endphp
-                                                <span
+                                                <span class="color-picker" data-image="{{ asset($imageUrl) }}"
                                                     style="background-color: {{ $hex }};
-                           width: 16px;
-                           height: 16px;
-                           display: inline-block;
-                           border-radius: 50%;
-                           border: 1px solid {{ $border }};
-                           {{ $boxShadow }}"
+                                                    width: 16px;
+                                                    height: 16px;
+                                                    display: inline-block;
+                                                    border-radius: 50%;
+                                                    border: 1px solid {{ $border }};
+                                                    {{ $boxShadow }};
+                                                    cursor: pointer;"
                                                     title="{{ $colorKey }}">
                                                 </span>
                                             @endforeach
                                         </div>
-
                                         {{-- Size bên phải --}}
                                         <div class="d-flex gap-1">
                                             @foreach ($sizes as $size)
@@ -191,7 +211,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         @endforeach
                     </div>
@@ -3082,5 +3101,35 @@
     <!-- END: Product QuickView -->
 @endsection
 @section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.color-picker').forEach(picker => {
+                picker.addEventListener('click', function() {
+                    const imageUrl = this.dataset.image;
+                    const container = this.closest('.productItem01') || this.closest(
+                        '.productItem02');
+                    const mainImg = container.querySelector('.main-image');
+                    const hoverImg = container.querySelector('.hover-image');
+
+                    if (mainImg && imageUrl) {
+                        mainImg.style.opacity = 0;
+                        setTimeout(() => {
+                            mainImg.src = imageUrl;
+                            mainImg.onload = () => mainImg.style.opacity = 1;
+                        }, 150);
+                    }
+
+                    if (hoverImg && imageUrl) {
+                        hoverImg.src = imageUrl;
+                    }
+
+                    // Thêm hiệu ứng chọn
+                    container.querySelectorAll('.color-picker').forEach(el => el.classList.remove(
+                        'active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
 
 @endsection

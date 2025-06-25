@@ -17,25 +17,31 @@ class HomeController extends Controller
             'variants.variantAttributeValues.attributeValue'
         ])->get();
 
-        // Gắn danh sách màu (đã chuẩn hóa) vào từng sản phẩm
         foreach ($products as $product) {
             $colorSet = [];
+            $colorVariants = [];
 
             foreach ($product->variants as $variant) {
                 foreach ($variant->variantAttributeValues as $attr) {
-                    if ($attr->attribute_id == 1) { // 1 = color
-                        $value = strtolower(Str::slug($attr->attributeValue->value));
-                        $colorSet[] = $value;
+                    if ($attr->attribute_id == 1 && $attr->attributeValue) {
+                        $colorKey = strtolower(Str::slug($attr->attributeValue->value));
+
+                        // ✅ Thêm dòng này để đẩy vào danh sách màu
+                        $colorSet[] = $colorKey;
+
+                        if (!isset($colorVariants[$colorKey]) && $variant->variant_image) {
+                            $colorVariants[$colorKey] = $variant->variant_image;
+                        }
                     }
                 }
             }
 
+            $product->setAttribute('colorVariants', $colorVariants);
             $product->setAttribute('colors', array_unique($colorSet));
         }
 
         return view('client.pages.home', compact('products'));
     }
-
     public function danhsachdiachi()
     {
         $address = Address::get();

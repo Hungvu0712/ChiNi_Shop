@@ -44,6 +44,8 @@ class ShopController extends Controller
                 }
             }
 
+            // Gắn lại thuộc tính cho sản phẩm (thêm dòng này nhưng không xoá gì cả)
+
             $product->colors = $colorSet->unique()->values()->all();
             $product->sizes = $sizeSet->unique()->values()->all();
             $product->colorVariants = $colorVariants;
@@ -70,13 +72,20 @@ class ShopController extends Controller
         // Xử lý màu và size
         $colorSet = collect();
         $sizeSet = collect();
+        $colorVariants = [];
 
         foreach ($product->variants as $variant) {
             foreach ($variant->variantAttributeValues as $attr) {
                 if (!$attr->attributeValue) continue;
 
                 if ($attr->attribute_id == 1) {
-                    $colorSet->push(strtolower(Str::slug($attr->attributeValue->value)));
+                    $slug = strtolower(Str::slug($attr->attributeValue->value));
+                    $colorSet->push($slug);
+
+                    // Gán ảnh cho từng màu nếu chưa có
+                    if (!isset($colorVariants[$slug]) && $variant->variant_image) {
+                        $colorVariants[$slug] = $variant->variant_image;
+                    }
                 } elseif ($attr->attribute_id == 2) {
                     $sizeSet->push(strtoupper($attr->attributeValue->value));
                 }
@@ -85,6 +94,7 @@ class ShopController extends Controller
 
         $product->colors = $colorSet->unique()->values()->all();
         $product->sizes = $sizeSet->unique()->values()->all();
+        $product->colorVariants = $colorVariants; // ✅ thêm dòng này
 
         // Sản phẩm cùng thương hiệu
         $relatedProducts = Product::with([
@@ -97,13 +107,20 @@ class ShopController extends Controller
         foreach ($relatedProducts as $related) {
             $colorSet = collect();
             $sizeSet = collect();
+            $colorVariants = [];
 
             foreach ($related->variants as $variant) {
                 foreach ($variant->variantAttributeValues as $attr) {
                     if (!$attr->attributeValue) continue;
 
                     if ($attr->attribute_id == 1) {
-                        $colorSet->push(strtolower(Str::slug($attr->attributeValue->value)));
+                        $slug = strtolower(Str::slug($attr->attributeValue->value));
+                        $colorSet->push($slug);
+
+                        // Gán ảnh cho từng màu nếu chưa có
+                        if (!isset($colorVariants[$slug]) && $variant->variant_image) {
+                            $colorVariants[$slug] = $variant->variant_image;
+                        }
                     } elseif ($attr->attribute_id == 2) {
                         $sizeSet->push(strtoupper($attr->attributeValue->value));
                     }
@@ -112,6 +129,7 @@ class ShopController extends Controller
 
             $related->colors = $colorSet->unique()->values()->all();
             $related->sizes = $sizeSet->unique()->values()->all();
+            $related->colorVariants = $colorVariants; // ✅ thêm dòng này
         }
 
         return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts'));
