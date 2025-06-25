@@ -2,7 +2,46 @@
 @extends('client.layouts.master')
 @section('title', 'Trang chủ')
 @section('css')
+    <style>
+        .pi01Actions a {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            margin: 0 5px;
+        }
 
+        .pi01Actions a:hover {
+            background-color: #7b9691;
+            color: #fffeff;
+        }
+
+        .footerSocial a {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            color: #333;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .footerSocial a:hover {
+            background-color: #7b9691;
+            color: #fffeff;
+        }
+    </style>
 @endsection
 @include('client.partials.banner')
 @section('content')
@@ -91,7 +130,12 @@
                                         alt="{{ $product->name }}">
                                     <img src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
                                         alt="{{ $product->name }}">
-                                    <!-- actions... -->
+                                    <div class="pi01Actions">
+                                        <a href="#" class="pi01Cart"><i class="fa-solid fa-shopping-cart"></i></a>
+                                        <a href="#" class="pi01QuickView"><i
+                                                class="fa-solid fa-arrows-up-down-left-right"></i></a>
+                                        <a href="#" class="pi01Wishlist"><i class="fa-solid fa-heart"></i></a>
+                                    </div>
                                 </div>
 
                                 <div class="pi01Details">

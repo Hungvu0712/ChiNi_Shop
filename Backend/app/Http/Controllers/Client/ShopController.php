@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Brand;
 use Illuminate\Support\Str;
 
 class ShopController extends Controller
@@ -55,18 +56,18 @@ class ShopController extends Controller
     {
         $product = Product::with([
             'variants.variantAttributeValues.attributeValue',
-            'category'
+            'category',
+            'brand',
+            'attachments' // thêm để eager load
         ])->where('slug', $slug)->firstOrFail();
 
-        // Gộp ảnh từ các variants (nếu có)
-        $galleryImages = $product->variants
-            ->pluck('variant_image')
-            ->filter()
-            ->unique()
-            ->values()
-            ->toArray();
+        // Gộp ảnh: ảnh chính + ảnh phụ từ attachments
+        $galleryImages = array_merge(
+            [$product->product_image],
+            $product->attachments->pluck('attachment_image')->toArray()
+        );
 
-        // Xử lý color và size như ở trang danh sách
+        // Xử lý màu và size
         $colorSet = collect();
         $sizeSet = collect();
 
@@ -85,6 +86,34 @@ class ShopController extends Controller
         $product->colors = $colorSet->unique()->values()->all();
         $product->sizes = $sizeSet->unique()->values()->all();
 
-        return view('client.pages.product_detail', compact('product', 'galleryImages'));
+        // Sản phẩm cùng thương hiệu
+        $relatedProducts = Product::with([
+            'variants.variantAttributeValues.attributeValue'
+        ])->where('brand_id', $product->brand_id)
+            ->where('id', '!=', $product->id)
+            ->limit(6)
+            ->get();
+
+        foreach ($relatedProducts as $related) {
+            $colorSet = collect();
+            $sizeSet = collect();
+
+            foreach ($related->variants as $variant) {
+                foreach ($variant->variantAttributeValues as $attr) {
+                    if (!$attr->attributeValue) continue;
+
+                    if ($attr->attribute_id == 1) {
+                        $colorSet->push(strtolower(Str::slug($attr->attributeValue->value)));
+                    } elseif ($attr->attribute_id == 2) {
+                        $sizeSet->push(strtoupper($attr->attributeValue->value));
+                    }
+                }
+            }
+
+            $related->colors = $colorSet->unique()->values()->all();
+            $related->sizes = $sizeSet->unique()->values()->all();
+        }
+
+        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts'));
     }
 }

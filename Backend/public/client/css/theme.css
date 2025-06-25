@@ -3781,7 +3781,7 @@
 }
 .shopDetailsPageSection{
     position: relative;
-    padding: 120px 0 117px;
+    padding: 50px 0 50px;
 }
 .productGalleryWrap{
     position: relative;
@@ -6591,11 +6591,11 @@
 /-----------------------------------------*/
 .pageBannerSection{
     background: #ecf5f4;
-    min-height: 568px;
+    height: 350px;
 }
 .pageBannerContent{
     position: relative;
-    padding: 253px 0 177px;
+    padding: 150px 0 70px;
 }
 .singleBlogPageBanner .pageBannerContent{
     padding: 251px 0 173px;
