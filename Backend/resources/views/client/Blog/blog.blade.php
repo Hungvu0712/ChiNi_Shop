@@ -90,17 +90,17 @@
                                 <div class="bi03Details">
                                     <div class="bi01Meta clearfix">
                                         <span><i class="fa-solid fa-folder-open"></i><a
-                                                href="">{{ $post->title }}</a></span>
+                                                href="">{{ $post->postCategory->name }}</a></span>
                                         <span><i class="fa-solid fa-clock"></i><a
                                                 href="#">{{ $post->created_at->format('d/m/Y') }}</a></span>
                                     </div>
                                     <h3><a
-                                            href="{{ route('blog_detail', ['slug' => $post->slug]) }}">{{ $post->excerpt }}</a>
+                                            href="{{ route('blog_detail', ['slug' => $post->slug]) }}">{{ $post->title }}</a>
                                     </h3>
-                                    <div class="post-category mt-2">
+                                    {{-- <div class="post-category mt-2">
                                         <strong>Danh mục:</strong> <a href="#"
                                             class="text-decoration-underline">{{ $post->postCategory->name }}</a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
