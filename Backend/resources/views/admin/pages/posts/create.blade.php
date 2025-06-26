@@ -15,6 +15,11 @@
         .note-modal {
             display: none;
         }
+
+        .note-image-url,
+        .note-form-label {
+            display: none !important;
+        }
     </style>
 @endsection
 
@@ -131,7 +136,7 @@
                     contentType: false,
                     processData: false,
                     success: function (url) {
-                        $('#summernote').summernote('insertImage', url, function ($image) {                            
+                        $('#summernote').summernote('insertImage', url, function ($image) {
                             $image.css('width', '50%');
                         });
                     },

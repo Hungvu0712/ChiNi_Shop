@@ -15,6 +15,10 @@
         .note-modal {
             display: none;
         }
+         .note-image-url,
+        .note-form-label {
+            display: none !important;
+        }
     </style>
 @endsection
 
