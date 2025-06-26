@@ -66,7 +66,6 @@ class ShopController extends Controller
             'variants.variantAttributeValues.attributeValue',
             'category',
             'brand',
-            'attachments'
         ])
             ->where('slug', $slug)
             ->where('active', 1) // ✅ Kiểm tra trạng thái
@@ -80,29 +79,39 @@ class ShopController extends Controller
         // Xử lý màu và size
         $colorSet = collect();
         $sizeSet = collect();
-        $colorVariants = [];
+        $variantByColor = [];
 
         foreach ($product->variants as $variant) {
-            foreach ($variant->variantAttributeValues as $attr) {
-                if (!$attr->attributeValue) continue;
+            $colorAttr = $variant->variantAttributeValues->firstWhere('attribute_id', 1);
+            $sizeAttr = $variant->variantAttributeValues->firstWhere('attribute_id', 2);
 
-                if ($attr->attribute_id == 1) {
-                    $slug = strtolower(Str::slug($attr->attributeValue->value));
-                    $colorSet->push($slug);
+            if ($colorAttr && $colorAttr->attributeValue) {
+                $colorSlug = strtolower(Str::slug($colorAttr->attributeValue->value));
 
-                    // Gán ảnh cho từng màu nếu chưa có
-                    if (!isset($colorVariants[$slug]) && $variant->variant_image) {
-                        $colorVariants[$slug] = $variant->variant_image;
-                    }
-                } elseif ($attr->attribute_id == 2) {
-                    $sizeSet->push(strtoupper($attr->attributeValue->value));
+                // ✅ Thêm dòng này để danh sách màu hiển thị
+                $colorSet->push($colorSlug);
+
+                if (!isset($variantByColor[$colorSlug])) {
+                    $variantByColor[$colorSlug] = [
+                        'variant_name' => $variant->variant_name ?? $product->name,
+                        'price' => $variant->price ?? $product->price,
+                        'sku' => $variant->sku ?? $product->sku,
+                        'image' => $variant->variant_image,
+                        'gallery' => [$variant->variant_image] // nếu sau này có gallery riêng thì sửa
+                    ];
                 }
+            }
+
+            if ($sizeAttr && $sizeAttr->attributeValue) {
+                $sizeSet->push(strtoupper($sizeAttr->attributeValue->value));
             }
         }
 
+
+
         $product->colors = $colorSet->unique()->values()->all();
         $product->sizes = $sizeSet->unique()->values()->all();
-        $product->colorVariants = $colorVariants; // ✅ thêm dòng này
+        $product->variantByColor = $variantByColor;
 
         // Sản phẩm cùng thương hiệu
         $relatedProducts = Product::with([

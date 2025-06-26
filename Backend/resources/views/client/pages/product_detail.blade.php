@@ -7,6 +7,28 @@
             outline: 2px solid #000;
             outline-offset: 2px;
         }
+
+        .productGalleryThumb {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .pgtImage {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .pgtImage img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 
 
@@ -89,22 +111,27 @@
                             <div class="pcVariation">
                                 <span>Color</span>
                                 <div class="pcvContainer d-flex gap-1">
-                                    @foreach ($product->colors ?? [] as $colorKey)
+                                    @foreach ($product->variantByColor as $colorKey => $variantData)
                                         @php
                                             $hex = $colorMap[$colorKey] ?? '#ccc';
                                             $border = $hex === '#ffffff' ? '#999' : '#ccc';
                                             $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
                                         @endphp
-                                        <span class="color-picker"
+                                        <span class="color-picker" data-image="{{ asset($variantData['image']) }}"
+                                            data-name="{{ $variantData['variant_name'] }}"
+                                            data-price="{{ number_format($variantData['price']) }} VNĐ"
+                                            data-sku="{{ $variantData['sku'] }}"
+                                            data-gallery='@json($variantData['gallery'])'
                                             style="background-color: {{ $hex }};
-                       width: 18px;
-                       height: 18px;
-                       border-radius: 50%;
-                       border: 1px solid {{ $border }};
-                       {{ $boxShadow }};
-                       display: inline-block;">
+               width: 18px;
+               height: 18px;
+               border-radius: 50%;
+               border: 1px solid {{ $border }};
+               {{ $boxShadow }};
+               display: inline-block;">
                                         </span>
                                     @endforeach
+
                                 </div>
                             </div>
 
@@ -403,21 +430,34 @@
             document.querySelectorAll('.color-picker').forEach(picker => {
                 picker.addEventListener('click', function() {
                     const imageUrl = this.getAttribute('data-image');
-                    const container = this.closest('.productItem01');
-                    const imageElement = container.querySelector('.pi01Thumb img:nth-child(1)');
+                    const name = this.getAttribute('data-name');
+                    const price = this.getAttribute('data-price');
+                    const sku = this.getAttribute('data-sku');
+                    const gallery = JSON.parse(this.getAttribute('data-gallery') || '[]');
 
-                    if (imageElement && imageUrl) {
-                        imageElement.src = imageUrl;
+                    // Đổi ảnh chính
+                    const mainImage = document.getElementById('mainProductImage');
+                    if (mainImage && imageUrl) {
+                        mainImage.src = imageUrl;
                     }
 
-                    // hiệu ứng chọn
-                    container.querySelectorAll('.color-picker').forEach(el => el.classList.remove(
-                        'active'));
-                    this.classList.add('active');
+                    // Đổi bộ ảnh nhỏ (gallery)
+                    const thumbContainer = document.querySelector('.productGalleryThumb');
+                    if (thumbContainer && gallery.length) {
+                        thumbContainer.innerHTML = gallery.map(img =>
+                            `<div class="pgtImage"><img src="${img}" alt=""></div>`
+                        ).join('');
+                    }
+
+                    // Cập nhật tên, giá, SKU
+                    if (name) document.querySelector('.productContent h2').innerText = name;
+                    if (price) document.querySelector('.pi01Price ins').innerText = price;
+                    if (sku) document.querySelector('.pcMeta a').innerText = sku;
                 });
             });
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mainImage = document.getElementById('mainProductImage');
