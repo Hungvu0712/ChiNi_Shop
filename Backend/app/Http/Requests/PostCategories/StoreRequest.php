@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Permission;
+namespace App\Http\Requests\PostCategories;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,16 +22,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:permissions,name'],
-        ];
-    }
-
-    public function messages(){
-        return [
-            'name.required' => '*Không được bỏ trống',
-            'name.string' => '*Tên phải là 1 chuỗi',
-            'name.max' => '*Tên không được quá 255 ký tự',
-            'name.unique' => '*Đã có trong CSDL',
+            'name' => 'required|string|max:255|unique:post_categories,name',
         ];
     }
 }

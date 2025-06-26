@@ -14,4 +14,9 @@ class PostCategory extends Model
         'description',
         'slug',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }
