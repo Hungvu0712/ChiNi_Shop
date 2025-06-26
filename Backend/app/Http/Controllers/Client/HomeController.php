@@ -15,20 +15,6 @@ class HomeController extends Controller
         return view('client.pages.home', compact('banner'));
     }
 
-    public function danhsachdiachi() {
-        $address = Address::get();
-        return view('profile.address', compact('address'));
-    }
 
-    public function addAddress(Request $request) {
-        $address = [
-            'user_id' => auth()->id(),
-            'fullname' => $request->fullname,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'specific_address' => $request->specific_address,
-        ];
-        Address::create($address);
-    }
 
 }
