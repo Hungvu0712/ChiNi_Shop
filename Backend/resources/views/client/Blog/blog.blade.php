@@ -1,7 +1,23 @@
 @extends('client.layouts.master')
 @section('title', 'Chini Shop')
 @section('css')
+    <style>
+        .bi03Thumb {
+            width: 100%;
+            height: 250px;
+            /* Chiều cao cố định cho ảnh */
+            overflow: hidden;
+            border-radius: 8px;
+        }
 
+        .bi03Thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Đảm bảo ảnh phủ hết và không méo */
+            display: block;
+        }
+    </style>
 @endsection
 {{-- @include('client.partials.banner') --}}
 @section('content')
@@ -62,8 +78,10 @@
     <section class="blogPageSection">
         <div class="container">
             <div class="row">
+                @php $hasPost = false; @endphp
                 @foreach ($posts as $post)
                     @if ($post->status == 'published')
+                        @php $hasPost = true; @endphp
                         <div class="col-md-4 mb-4">
                             <div class="blogItem03">
                                 <div class="bi03Thumb">
@@ -74,10 +92,10 @@
                                         <span><i class="fa-solid fa-folder-open"></i><a
                                                 href="">{{ $post->title }}</a></span>
                                         <span><i class="fa-solid fa-clock"></i><a
-                                                href="#">{{ $post->created_at->format('d/m/Y') }}
-                                            </a></span>
+                                                href="#">{{ $post->created_at->format('d/m/Y') }}</a></span>
                                     </div>
-                                    <h3><a href="{{ route('blog_detail', ['slug' => $post->slug]) }}">{{ $post->excerpt }}</a>
+                                    <h3><a
+                                            href="{{ route('blog_detail', ['slug' => $post->slug]) }}">{{ $post->excerpt }}</a>
                                     </h3>
                                     <div class="post-category mt-2">
                                         <strong>Danh mục:</strong> <a href="#"
@@ -86,17 +104,15 @@
                                 </div>
                             </div>
                         </div>
-                    @else
-                        <div class="container my-5">
-                            <div class="alert alert-info text-center py-5" role="alert"
-                                style="background-color: white;">
-                                <i class="bi bi-file-earmark-text" style="font-size: 2rem;"></i>
-                                <h4 class="mt-3">Hiện tại chưa có bài viết nào!</h4>
-                                <p>Vui lòng quay lại sau hoặc khám phá các chuyên mục khác.</p>
-                            </div>
-                        </div>
                     @endif
                 @endforeach
+
+                @if (!$hasPost)
+                    <div class="col-12 text-center py-5">
+                        <h4>Không có bài viết nào.</h4>
+                    </div>
+                @endif
+
 
             </div>
 
