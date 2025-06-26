@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('public_banner_image_id')->nullable();
             $table->string('link')->nullable();
             $table->string('content');
-            $table->integer('active')->default(1);
+            $table->boolean('active')->default(0);
             $table->timestamps();
         });
     }

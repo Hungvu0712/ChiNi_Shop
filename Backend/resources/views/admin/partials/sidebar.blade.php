@@ -214,6 +214,26 @@
                     </div>
                 </li>
 
+                <!-- Quản lý Banners -->
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#banners"
+                       aria-expanded="{{ request()->routeIs('banners.*') ? 'true' : 'false' }}">
+                        <i class="fas fa-sliders-h"></i>
+                        <p>Banners</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('banners.*') ? 'show' : '' }}" id="banners">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('banners.index') ? 'active' : '' }}">
+                                <a href="{{ route('banners.index') }}"><span class="sub-item">Danh sách</span></a>
+                            </li>
+                            <li class="{{ request()->routeIs('banners.create') ? 'active' : '' }}">
+                                <a href="{{ route('banners.create') }}"><span class="sub-item">Thêm</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
             </ul>
         </div>
     </div>
