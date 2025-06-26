@@ -19,7 +19,7 @@ class PostHomeController extends Controller
     public function show($slug)
     {
         $post = Post::with('postCategory')->where('slug', $slug)->first();
-
-        return view('client.blog.blog_detail', compact('post'));
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
+        return view('client.blog.blog_detail', compact('post', 'menus'));
     }
 }
