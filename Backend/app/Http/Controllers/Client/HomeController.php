@@ -11,37 +11,52 @@ use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
+
     public function index()
     {
         $products = Product::with([
             'variants.variantAttributeValues.attributeValue'
-        ])->get();
+        ])
+            ->where('active', 1) // ✅ Chỉ lấy sản phẩm đã kích hoạt
+            ->get();
 
         foreach ($products as $product) {
             $colorSet = [];
             $colorVariants = [];
+            $colorPrices = [];
+            $colorNames = [];
 
             foreach ($product->variants as $variant) {
                 foreach ($variant->variantAttributeValues as $attr) {
                     if ($attr->attribute_id == 1 && $attr->attributeValue) {
                         $colorKey = strtolower(Str::slug($attr->attributeValue->value));
 
-                        // ✅ Thêm dòng này để đẩy vào danh sách màu
+                        // ✅ Ghi nhận màu
                         $colorSet[] = $colorKey;
 
+                        // ✅ Gán ảnh cho từng màu
                         if (!isset($colorVariants[$colorKey]) && $variant->variant_image) {
                             $colorVariants[$colorKey] = $variant->variant_image;
+                        }
+
+                        // ✅ Gán giá và tên biến thể nếu chưa có
+                        if (!isset($colorPrices[$colorKey])) {
+                            $colorPrices[$colorKey] = $variant->price;
+                            $colorNames[$colorKey] = $variant->variant_name ?? $product->name;
                         }
                     }
                 }
             }
 
             $product->setAttribute('colorVariants', $colorVariants);
+            $product->setAttribute('colorPrices', $colorPrices);
+            $product->setAttribute('colorNames', $colorNames);
             $product->setAttribute('colors', array_unique($colorSet));
         }
 
         return view('client.pages.home', compact('products'));
     }
+
     public function danhsachdiachi()
     {
         $address = Address::get();

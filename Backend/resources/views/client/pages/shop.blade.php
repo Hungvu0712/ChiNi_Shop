@@ -232,10 +232,10 @@
                                                 <div class="productItem01">
                                                     <div class="pi01Thumb">
                                                         <img class="main-img"
-                                                            src="{{ asset($product->colorVariants[$product->colors[0] ?? ''] ?? ($product->variants->first()->variant_image ?? 'images/no-image.jpg')) }}"
+                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <img class="hover-img"
-                                                            src="{{ asset($product->colorVariants[$product->colors[0] ?? ''] ?? ($product->variants->first()->variant_image ?? 'images/no-image.jpg')) }}"
+                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <div class="pi01Actions">
                                                             <a href="javascript:void(0);" class="pi01Cart"><i
@@ -259,14 +259,14 @@
                                                             <div class="ratingCounts">10 Reviews</div>
                                                         </div>
 
-                                                        <h3>
+                                                        <h3 class="product-name">
                                                             <a href="{{ route('client.shop.show', $product->slug) }}">
                                                                 {{ $product->name }}
                                                             </a>
                                                         </h3>
 
                                                         <div class="pi01Price">
-                                                            <ins>{{ number_format($product->variants->first()->price ?? 0) }}
+                                                            <ins class="product-price">{{ number_format($product->price) }}
                                                                 VNĐ</ins>
                                                         </div>
 
@@ -294,23 +294,31 @@
                                                                                 ? 'box-shadow: 0 0 2px #999;'
                                                                                 : '';
                                                                         $imageUrl =
-                                                                            $product->colorVariants[$color] ??
-                                                                            ($product->variants->first()
-                                                                                ->variant_image ??
-                                                                                '');
+                                                                            $product->colorVariants[$color] ?? '';
+                                                                        $price = number_format(
+                                                                            $product->colorPrices[$color] ??
+                                                                                $product->price,
+                                                                        );
+                                                                        $name =
+                                                                            $product->colorNames[$color] ??
+                                                                            $product->name;
                                                                     @endphp
+
                                                                     <span class="color-picker"
                                                                         data-image="{{ asset($imageUrl) }}"
+                                                                        data-name="{{ $name }}"
+                                                                        data-price="{{ $price }} VNĐ"
                                                                         style="background-color: {{ $hex }};
-                                                                     width: 16px;
-                                                                     height: 16px;
-                                                                     display: inline-block;
-                                                                     border-radius: 50%;
-                                                                     border: 1px solid {{ $border }};
-                                                                     {{ $boxShadow }};
-                                                                     cursor: pointer;">
+                 width: 16px;
+                 height: 16px;
+                 display: inline-block;
+                 border-radius: 50%;
+                 border: 1px solid {{ $border }};
+                 {{ $boxShadow }};
+                 cursor: pointer;">
                                                                     </span>
                                                                 @endforeach
+
 
                                                             </div>
                                                             {{-- Size --}}
@@ -484,35 +492,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.color-picker').forEach(picker => {
                 picker.addEventListener('click', function() {
-                    const imageUrl = this.getAttribute('data-image');
-                    const container = this.closest('.productItem02') || this.closest(
-                        '.productItem01');
+                    const imageUrl = this.dataset.image;
+                    const price = this.dataset.price;
+                    const name = this.dataset.name;
 
-                    if (container) {
-                        const mainImg = container.querySelector('.main-img');
-                        const hoverImg = container.querySelector('.hover-img');
+                    const container = this.closest('.productItem01, .productItem02');
+                    const mainImg = container.querySelector('.main-img');
+                    const hoverImg = container.querySelector('.hover-img');
+                    const priceEl = container.querySelector('.product-price');
+                    const nameEl = container.querySelector('.product-name');
 
-                        if (mainImg && imageUrl) {
-                            mainImg.style.opacity = 0;
-
-                            setTimeout(() => {
-                                mainImg.src = imageUrl;
-                                mainImg.style.opacity = 1;
-                            }, 50);
-                        }
-                        if (hoverImg && imageUrl) {
-                            hoverImg.src =
-                                imageUrl; // ⚠️ KHÔNG chỉnh style.opacity để giữ hiệu ứng hover
-                        }
-
-
-                        // Hiệu ứng chọn
-                        container.querySelectorAll('.color-picker').forEach(el => el.classList
-                            .remove('selected'));
-                        this.classList.add('selected');
-                    }
+                    if (mainImg && imageUrl) mainImg.src = imageUrl;
+                    if (hoverImg && imageUrl) hoverImg.src = imageUrl;
+                    if (priceEl && price) priceEl.textContent = price;
+                    if (nameEl && name) nameEl.textContent = name;
                 });
             });
         });
     </script>
+
 @endsection

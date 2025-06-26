@@ -15,28 +15,33 @@ class ShopController extends Controller
         // Lấy sản phẩm cùng các mối quan hệ
         $products = Product::with([
             'variants.variantAttributeValues.attributeValue'
-        ])->paginate(12);
-
+        ])
+            ->where('active', 1) // ✅ Chỉ sản phẩm đã kích hoạt
+            ->paginate(12);
         foreach ($products as $product) {
             $colorSet = collect();
             $sizeSet = collect();
             $colorVariants = [];
+            $colorPrices = [];
+            $colorNames = [];
 
             foreach ($product->variants ?? [] as $variant) {
                 foreach ($variant->variantAttributeValues ?? [] as $attr) {
-                    if (!$attr->attributeValue) {
-                        continue;
-                    }
+                    if (!$attr->attributeValue) continue;
 
                     $value = $attr->attributeValue->value;
-
                     if ($attr->attribute_id == 1) {
                         $slug = strtolower(Str::slug($value));
                         $colorSet->push($slug);
 
-                        // Gán ảnh cho từng màu nếu chưa có
                         if (!isset($colorVariants[$slug]) && $variant->variant_image) {
                             $colorVariants[$slug] = $variant->variant_image;
+                        }
+
+                        // Gán tên và giá theo màu (biến thể)
+                        if (!isset($colorPrices[$slug])) {
+                            $colorPrices[$slug] = $variant->price;
+                            $colorNames[$slug] = $variant->variant_name ?? $product->name;
                         }
                     } elseif ($attr->attribute_id == 2) {
                         $sizeSet->push(strtoupper($value));
@@ -44,12 +49,13 @@ class ShopController extends Controller
                 }
             }
 
-            // Gắn lại thuộc tính cho sản phẩm (thêm dòng này nhưng không xoá gì cả)
-
             $product->colors = $colorSet->unique()->values()->all();
             $product->sizes = $sizeSet->unique()->values()->all();
             $product->colorVariants = $colorVariants;
+            $product->colorPrices = $colorPrices;
+            $product->colorNames = $colorNames;
         }
+
 
         return view('client.pages.shop', compact('products'));
     }
@@ -60,9 +66,11 @@ class ShopController extends Controller
             'variants.variantAttributeValues.attributeValue',
             'category',
             'brand',
-            'attachments' // thêm để eager load
-        ])->where('slug', $slug)->firstOrFail();
-
+            'attachments'
+        ])
+            ->where('slug', $slug)
+            ->where('active', 1) // ✅ Kiểm tra trạng thái
+            ->firstOrFail();
         // Gộp ảnh: ảnh chính + ảnh phụ từ attachments
         $galleryImages = array_merge(
             [$product->product_image],
@@ -99,11 +107,12 @@ class ShopController extends Controller
         // Sản phẩm cùng thương hiệu
         $relatedProducts = Product::with([
             'variants.variantAttributeValues.attributeValue'
-        ])->where('brand_id', $product->brand_id)
+        ])
+            ->where('brand_id', $product->brand_id)
             ->where('id', '!=', $product->id)
+            ->where('active', 1) // ✅ Chỉ sản phẩm đã kích hoạt
             ->limit(6)
             ->get();
-
         foreach ($relatedProducts as $related) {
             $colorSet = collect();
             $sizeSet = collect();

@@ -137,11 +137,11 @@
                             @endphp
                             <div class="productItem01">
                                 <div class="pi01Thumb">
-                                    <img class="product-preview main-image"
-                                        src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                    <img class="main-img"
+                                        src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                         alt="{{ $product->name }}">
-                                    <img class="hover-image"
-                                        src="{{ asset($firstVariant->variant_image ?? $product->product_image) }}"
+                                    <img class="hover-img"
+                                        src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                         alt="{{ $product->name }}">
                                     <div class="pi01Actions">
                                         <a href="#" class="pi01Cart"><i class="fa-solid fa-shopping-cart"></i></a>
@@ -152,16 +152,16 @@
                                 </div>
 
                                 <div class="pi01Details">
-                                    <h3>
+                                    <h3 class="product-name">
                                         <a href="{{ route('client.shop.show', $product->slug) }}">
                                             {{ $product->name }}
                                         </a>
                                     </h3>
 
-                                    <div class="pi01Price">
-                                        <ins>{{ number_format($firstVariant->price ?? $product->price) }} VNĐ</ins>
-                                    </div>
 
+                                    <div class="pi01Price">
+                                        <ins class="product-price">{{ number_format($product->price ?? 0) }} VNĐ</ins>
+                                    </div>
                                     @php
                                         $colorMap = [
                                             'do' => '#e74c3c',
@@ -179,26 +179,30 @@
                                         {{-- Màu sắc bên trái --}}
                                         <div class="d-flex gap-1">
                                             @foreach ($product->colors ?? [] as $colorKey)
-                                                @php
-                                                    $hex = $colorMap[$colorKey] ?? '#ccc';
-                                                    $border = $hex === '#ffffff' ? '#999' : '#ccc';
-                                                    $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
-                                                    $imageUrl =
-                                                        $product->colorVariants[$colorKey] ??
-                                                        ($firstVariant->variant_image ?? $product->product_image);
-                                                @endphp
-                                                <span class="color-picker" data-image="{{ asset($imageUrl) }}"
-                                                    style="background-color: {{ $hex }};
-                                                    width: 16px;
-                                                    height: 16px;
-                                                    display: inline-block;
-                                                    border-radius: 50%;
-                                                    border: 1px solid {{ $border }};
-                                                    {{ $boxShadow }};
-                                                    cursor: pointer;"
-                                                    title="{{ $colorKey }}">
-                                                </span>
-                                            @endforeach
+    @php
+        $hex = $colorMap[$colorKey] ?? '#ccc';
+        $border = $hex === '#ffffff' ? '#999' : '#ccc';
+        $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
+
+        $imageUrl = $product->colorVariants[$colorKey] ?? $product->product_image;
+        $price = number_format($product->colorPrices[$colorKey] ?? $product->price);
+        $name = $product->colorNames[$colorKey] ?? $product->name;
+    @endphp
+    <span class="color-picker"
+        data-image="{{ asset($imageUrl) }}"
+        data-name="{{ $name }}"
+        data-price="{{ $price }} VNĐ"
+        style="background-color: {{ $hex }};
+               width: 16px;
+               height: 16px;
+               display: inline-block;
+               border-radius: 50%;
+               border: 1px solid {{ $border }};
+               {{ $boxShadow }};
+               cursor: pointer;"
+        title="{{ $colorKey }}">
+    </span>
+@endforeach
                                         </div>
                                         {{-- Size bên phải --}}
                                         <div class="d-flex gap-1">
@@ -3106,30 +3110,38 @@
             document.querySelectorAll('.color-picker').forEach(picker => {
                 picker.addEventListener('click', function() {
                     const imageUrl = this.dataset.image;
-                    const container = this.closest('.productItem01') || this.closest(
-                        '.productItem02');
-                    const mainImg = container.querySelector('.main-image');
-                    const hoverImg = container.querySelector('.hover-image');
+                    const name = this.dataset.name;
+                    const price = this.dataset.price;
+
+                    const container = this.closest('.productItem01');
+
+                    const mainImg = container.querySelector('.main-img');
+                    const hoverImg = container.querySelector('.hover-img');
+                    const nameEl = container.querySelector('.product-name a');
+                    const priceEl = container.querySelector('.product-price');
 
                     if (mainImg && imageUrl) {
-                        mainImg.style.opacity = 0;
-                        setTimeout(() => {
-                            mainImg.src = imageUrl;
-                            mainImg.onload = () => mainImg.style.opacity = 1;
-                        }, 150);
+                        mainImg.src = imageUrl;
                     }
 
                     if (hoverImg && imageUrl) {
                         hoverImg.src = imageUrl;
                     }
 
-                    // Thêm hiệu ứng chọn
+                    if (nameEl && name) {
+                        nameEl.innerText = name;
+                    }
+
+                    if (priceEl && price) {
+                        priceEl.innerText = price;
+                    }
+
+                    // toggle selected class
                     container.querySelectorAll('.color-picker').forEach(el => el.classList.remove(
-                        'active'));
-                    this.classList.add('active');
+                        'selected'));
+                    this.classList.add('selected');
                 });
             });
         });
     </script>
-
 @endsection
