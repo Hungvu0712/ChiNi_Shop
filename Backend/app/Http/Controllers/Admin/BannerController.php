@@ -46,8 +46,8 @@ class BannerController extends Controller
         'overwrite' => true,
     ]);
 
-    // Nếu banner này được chọn "active"
-    if ($request->has('active')) {
+    $isActive = $request->input('active', 0);
+    if ((int)$isActive === 1) {
         // Tắt các banner khác
         Banner::where('active', 1)->update(['active' => 0]);
     }
@@ -59,7 +59,7 @@ class BannerController extends Controller
         'public_banner_image_id' => $uploadImage->getPublicId(),
         'link' => $validate['link'],
         'content' => $validate['content'],
-        'active' => $request->input('active', 0),
+        'active' => $isActive,
     ]);
 
     return redirect()->route('banners.index')->with('success', 'Khởi tạo thành công');
@@ -90,8 +90,10 @@ class BannerController extends Controller
     {
         $banner = Banner::findOrFail($id);
 
-        if ($request->input('active') == 1) {
-        // Nếu bật banner này, tắt các banner khác
+        $isActive = $request->input('active', 0);
+
+    // Nếu bật banner này, thì tắt các banner khác
+    if ((int)$isActive === 1) {
         Banner::where('id', '!=', $banner->id)->update(['active' => 0]);
     }
 
