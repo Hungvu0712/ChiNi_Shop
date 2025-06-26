@@ -14,7 +14,7 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::with('children')->get();
+        $menus = Menu::with('children')->whereNull('parent_id')->orderBy('order_index')->get();
         return view('admin.pages.menus.index', compact('menus'));
     }
 
