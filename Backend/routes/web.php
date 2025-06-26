@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\PostController as ClientPostController;
 use App\Http\Controllers\ProfileController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -114,4 +115,7 @@ Route::controller(AddressController::class)->group(function () {
     Route::put('/update-address/{id}', 'update')->name('update-address');
 });
 
-
+Route::controller(ClientPostController::class)->group(function () {
+    Route::get('blog' , 'index')->name('blog');
+    Route::get('blog-detail/{id}' , 'show')->name('blog_detail');
+});
