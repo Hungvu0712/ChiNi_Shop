@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ProfileController;
 use GuzzleHttp\Middleware;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('/banner', [ClientBannerController::class, 'show'])->name('client.banner');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
@@ -85,7 +87,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
 Route::get('/404', function () {
     return view('404')->name('pagenotfound');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
