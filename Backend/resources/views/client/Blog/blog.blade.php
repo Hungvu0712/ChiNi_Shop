@@ -63,27 +63,39 @@
         <div class="container">
             <div class="row">
                 @foreach ($posts as $post)
-                    <div class="col-md-4 mb-4">
-                        <div class="blogItem03">
-                            <div class="bi03Thumb">
-                                <img src="{{ $post->featured_image }}" alt="Ulina Blog Post">
-                            </div>
-                            <div class="bi03Details">
-                                <div class="bi01Meta clearfix">
-                                    <span><i class="fa-solid fa-folder-open"></i><a
-                                            href="">{{ $post->title }}</a></span>
-                                    <span><i class="fa-solid fa-clock"></i><a
-                                            href="#">{{ $post->created_at->format('d/m/Y') }}
-                                        </a></span>
+                    @if ($post->status == 'published')
+                        <div class="col-md-4 mb-4">
+                            <div class="blogItem03">
+                                <div class="bi03Thumb">
+                                    <img src="{{ $post->featured_image }}" alt="Ulina Blog Post">
                                 </div>
-                                <h3><a href="{{ route('blog_detail', ['id' => $post->id]) }}">{{ $post->excerpt }}</a></h3>
-                                <div class="post-category mt-2">
-                                    <strong>Danh mục:</strong> <a href="#"
-                                        class="text-decoration-underline">{{ $post->postCategory->name }}</a>
+                                <div class="bi03Details">
+                                    <div class="bi01Meta clearfix">
+                                        <span><i class="fa-solid fa-folder-open"></i><a
+                                                href="">{{ $post->title }}</a></span>
+                                        <span><i class="fa-solid fa-clock"></i><a
+                                                href="#">{{ $post->created_at->format('d/m/Y') }}
+                                            </a></span>
+                                    </div>
+                                    <h3><a href="{{ route('blog_detail', ['slug' => $post->slug]) }}">{{ $post->excerpt }}</a>
+                                    </h3>
+                                    <div class="post-category mt-2">
+                                        <strong>Danh mục:</strong> <a href="#"
+                                            class="text-decoration-underline">{{ $post->postCategory->name }}</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="container my-5">
+                            <div class="alert alert-info text-center py-5" role="alert"
+                                style="background-color: white;">
+                                <i class="bi bi-file-earmark-text" style="font-size: 2rem;"></i>
+                                <h4 class="mt-3">Hiện tại chưa có bài viết nào!</h4>
+                                <p>Vui lòng quay lại sau hoặc khám phá các chuyên mục khác.</p>
+                            </div>
+                        </div>
+                    @endif
                 @endforeach
 
             </div>
