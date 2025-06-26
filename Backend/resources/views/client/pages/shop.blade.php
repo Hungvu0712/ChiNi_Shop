@@ -351,10 +351,10 @@
                                                     <div class="pi02Thumb">
                                                         {{-- Ảnh chính và hover --}}
                                                         <img class="main-img"
-                                                            src="{{ asset($product->colorVariants[$product->colors[0] ?? ''] ?? ($product->variants->first()->variant_image ?? 'images/no-image.jpg')) }}"
+                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <img class="hover-img"
-                                                            src="{{ asset($product->colorVariants[$product->colors[0] ?? ''] ?? ($product->variants->first()->variant_image ?? 'images/no-image.jpg')) }}"
+                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <div class="pi01Actions">
                                                             <a href="javascript:void(0);" class="pi01Cart"><i
@@ -385,14 +385,14 @@
                                                                 Reviews</div>
                                                         </div>
 
-                                                        <h3>
+                                                        <h3 class="product-name">
                                                             <a href="{{ route('client.shop.show', $product->slug) }}">
                                                                 {{ $product->name }}
                                                             </a>
                                                         </h3>
 
                                                         <div class="pi01Price">
-                                                            <ins>{{ number_format($product->variants->first()->price ?? 0) }}
+                                                            <ins class="product-price">{{ number_format($product->price) }}
                                                                 VNĐ</ins>
                                                         </div>
 
@@ -415,7 +415,7 @@
                                                                     ];
                                                                 @endphp
 
-                                                                @foreach ($product->colors ?? [] as $index => $color)
+                                                                @foreach ($product->colors ?? [] as $color)
                                                                     @php
                                                                         $hex = $colorMap[$color] ?? '#ccc';
                                                                         $border = $hex === '#ffffff' ? '#999' : '#ccc';
@@ -424,25 +424,28 @@
                                                                                 ? 'box-shadow: 0 0 2px #999;'
                                                                                 : '';
                                                                         $imageUrl =
-                                                                            $product->colorVariants[$color] ??
-                                                                            ($product->variants->first()
-                                                                                ->variant_image ??
-                                                                                '');
+                                                                            $product->colorVariants[$color] ?? '';
+                                                                        $price = number_format(
+                                                                            $product->colorPrices[$color] ??
+                                                                                $product->price,
+                                                                        );
+                                                                        $name =
+                                                                            $product->colorNames[$color] ??
+                                                                            $product->name;
                                                                     @endphp
 
-                                                                    <span
-                                                                        class="color-picker {{ $index === 0 ? 'selected' : '' }}"
+                                                                    <span class="color-picker"
                                                                         data-image="{{ asset($imageUrl) }}"
-                                                                        style="
-                                                                        background-color: {{ $hex }};
-                                                                        width: 16px;
-                                                                        height: 16px;
-                                                                        display: inline-block;
-                                                                        border-radius: 50%;
-                                                                        border: 1px solid {{ $border }};
-                                                                        {{ $boxShadow }}
-                                                                        cursor: pointer;
-                                                                    ">
+                                                                        data-name="{{ $name }}"
+                                                                        data-price="{{ $price }} VNĐ"
+                                                                        style="background-color: {{ $hex }};
+                 width: 16px;
+                 height: 16px;
+                 display: inline-block;
+                 border-radius: 50%;
+                 border: 1px solid {{ $border }};
+                 {{ $boxShadow }};
+                 cursor: pointer;">
                                                                     </span>
                                                                 @endforeach
                                                             </div>
