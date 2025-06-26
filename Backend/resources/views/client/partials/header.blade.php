@@ -12,29 +12,32 @@
                     <div class="mainMenu">
                         <ul>
                             @foreach ($menus as $menu)
-                                <li class="dropdown">
+                                <li class="{{ $menu->children->count() > 0 ? 'dropdown' : '' }}">
                                     <a href="{{ $menu->url }}">
                                         <span>{{ $menu->name }}</span>
                                         @if ($menu->children->count() > 0)
                                             <i class="bi bi-chevron-down toggle-dropdown"></i>
                                         @endif
                                     </a>
-                                    @if ($menu->children->count() > 0)
-                                        <ul>
-                                            @foreach ($menu->children as $child)
-                                                <li class="dropdown">
-                                                    <a href="{{ route('menu.show', $child->slug) }}">
-                                                        <span>{{ $child->name }}</span>
 
+                                    @if ($menu->children->count() > 0)
+                                        <ul class="dropdown-menu">
+                                            @foreach ($menu->children as $child)
+                                                <li class="{{ $child->children->count() > 0 ? 'dropdown' : '' }}">
+                                                    <a href="{{ $child->url }}">
+                                                        <span>{{ $child->name }}</span>
                                                         @if ($child->children->count() > 0)
                                                             <i class="bi bi-chevron-down toggle-dropdown"></i>
                                                         @endif
                                                     </a>
+
                                                     @if ($child->children->count() > 0)
-                                                        <ul>
-                                                            @foreach ($child->children as $granchild)
-                                                                <li><a
-                                                                        href="{{ $granchild->url }}">{{ $granchild->name }}</a>
+                                                        <ul class="dropdown-menu">
+                                                            @foreach ($child->children as $grandchild)
+                                                                <li>
+                                                                    <a href="{{ $grandchild->url }}">
+                                                                        {{ $grandchild->name }}
+                                                                    </a>
                                                                 </li>
                                                             @endforeach
                                                         </ul>
@@ -47,6 +50,7 @@
                             @endforeach
                         </ul>
                     </div>
+
                     <div class="accessNav">
                         <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
                             <span>Menu</span></a>
@@ -129,7 +133,8 @@
                                             @endrole
 
                                             @role('staff')
-                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác
+                                                        viên</a>
                                                 </li>
                                             @endrole
 
