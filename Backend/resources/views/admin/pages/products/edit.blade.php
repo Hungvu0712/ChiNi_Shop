@@ -3,7 +3,7 @@
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
-    <style>
+       <style>
         .form-section {
             background-color: #fff;
             border-radius: 8px;
@@ -93,6 +93,24 @@
         .current-image:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
     </style>
 @endsection
@@ -332,42 +350,32 @@
                                 </div>
                             </div>
 
-                            <!-- Attributes Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-list-ul me-2"></i>Thuộc tính sản phẩm</h5>
-                                @foreach ($attributes as $attribute)
-                                    <div class="mb-4">
-                                        <label class="fw-bold d-block mb-2">{{ $attribute->name }}</label>
-                                        <div class="d-flex flex-wrap">
-                                            @foreach ($attribute->attributeValues as $value)
-                                                <div class="form-check attribute-checkbox">
-                                                    <input type="checkbox" class="form-check-input attr-checkbox"
-                                                        name="attributes[{{ $attribute->id }}][]"
-                                                        data-attr-name="{{ $attribute->name }}"
-                                                        data-attr-id="{{ $attribute->id }}" value="{{ $value->id }}"
-                                                        id="attr_{{ $attribute->id }}_{{ $value->id }}"
-                                                        {{ in_array($value->id, $selectedValueIds ?? []) ? 'checked' : '' }}>
-                                                    <label class="form-check-label"
-                                                        for="attr_{{ $attribute->id }}_{{ $value->id }}">
-                                                        {{ $value->value }}
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                        <!-- Màu sắc -->
+<div class="form-group">
+    <label class="fw-bold"><i class="fas fa-palette me-2"></i>Chọn màu</label><br>
+    @foreach ($colors as $color)
+        <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input color-checkbox" name="colors[]"
+                value="{{ $color->id }}" data-color-name="{{ $color->value }}"
+                id="color-{{ $color->id }}"
+                {{ in_array($color->id, $selectedValueIds) ? 'checked' : '' }}>
+            <label class="form-check-label" for="color-{{ $color->id }}">{{ $color->value }}</label>
+        </div>
+    @endforeach
+</div>
 
-                            <!-- Variants Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-random me-2"></i>Biến thể sản phẩm</h5>
-                                <div id="variant-list">
+<!-- Size theo màu -->
+<div id="size-selectors"></div>
+
+<!-- Biến thể sản phẩm -->
+<div class="form-section mt-4">
+    <h5 class="form-section-title"><i class="fas fa-random me-2"></i>Biến thể sản phẩm</h5>
+    <div id="variant-forms"></div>
+    <input type="hidden" name="variants_json" id="variants_json" value="">
+</div>
 
 
-                                </div>
-                                <input type="hidden" name="variants_json" id="variants_json"
-                                    value="{{ $product->variants_json }}">
-                            </div>
+
 
                             <!-- Form Actions -->
                             <div class="d-flex justify-content-between mt-4">
@@ -392,7 +400,135 @@
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 
     <script>
-        // Initialize Summernote
+        // Khởi tạo Tagify
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('#tag-input');
+            new Tagify(input, {
+                enforceWhitelist: false,
+                dropdown: {
+                    enabled: 0
+                },
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
+            });
+        });
+    </script>
+
+    <script>
+        const productImageInput = document.getElementById('product_image');
+        const mainImagePreview = document.getElementById('mainImagePreview');
+        const mainImageWrapper = document.getElementById('mainImageWrapper');
+
+        productImageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ảnh không được vượt quá 5MB');
+                    this.value = '';
+                    mainImageWrapper.style.display = 'none';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    mainImagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                mainImageWrapper.style.display = 'block';
+            } else {
+                mainImageWrapper.style.display = 'none';
+            }
+        });
+
+        window.removeMainImage = function () {
+            productImageInput.value = '';
+            mainImagePreview.src = '#';
+            mainImageWrapper.style.display = 'none';
+        };
+
+        // ==== ẢNH ĐÍNH KÈM ====
+        const attachmentsInput = document.getElementById('attachments');
+        const attachmentsPreview = document.getElementById('attachmentsPreview');
+        const removedInput = document.getElementById('removed_attachments');
+        let allFiles = [];
+
+        attachmentsInput.addEventListener('change', function (e) {
+            const newFiles = Array.from(e.target.files);
+
+            const validFiles = newFiles.filter(file => {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert(`File "${file.name}" vượt quá 2MB và sẽ bị bỏ qua`);
+                    return false;
+                }
+                return true;
+            });
+
+            validFiles.forEach(file => {
+                if (!allFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    allFiles.push(file);
+                }
+            });
+
+            updateAttachmentsPreview();
+            updateInputFiles();
+        });
+
+        function updateAttachmentsPreview() {
+            attachmentsPreview.innerHTML = '';
+
+            allFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const container = document.createElement('div');
+                    container.classList.add('preview-container', 'position-relative');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('img-thumbnail');
+                    img.style.width = '120px';
+                    img.style.height = '120px';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'remove-btn btn btn-sm btn-danger position-absolute top-0 end-0';
+                    btn.textContent = '×';
+                    btn.type = 'button';
+                    btn.style.zIndex = 10;
+                    btn.onclick = function () {
+                        allFiles.splice(index, 1);
+                        updateAttachmentsPreview();
+                        updateInputFiles();
+                    };
+
+                    container.appendChild(img);
+                    container.appendChild(btn);
+                    attachmentsPreview.appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateInputFiles() {
+            const dt = new DataTransfer();
+            allFiles.forEach(file => dt.items.add(file));
+            attachmentsInput.files = dt.files;
+        }
+
+        // ==== XÓA ẢNH ĐÍNH KÈM CŨ (hiển thị sẵn từ DB) ====
+        document.querySelectorAll('.remove-image').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const container = this.closest('.preview-container');
+                if (container) container.remove();
+
+                let current = removedInput.value ? removedInput.value.split(',') : [];
+                if (!current.includes(id)) {
+                    current.push(id);
+                }
+                removedInput.value = current.join(',');
+            });
+        });
+    </script>
+
+    <script>
+         // Khởi tạo Summernote
         $(document).ready(function() {
             $('#summernote').summernote({
                 height: 250,
@@ -408,217 +544,168 @@
                 ]
             });
         });
-
-        // Image Upload Handling
-        const productImageInput = document.getElementById('product_image');
-        const mainImagePreview = document.getElementById('mainImagePreview');
-        const mainImageWrapper = document.getElementById('mainImageWrapper');
-        const currentThumbnail = document.getElementById('current-thumbnail');
-        const removeThumbnailBtn = document.getElementById('remove-thumbnail');
-
-        productImageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    mainImagePreview.src = e.target.result;
-                    mainImageWrapper.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function removeMainImage() {
-            productImageInput.value = '';
-            mainImagePreview.src = '#';
-            mainImageWrapper.style.display = 'none';
-        }
-
-        if (removeThumbnailBtn) {
-            removeThumbnailBtn.addEventListener('click', function() {
-                if (currentThumbnail) {
-                    currentThumbnail.style.display = 'none';
-                }
-                this.style.display = 'none';
-                productImageInput.value = '';
-            });
-        }
-
-        // Attachments Handling
-        const attachmentsInput = document.getElementById('attachments');
-        const attachmentsPreview = document.getElementById('attachmentsPreview');
-
-        attachmentsInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            attachmentsPreview.innerHTML = '';
-
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = document.createElement('div');
-                    container.classList.add('preview-container');
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('img-thumbnail');
-                    img.style.width = '120px';
-                    img.style.height = '120px';
-                    img.style.objectFit = 'cover';
-
-                    const btn = document.createElement('button');
-                    btn.className = 'remove-btn';
-                    btn.innerHTML = '<i class="fas fa-times"></i>';
-                    btn.onclick = function() {
-                        const dt = new DataTransfer();
-                        const oldFiles = Array.from(attachmentsInput.files);
-                        oldFiles.forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        attachmentsInput.files = dt.files;
-                        container.remove();
-                    };
-
-                    container.appendChild(img);
-                    container.appendChild(btn);
-                    attachmentsPreview.appendChild(container);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // Tagify Initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.querySelector('#tag-input');
-            if (input) {
-                new Tagify(input, {
-                    enforceWhitelist: false,
-                    dropdown: {
-                        enabled: 0
-                    },
-                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
-                });
-            }
-        });
-
-
-
-        // Handle removal of existing attachments
-        let removedAttachmentIds = [];
-        document.querySelectorAll('.remove-image').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                if (id) {
-                    removedAttachmentIds.push(id);
-                    document.getElementById('removed_attachments').value = removedAttachmentIds.join(',');
-                    this.closest('.preview-container').remove();
-                }
-            });
-        });
     </script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const variantList = document.getElementById('variant-list');
-        const variantsJsonInput = document.getElementById('variants_json');
-        const oldVariants = JSON.parse(variantsJsonInput.value || '[]');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sizes = @json($sizes);
+    const sizeSelectors = document.getElementById('size-selectors');
+    const variantForms = document.getElementById('variant-forms');
+    const variantsJsonInput = document.getElementById('variants_json');
+    const initialVariants = @json($productVariants);
 
-        function generateCombinations(attrMap) {
-            const keys = Object.keys(attrMap);
-            if (keys.length < 2) return [];
+    let selectedVariants = {};
 
-            const cartesian = arr => arr.reduce((a, b) =>
-                a.flatMap(d => b.map(e => [...d, e])), [[]]);
+    // 1. Load biến thể ban đầu
+    initialVariants.forEach(item => {
+        const key = `${item.color}/${item.size}`;
+        selectedVariants[key] = {
+            id: item.id,
+            color: item.color,
+            size: item.size,
+            sku: item.sku,
+            price: item.price,
+            quantity: item.quantity,
+            weight: item.weight,
+            variant_image: item.variant_image
+        };
+    });
 
-            const valuesArray = keys.map(k => attrMap[k]);
-            return cartesian(valuesArray).map(comb => {
-                const label = comb.map(v => v.name).join(' / ');
-                const ids = comb.map(v => v.id).sort().join(',');
-                return { label, ids };
-            });
-        }
+    // 2. Render checkbox size theo màu đã chọn
+    function renderSizeSelectors() {
+        sizeSelectors.innerHTML = '';
 
-        function renderVariants() {
-            const checked = document.querySelectorAll('.attr-checkbox:checked');
-            const attrMap = {};
+        document.querySelectorAll('.color-checkbox:checked').forEach(colorEl => {
+            const colorId = colorEl.value;
+            const colorName = colorEl.dataset.colorName;
 
-            checked.forEach(cb => {
-                const attrName = cb.dataset.attrName;
-                if (!attrMap[attrName]) attrMap[attrName] = [];
-                attrMap[attrName].push({
-                    id: cb.value,
-                    name: cb.nextElementSibling.innerText.trim()
-                });
-            });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-3 border rounded p-3';
+            wrapper.id = `size-block-${colorId}`;
+            wrapper.innerHTML = `<label class="fw-bold d-block mb-2">Chọn size cho màu <span class="text-primary">${colorName}</span>:</label>`;
 
-            const combos = generateCombinations(attrMap);
-            const newKeys = combos.map(c => c.ids);
-
-            // 1. XÓA CÁC BLOCK ĐƯỢC SINH RA BỞI JS mà KHÔNG CÒN TRONG COMBO MỚI
-            document.querySelectorAll('.variant-block.variant-new').forEach(el => {
-                const keyInput = el.querySelector('input[name="variant_keys[]"]');
-                if (keyInput && !newKeys.includes(keyInput.value)) {
-                    el.remove();
-                }
-            });
-
-            // 2. Lấy tất cả các keys đang tồn tại (từ Blade và từ JS)
-            const existingKeys = new Set(
-                Array.from(document.querySelectorAll('input[name="variant_keys[]"]'))
-                    .map(i => i.value)
-            );
-
-            // 3. Thêm các combo mới chưa tồn tại
-            combos.forEach(combo => {
-                if (existingKeys.has(combo.ids)) return;
-
-                const index = document.querySelectorAll('.variant-block').length;
-                const old = oldVariants.find(v => v.variant_key === combo.ids);
-
-                const block = document.createElement('div');
-                block.className = 'variant-block variant-new border p-3 rounded mb-3';
-                block.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong class="text-primary">${combo.label}</strong>
-                    </div>
-                    <input type="hidden" name="variant_keys[]" value="${combo.ids}">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label>SKU</label>
-                            <input type="text" name="variants_new[${index}][sku]" class="form-control" value="${old?.sku || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Giá</label>
-                            <input type="number" name="variants_new[${index}][price]" class="form-control" value="${old?.price || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Số lượng</label>
-                            <input type="number" name="variants_new[${index}][quantity]" class="form-control" value="${old?.quantity || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Trọng lượng</label>
-                            <input type="text" name="variants_new[${index}][weight]" class="form-control" value="${old?.weight || ''}">
-                        </div>
-                        <div class="col-md-12">
-                            <label>Ảnh biến thể</label>
-                            <input type="file" name="variants_new[${index}][variant_image]" class="form-control">
-                        </div>
+            sizes.forEach(size => {
+                const key = `${colorName}/${size.value}`;
+                const isChecked = selectedVariants[key] ? 'checked' : '';
+                wrapper.innerHTML += `
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input size-checkbox"
+                               data-color-name="${colorName}" data-size-name="${size.value}"
+                               id="size-${colorId}-${size.id}" ${isChecked}>
+                        <label class="form-check-label" for="size-${colorId}-${size.id}">${size.value}</label>
                     </div>
                 `;
-
-                variantList.appendChild(block);
-                existingKeys.add(combo.ids);
             });
-        }
 
-        // Gắn sự kiện change
-        document.querySelectorAll('.attr-checkbox').forEach(cb => {
-            cb.addEventListener('change', renderVariants);
+            sizeSelectors.appendChild(wrapper);
         });
 
-        // Gọi khi load trang
-        renderVariants();
+        attachSizeEvents();
+    }
+
+    // 3. Gắn sự kiện checkbox size
+    function attachSizeEvents() {
+        document.querySelectorAll('.size-checkbox').forEach(el => {
+            el.addEventListener('change', function () {
+                const key = `${this.dataset.colorName}/${this.dataset.sizeName}`;
+                if (this.checked) {
+                    if (!selectedVariants[key]) {
+                        selectedVariants[key] = {
+                            sku: '', price: '', quantity: '', weight: '', variant_image: ''
+                        };
+                    }
+                } else {
+                    delete selectedVariants[key];
+                }
+                renderVariantForms();
+            });
+        });
+    }
+
+    // 4. Render form biến thể
+    function renderVariantForms() {
+        variantForms.innerHTML = '';
+        const variantsArray = [];
+
+        Object.entries(selectedVariants).forEach(([key, data], index) => {
+            const [color, size] = key.split('/');
+            const block = document.createElement('div');
+            block.className = 'border p-3 mb-3 rounded bg-light';
+
+            block.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">${color} / ${size}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-variant" data-key="${key}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="hidden" name="variant_keys[${index}]" value="${key}">
+                ${data.id ? `<input type="hidden" name="variant_ids[${index}]" value="${data.id}">` : ''}
+                ${data.id ? `<input type="hidden" name="variants[${index}][id]" value="${data.id}">` : ''}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>SKU</label>
+                        <input type="text" name="variants[${index}][sku]" class="form-control" value="${data.sku || ''}">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Giá</label>
+                        <input type="number" name="variants[${index}][price]" class="form-control" value="${data.price || ''}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Số lượng</label>
+                        <input type="number" name="variants[${index}][quantity]" class="form-control" value="${data.quantity || ''}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Trọng lượng</label>
+                        <input type="text" name="variants[${index}][weight]" class="form-control" value="${data.weight || ''}">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Ảnh biến thể</label>
+                        <div class="mb-2">
+                            ${data.variant_image ? `<img src="${data.variant_image}" class="img-thumbnail mb-2" width="120">` : ''}
+                        </div>
+                        <input type="file" name="variants[${index}][variant_image]" class="form-control" accept="image/*">
+                    </div>
+                </div>
+            `;
+
+            variantForms.appendChild(block);
+            variantsArray.push({ id: data.id ?? null, key, color, size, ...data });
+        });
+
+        variantsJsonInput.value = JSON.stringify(variantsArray);
+
+        document.querySelectorAll('.remove-variant').forEach(btn => {
+            btn.addEventListener('click', function () {
+                delete selectedVariants[this.dataset.key];
+                renderVariantForms();
+                renderSizeSelectors();
+            });
+        });
+    }
+
+    // 5. Sự kiện checkbox màu
+    document.querySelectorAll('.color-checkbox').forEach(el => {
+        el.addEventListener('change', () => {
+            const colorName = el.dataset.colorName;
+            if (!el.checked) {
+                document.getElementById(`size-block-${el.value}`)?.remove();
+                Object.keys(selectedVariants).forEach(key => {
+                    if (key.startsWith(`${colorName}/`)) {
+                        delete selectedVariants[key];
+                    }
+                });
+                renderVariantForms();
+            }
+            renderSizeSelectors();
+        });
     });
+
+    renderSizeSelectors();
+    renderVariantForms();
+});
 </script>
+
 
 
 @endsection
