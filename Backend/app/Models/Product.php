@@ -24,6 +24,7 @@ class Product extends Model
         'tags',
         'sku',
         'active',
+        'variants_json'
     ];
     public function attachments()
     {

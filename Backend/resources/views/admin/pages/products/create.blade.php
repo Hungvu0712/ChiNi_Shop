@@ -94,6 +94,24 @@
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 @endsection
 
@@ -110,7 +128,8 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
-                            <input class="form-control" name="name" type="text" value="{{ old('name') }}" placeholder="Nhập tên sản phẩm" />
+                            <input class="form-control" name="name" type="text" value="{{ old('name') }}"
+                                placeholder="Nhập tên sản phẩm" />
                             @error('name')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -118,9 +137,9 @@
                         <div class="col-md-6">
                             <label class="form-label" for="price">Giá <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">₫</span>
+                                <span class="input-group-text">vnđ</span>
                                 <input class="form-control" name="price" step="0.01" type="number"
-                                       value="{{ old('price') }}" placeholder="Nhập giá sản phẩm" />
+                                    value="{{ old('price') }}" placeholder="Nhập giá sản phẩm" />
                             </div>
                             @error('price')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -134,7 +153,8 @@
                             <select class="form-select" name="category_id">
                                 <option value="">-- Chọn danh mục --</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach
@@ -148,7 +168,8 @@
                             <select class="form-select" name="brand_id">
                                 <option value="">-- Chọn thương hiệu --</option>
                                 @foreach ($brands as $brand)
-                                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                    <option value="{{ $brand->id }}"
+                                        {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}
                                     </option>
                                 @endforeach
@@ -170,22 +191,25 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Ảnh chính <span class="text-danger">*</span></label>
-                            <input class="form-control" id="product_image" name="product_image" type="file" accept="image/*" />
-                            <div class="text-muted small mt-1">Ảnh đại diện cho sản phẩm (tối đa 5MB)</div>
+                            <input class="form-control" id="product_image" name="product_image" type="file"
+                                accept="image/*" />
+                            <div class="text-muted small mt-1">Ảnh đại diện cho sản phẩm (tối đa 2MB)</div>
                             @error('product_image')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                             <div class="mt-2" id="mainImageWrapper" style="display:none;">
                                 <div class="preview-container">
                                     <img alt="Ảnh chính" class="img-thumbnail" id="mainImagePreview" src="#" />
-                                    <button class="remove-btn" onclick="removeMainImage()" type="button" title="Xóa ảnh">×</button>
+                                    <button class="remove-btn" onclick="removeMainImage()" type="button"
+                                        title="Xóa ảnh">×</button>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Ảnh đính kèm</label>
-                            <input class="form-control" id="attachments" name="attachments[]" type="file" multiple accept="image/*" />
-                            <div class="text-muted small mt-1">Có thể chọn nhiều ảnh (tối đa 5MB mỗi ảnh)</div>
+                            <input class="form-control" id="attachments" name="attachments[]" type="file" multiple
+                                accept="image/*" />
+                            <div class="text-muted small mt-1">Có thể chọn nhiều ảnh (tối đa 2MB mỗi ảnh)</div>
                             @error('attachments.*')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -197,7 +221,8 @@
                         <div class="col-md-4">
                             <label class="form-label">Trọng lượng</label>
                             <div class="input-group">
-                                <input class="form-control" name="weight" type="text" value="{{ old('weight') }}" placeholder="VD: 500g" />
+                                <input class="form-control" name="weight" type="text" value="{{ old('weight') }}"
+                                    placeholder="VD: 500" />
                                 <span class="input-group-text">gram</span>
                             </div>
                             @error('weight')
@@ -206,7 +231,8 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Số lượng <span class="text-danger">*</span></label>
-                            <input class="form-control" name="quantity" type="number" value="{{ old('quantity') }}" placeholder="Nhập số lượng" />
+                            <input class="form-control" name="quantity" type="number" value="{{ old('quantity') }}"
+                                placeholder="Nhập số lượng" />
                             @error('quantity')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -214,7 +240,7 @@
                         <div class="col-md-4">
                             <label class="form-label">Số lượng tồn kho cảnh báo</label>
                             <input class="form-control" name="quantity_warning" type="number"
-                                   value="{{ old('quantity_warning') }}" placeholder="Nhập số lượng cảnh báo" />
+                                value="{{ old('quantity_warning') }}" placeholder="Nhập số lượng cảnh báo" />
                             @error('quantity_warning')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -225,7 +251,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Tags</label>
                             <input id="tag-input" name="tags" class="form-control" value="{{ old('tags') }}"
-                                   placeholder="Nhập tags">
+                                placeholder="Nhập tags">
                             @error('tags')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -234,7 +260,7 @@
                         <div class="col-md-6">
                             <label class="form-label">SKU</label>
                             <input class="form-control" name="sku" type="text" value="{{ old('sku') }}"
-                                   placeholder="Mã SKU sản phẩm" />
+                                placeholder="Mã SKU sản phẩm" />
                             @error('sku')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -244,7 +270,8 @@
                     <div class="mb-4">
                         <div class="form-check form-switch">
                             <input name="active" type="hidden" value="0" />
-                            <input checked class="form-check-input" id="activeCheck" name="active" type="checkbox" value="1" />
+                            <input checked class="form-check-input" id="activeCheck" name="active" type="checkbox"
+                                value="1" />
                             <label class="form-check-label fw-bold" for="activeCheck">Kích hoạt sản phẩm</label>
                             @error('active')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -252,58 +279,31 @@
                         </div>
                     </div>
 
-                    {{-- Hiển thị các thuộc tính sản phẩm --}}
-                    <div class="attr-section mb-4">
-                        <h5><i class="fas fa-tags me-2"></i>Thuộc tính sản phẩm</h5>
-                        @foreach ($attributes as $attribute)
-                            <div class="mb-3">
-                                <label class="fw-bold d-block mb-2">{{ $attribute->name }}</label>
-                                <div class="d-flex flex-wrap">
-                                    @foreach ($attribute->attributeValues as $value)
-                                        <div class="form-check me-3 mb-2">
-                                            <input type="checkbox" class="form-check-input attr-checkbox"
-                                                   name="attributes[{{ $attribute->id }}][]"
-                                                   data-attr-name="{{ $attribute->name }}"
-                                                   data-attr-id="{{ $attribute->id }}"
-                                                   value="{{ $value->id }}"
-                                                   id="attr-{{ $attribute->id }}-{{ $value->id }}">
-                                            <label class="form-check-label" for="attr-{{ $attribute->id }}-{{ $value->id }}">
-                                                {{ $value->value }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                    <!-- Màu sắc -->
+<div class="form-group">
+    <label class="fw-bold"><i class="fas fa-palette me-2"></i>Chọn màu</label><br>
+    @foreach ($colors as $color)
+        <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input color-checkbox" name="colors[]"
+                value="{{ $color->id }}" data-color-name="{{ $color->value }}"
+                id="color-{{ $color->id }}"
+                {{ in_array($color->id, $selectedValueIds ?? []) ? 'checked' : '' }}>
+            <label class="form-check-label" for="color-{{ $color->id }}">{{ $color->value }}</label>
+        </div>
+    @endforeach
+</div>
 
-                    {{-- Khu vực hiển thị các biến thể sản phẩm --}}
-                    @if ($errors->any())
-                        @php
-                            $variantErrors = collect($errors->getMessages())->filter(function ($_, $key) {
-                                return Str::startsWith($key, 'variants');
-                            });
-                        @endphp
+<!-- Size theo màu -->
+<div id="size-selectors" class="mb-3"></div>
 
-                        @if ($variantErrors->isNotEmpty())
-                            <div class="alert alert-danger mb-4">
-                                <strong class="d-block mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Có lỗi trong biến thể sản phẩm:</strong>
-                                <ul class="mb-0 ps-3">
-                                    @foreach ($variantErrors as $messages)
-                                        @foreach ($messages as $message)
-                                            <li>{{ $message }}</li>
-                                        @endforeach
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                    @endif
+<!-- Biến thể sản phẩm -->
+<div class="form-section">
+    <h5 class="form-section-title"><i class="fas fa-random me-2"></i>Biến thể sản phẩm</h5>
+    <div id="variant-forms"></div>
+    <input type="hidden" name="variants_json" id="variants_json" value="">
+</div>
 
-                    <div class="attr-section mt-4">
-                        <h5><i class="fas fa-list-alt me-2"></i>Biến thể sản phẩm</h5>
-                        <div id="variant-list" class="mt-3"></div>
-                        <input type="hidden" name="variants_json" id="variants_json">
-                    </div>
+
 
                     <div class="d-flex justify-content-between mt-4 pt-3 border-top">
                         <a class="btn btn-secondary" href="{{ route('products.index') }}">
@@ -323,87 +323,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
     <script>
-        // Xử lý hiển thị ảnh chính
-        const productImageInput = document.getElementById('product_image');
-        const mainImagePreview = document.getElementById('mainImagePreview');
-        const mainImageWrapper = document.getElementById('mainImageWrapper');
-
-        productImageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Ảnh không được vượt quá 5MB');
-                    this.value = '';
-                    return;
-                }
-                mainImagePreview.src = URL.createObjectURL(file);
-                mainImageWrapper.style.display = 'block';
-            } else {
-                mainImageWrapper.style.display = 'none';
-            }
-        });
-
-        function removeMainImage() {
-            productImageInput.value = '';
-            mainImagePreview.src = '#';
-            mainImageWrapper.style.display = 'none';
-        }
-
-        // Xử lý hiển thị ảnh đính kèm
-        const attachmentsInput = document.getElementById('attachments');
-        const attachmentsPreview = document.getElementById('attachmentsPreview');
-
-        attachmentsInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            attachmentsPreview.innerHTML = '';
-
-            // Kiểm tra kích thước từng file
-            const validFiles = files.filter(file => {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert(`File ${file.name} vượt quá 5MB sẽ bị bỏ qua`);
-                    return false;
-                }
-                return true;
-            });
-
-            // Cập nhật lại files input với chỉ các file hợp lệ
-            const dt = new DataTransfer();
-            validFiles.forEach(file => dt.items.add(file));
-            this.files = dt.files;
-
-            validFiles.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = document.createElement('div');
-                    container.classList.add('preview-container');
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('img-thumbnail');
-                    img.style.height = '120px';
-                    img.style.width = '120px';
-
-                    const btn = document.createElement('button');
-                    btn.className = 'remove-btn';
-                    btn.innerHTML = '×';
-                    btn.onclick = function() {
-                        const dt = new DataTransfer();
-                        const oldFiles = Array.from(attachmentsInput.files);
-                        oldFiles.forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        attachmentsInput.files = dt.files;
-                        container.remove();
-                    };
-
-                    container.appendChild(img);
-                    container.appendChild(btn);
-                    attachmentsPreview.appendChild(container);
-                };
-                reader.readAsDataURL(file);
+        // Khởi tạo Tagify
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('#tag-input');
+            new Tagify(input, {
+                enforceWhitelist: false,
+                dropdown: {
+                    enabled: 0
+                },
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
             });
         });
+    </script>
 
+    <script>
         // Khởi tạo Summernote
         $(document).ready(function() {
             $('#summernote').summernote({
@@ -420,125 +353,285 @@
                 ]
             });
         });
+    </script>
 
-        // Xử lý biến thể sản phẩm
-        document.addEventListener('DOMContentLoaded', function() {
-            const variantList = document.getElementById('variant-list');
-            const variantsJsonInput = document.getElementById('variants_json');
+    <script>
+        // Xử lý hiển thị ảnh chính
+        const productImageInput = document.getElementById('product_image');
+        const mainImagePreview = document.getElementById('mainImagePreview');
+        const mainImageWrapper = document.getElementById('mainImageWrapper');
 
-            function generateCombinations(attributeMap) {
-                const keys = Object.keys(attributeMap);
-                if (keys.length === 0) return [];
-
-                function cartesian(arr) {
-                    return arr.reduce((a, b) => a.flatMap(d => b.map(e => [...d, e])), [
-                        []
-                    ]);
-                }
-                const valuesArray = keys.map(k => attributeMap[k]);
-                const combinations = cartesian(valuesArray);
-                return combinations.map(comb => {
-                    const label = comb.map(v => v.name).join(' / ');
-                    const ids = comb.map(v => v.id).join(',');
-                    return {
-                        label,
-                        ids
-                    };
-                });
-            }
-
-            function renderVariants() {
-                const checked = document.querySelectorAll('.attr-checkbox:checked');
-                const attrMap = {};
-                checked.forEach(cb => {
-                    const attrName = cb.dataset.attrName;
-                    if (!attrMap[attrName]) attrMap[attrName] = [];
-                    attrMap[attrName].push({
-                        id: cb.value,
-                        name: cb.nextElementSibling.innerText.trim()
-                    });
-                });
-
-                if (Object.keys(attrMap).length < 2) {
-                    variantList.innerHTML = `
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Chọn ít nhất 2 thuộc tính (VD: Màu và Size) để tạo biến thể
-                        </div>`;
-                    variantsJsonInput.value = '';
+        productImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ảnh không được vượt quá 2MB');
+                    this.value = '';
                     return;
                 }
-
-                const combos = generateCombinations(attrMap);
-                variantList.innerHTML = '';
-                const variantsData = [];
-
-                combos.forEach((combo, index) => {
-                    const block = document.createElement('div');
-                    block.className = 'border p-3 rounded mb-3 bg-white';
-                    block.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0 text-primary">${combo.label}</h6>
-                            <span class="badge bg-secondary">#${index + 1}</span>
-                        </div>
-                        <input type="hidden" name="variant_keys[${index}]" value="${combo.ids}">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label">SKU</label>
-                                <input type="text" name="variants[${index}][sku]" class="form-control" placeholder="Mã SKU biến thể">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Giá <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₫</span>
-                                    <input type="number" step="0.01" name="variants[${index}][price]"
-                                           class="form-control" placeholder="Giá biến thể" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
-                                <input type="number" name="variants[${index}][quantity]"
-                                       class="form-control" placeholder="Số lượng" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Trọng lượng</label>
-                                <div class="input-group">
-                                    <input type="text" name="variants[${index}][weight]"
-                                           class="form-control" placeholder="VD: 500g">
-                                    <span class="input-group-text">gram</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Ảnh biến thể</label>
-                                <input type="file" name="variants[${index}][variant_image]"
-                                       class="form-control" accept="image/*">
-                            </div>
-                        </div>
-                    `;
-                    variantList.appendChild(block);
-                    variantsData.push({
-                        ids: combo.ids,
-                        label: combo.label
-                    });
-                });
-                variantsJsonInput.value = JSON.stringify(variantsData);
+                mainImagePreview.src = URL.createObjectURL(file);
+                mainImageWrapper.style.display = 'block';
+            } else {
+                mainImageWrapper.style.display = 'none';
             }
-
-            document.querySelectorAll('.attr-checkbox').forEach(cb => {
-                cb.addEventListener('change', renderVariants);
-            });
         });
 
-        // Khởi tạo Tagify
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.querySelector('#tag-input');
-            new Tagify(input, {
-                enforceWhitelist: false,
-                dropdown: {
-                    enabled: 0
-                },
-                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
+        function removeMainImage() {
+            productImageInput.value = '';
+            mainImagePreview.src = '#';
+            mainImageWrapper.style.display = 'none';
+        }
+
+        const attachmentsInput = document.getElementById('attachments');
+        const attachmentsPreview = document.getElementById('attachmentsPreview');
+
+        // Mảng lưu toàn bộ file hợp lệ (kể cả đã chọn trước)
+        let allFiles = [];
+
+        attachmentsInput.addEventListener('change', function(e) {
+            const newFiles = Array.from(e.target.files);
+
+            // Lọc ảnh không vượt quá 2MB
+            const validNewFiles = newFiles.filter(file => {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert(`File ${file.name} vượt quá 2MB và sẽ bị bỏ qua`);
+                    return false;
+                }
+                return true;
             });
+
+            // Gộp ảnh mới vào danh sách cũ (tránh trùng tên)
+            validNewFiles.forEach(newFile => {
+                if (!allFiles.some(file => file.name === newFile.name && file.size === newFile.size)) {
+                    allFiles.push(newFile);
+                }
+            });
+
+            updateAttachmentsPreview();
+            updateInputFiles(); // Cập nhật lại input[type=file]
         });
+
+        // Cập nhật giao diện ảnh preview
+        function updateAttachmentsPreview() {
+            attachmentsPreview.innerHTML = '';
+
+            allFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.createElement('div');
+                    container.classList.add('preview-container', 'position-relative');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('img-thumbnail');
+                    img.style.height = '120px';
+                    img.style.width = '120px';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'remove-btn btn btn-sm btn-danger position-absolute top-0 end-0';
+                    btn.style.zIndex = 10;
+                    btn.textContent = '×';
+                    btn.type = 'button';
+                    btn.onclick = function() {
+                        allFiles.splice(index, 1); // Xoá ảnh khỏi danh sách
+                        updateAttachmentsPreview();
+                        updateInputFiles();
+                    };
+
+                    container.appendChild(img);
+                    container.appendChild(btn);
+                    attachmentsPreview.appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Cập nhật lại input `attachments` với danh sách `allFiles`
+        function updateInputFiles() {
+            const dt = new DataTransfer();
+            allFiles.forEach(file => dt.items.add(file));
+            attachmentsInput.files = dt.files;
+        }
     </script>
+
+
+    {{-- biến thể --}}
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sizes = @json($sizes);
+    const initialVariants = @json($productVariants ?? []);
+    const sizeSelectors = document.getElementById('size-selectors');
+    const variantForms = document.getElementById('variant-forms');
+    const variantsJsonInput = document.getElementById('variants_json');
+    let selectedVariants = {};
+
+    // Bước 1: Đổ dữ liệu ban đầu
+    initialVariants.forEach(item => {
+        const key = `${item.color}/${item.size}`;
+        selectedVariants[key] = {
+            id: item.id ?? null,
+            color: item.color,
+            size: item.size,
+            sku: item.sku || '',
+            price: item.price || '',
+            quantity: item.quantity || '',
+            weight: item.weight || '',
+            variant_image: item.variant_image || ''
+        };
+    });
+
+    // Bước 2: Render size selectors
+    function renderSizeSelectors() {
+        sizeSelectors.innerHTML = '';
+        document.querySelectorAll('.color-checkbox:checked').forEach(colorEl => {
+            const colorId = colorEl.value;
+            const colorName = colorEl.dataset.colorName;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'border rounded p-3 mb-2';
+            wrapper.id = `size-block-${colorId}`;
+            wrapper.innerHTML = `<label class="fw-bold">Chọn size cho màu <span class="text-primary">${colorName}</span>:</label><br>`;
+
+            sizes.forEach(size => {
+                const key = `${colorName}/${size.value}`;
+                const isChecked = selectedVariants[key] ? 'checked' : '';
+                wrapper.innerHTML += `
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input size-checkbox"
+                            data-color-name="${colorName}" data-size-name="${size.value}"
+                            id="size-${colorId}-${size.id}" ${isChecked}>
+                        <label class="form-check-label" for="size-${colorId}-${size.id}">${size.value}</label>
+                    </div>
+                `;
+            });
+
+            sizeSelectors.appendChild(wrapper);
+        });
+
+        attachSizeEvents();
+    }
+
+    // Bước 3: Gắn sự kiện checkbox size
+    function attachSizeEvents() {
+        document.querySelectorAll('.size-checkbox').forEach(el => {
+            el.addEventListener('change', function () {
+                const key = `${this.dataset.colorName}/${this.dataset.sizeName}`;
+                if (this.checked) {
+                    if (!selectedVariants[key]) {
+                        selectedVariants[key] = {
+                            sku: '',
+                            price: '',
+                            quantity: '',
+                            weight: '',
+                            variant_image: ''
+                        };
+                    }
+                } else {
+                    delete selectedVariants[key];
+                }
+                renderVariantForms();
+            });
+        });
+    }
+
+    // Bước 4: Render form biến thể
+    function renderVariantForms() {
+        variantForms.innerHTML = '';
+        const variantsJson = [];
+
+        Object.entries(selectedVariants).forEach(([key, data], index) => {
+            const [color, size] = key.split('/');
+            const block = document.createElement('div');
+            block.className = 'border p-3 mb-3 rounded bg-light';
+
+            block.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6>${color} / ${size}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-variant" data-key="${key}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <input type="hidden" name="variant_keys[${index}]" value="${key}">
+                ${data.id ? `<input type="hidden" name="variant_ids[${index}]" value="${data.id}">` : ''}
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>SKU</label>
+                        <input type="text" name="variants[${index}][sku]" class="form-control" value="${data.sku || ''}">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Giá</label>
+                        <input type="number" name="variants[${index}][price]" class="form-control" value="${data.price || ''}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Số lượng</label>
+                        <input type="number" name="variants[${index}][quantity]" class="form-control" value="${data.quantity || ''}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Trọng lượng</label>
+                        <input type="text" name="variants[${index}][weight]" class="form-control" value="${data.weight || ''}">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Ảnh biến thể</label>
+                        <div class="mb-2">
+                            ${data.variant_image ? `<img src="${data.variant_image}" class="img-thumbnail" width="100">` : ''}
+                        </div>
+                        <input type="file" name="variants[${index}][variant_image]" class="form-control" accept="image/*">
+                        <small class="text-muted">* Ảnh sẽ mất nếu bạn thay đổi biến thể</small>
+                    </div>
+                </div>
+            `;
+
+            variantForms.appendChild(block);
+            variantsJson.push({
+                id: data.id || null,
+                key: key,
+                color: color,
+                size: size,
+                sku: data.sku,
+                price: data.price,
+                quantity: data.quantity,
+                weight: data.weight,
+                variant_image: data.variant_image
+            });
+        });
+
+        variantsJsonInput.value = JSON.stringify(variantsJson);
+
+        // Bắt sự kiện xóa
+        document.querySelectorAll('.remove-variant').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const key = this.dataset.key;
+                delete selectedVariants[key];
+                renderVariantForms();
+                renderSizeSelectors();
+            });
+        });
+    }
+
+    // Bước 5: Gắn sự kiện checkbox màu
+    document.querySelectorAll('.color-checkbox').forEach(el => {
+        el.addEventListener('change', () => {
+            const colorName = el.dataset.colorName;
+            if (!el.checked) {
+                document.getElementById(`size-block-${el.value}`)?.remove();
+                Object.keys(selectedVariants).forEach(key => {
+                    if (key.startsWith(`${colorName}/`)) {
+                        delete selectedVariants[key];
+                    }
+                });
+                renderVariantForms();
+            }
+            renderSizeSelectors();
+        });
+    });
+
+    // Khởi tạo
+    renderSizeSelectors();
+    renderVariantForms();
+});
+</script>
+
+
 @endsection
