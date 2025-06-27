@@ -663,28 +663,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         <label>Ảnh biến thể</label>
                         <div class="mb-2">
                             ${data.variant_image ? `<img src="${data.variant_image}" class="img-thumbnail mb-2" width="120">` : ''}
-                    <input type="hidden" name="variant_keys[]" value="${combo.ids}">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label>SKU</label>
-                            <input type="text" name="variants_new[${index}][sku]" class="form-control" value="${old?.sku || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Giá</label>
-                            <input type="number" name="variants_new[${index}][price]" class="form-control" value="${old?.price || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Số lượng</label>
-                            <input type="number" name="variants_new[${index}][quantity]" class="form-control" value="${old?.quantity || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Trọng lượng</label>
-                            <input type="text" name="variants_new[${index}][weight]" class="form-control" value="${old?.weight || ''}">
-                        </div>
-                        <div class="col-md-12">
-                            <label>Ảnh biến thể</label>
-                            <input type="file" name="variants_new[${index}][variant_image]" class="form-control">
-                            <img src="${old?.variant_image || ''}" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">
                         </div>
                         <input type="file" name="variants[${index}][variant_image]" class="form-control" accept="image/*">
                     </div>
