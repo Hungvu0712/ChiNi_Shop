@@ -11,94 +11,46 @@
                     </div>
                     <div class="mainMenu">
                         <ul>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Home</a>
-                                <ul>
-                                    <li><a href="index.html">Home One</a></li>
-                                    <li><a href="index2.html">Home Two</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="about.html">About</a></li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Shop</a>
-                                <div class="megaMenu">
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <h3>List Pages</h3>
-                                            <ul>
-                                                <li><a href="shop_left_sidebar.html">Shop Left Sidebar</a></li>
-                                                <li><a href="shop_full_width.html">Shop Full Width</a></li>
-                                                <li><a href="shop_right_sidebar.html">Shop Right Sidebar</a></li>
-                                                <li><a href="collections.html">Collections</a></li>
-                                                <li><a href="collection_list.html">Collection List</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <h3>Details & Utility</h3>
-                                            <ul>
-                                                <li><a href="shop_details1.html">Shop Details 01</a></li>
-                                                <li><a href="shop_details2.html">Shop Details 02</a></li>
-                                                <li><a href="cart.html">Shopping Cart</a></li>
-                                                <li><a href="checkout.html">Checkout</a></li>
-                                                <li><a href="wishlist.html">Wishlist</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-lg-4 hideOnMobile">
-                                            <div class="lookBook01 lb01M2">
-                                                <div class="lbContent">
-                                                    <h3>Be Stylish</h3>
-                                                    <h2>Girl’s Latest Fashion</h2>
-                                                    <a href="shop_left_sidebar.html" class="ulinaLink"><i
-                                                            class="fa-solid fa-angle-right"></i>Shop Now</a>
-                                                </div>
-                                                <img src="{{ asset('client/images/home1/3.png') }}"
-                                                    alt="Mans Latest Collection">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Pages</a>
-                                <ul>
-                                    <li><a href="team.html">Team</a></li>
-                                    <li><a href="faq.html">FAQ's</a></li>
-                                    <li><a href="testimonial.html">Testimonial</a></li>
-                                    <li><a href="404.html">Error 404</a></li>
-                                </ul>
-                            </li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Blog</a>
-                                <ul>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Standard</a>
-                                        <ul>
-                                            <li><a href="blog_standard_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_standard_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_standard_rsb.html">Right Sidebar</a></li>
+                            @foreach ($menus as $menu)
+                                <li class="{{ $menu->children->count() > 0 ? 'dropdown' : '' }}">
+                                    <a href="{{ $menu->url }}">
+                                        <span>{{ $menu->name }}</span>
+                                        @if ($menu->children->count() > 0)
+                                            <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                        @endif
+                                    </a>
+
+                                    @if ($menu->children->count() > 0)
+                                        <ul class="dropdown-menu">
+                                            @foreach ($menu->children as $child)
+                                                <li class="{{ $child->children->count() > 0 ? 'dropdown' : '' }}">
+                                                    <a href="{{ $child->url }}">
+                                                        <span>{{ $child->name }}</span>
+                                                        @if ($child->children->count() > 0)
+                                                            <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                                        @endif
+                                                    </a>
+
+                                                    @if ($child->children->count() > 0)
+                                                        <ul class="dropdown-menu">
+                                                            @foreach ($child->children as $grandchild)
+                                                                <li>
+                                                                    <a href="{{ $grandchild->url }}">
+                                                                        {{ $grandchild->name }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
+                                            @endforeach
                                         </ul>
-                                    </li>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Grid</a>
-                                        <ul>
-                                            <li><a href="blog_grid_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_grid_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_grid_rsb.html">Right Sidebar</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Details</a>
-                                        <ul>
-                                            <li><a href="blog_details_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_details_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_details_rsb.html">Right Sidebar</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="contact.html">Contacts</a></li>
+                                    @endif
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
+
                     <div class="accessNav">
                         <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
                             <span>Menu</span></a>
@@ -181,7 +133,9 @@
                                             @endrole
 
                                             @role('staff')
-                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác
+                                                        viên</a>
+                                                </li>
                                             @endrole
 
 
@@ -194,7 +148,8 @@
                                             <li><a class="dropdown-item" href="#">Nạp tiền
                                                 </a></li>
                                             {{-- nạp tiền --}}
-                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
+                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật
+                                                    khẩu</a></li>
 
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf

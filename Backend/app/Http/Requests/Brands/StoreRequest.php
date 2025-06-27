@@ -34,6 +34,7 @@ class StoreRequest extends FormRequest
             'name.max' => '*Tối đa 255 ký tự',
             'name.unique' => '*Đã tồn tại trong CSDL',
 
+            'brand_image.required' => '*Không được bỏ trống',
             'brand_image.image' => '*Phải là file hình',
             'brand_image.mimes' => '*Phải là file jpeg,png,jpg,gif',
             'brand_image.max' => '*Tối đa 2MB',

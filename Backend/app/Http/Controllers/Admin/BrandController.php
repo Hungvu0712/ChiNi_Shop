@@ -43,6 +43,10 @@ class BrandController extends Controller
     {
         $validated = $request->validated();
 
+        if (!$request->hasFile('brand_image')) {
+        return back()->with('error', 'Không có hình ảnh thương hiệu được tải lên');
+    }
+
         $uploadedFileUrl = Cloudinary::upload($request->file('brand_image')->getRealPath(), [
             'folder' => 'brands',
             'overwrite' => true,

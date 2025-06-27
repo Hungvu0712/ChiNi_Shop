@@ -13,10 +13,14 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\Client\AddressController;
+use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +40,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('/banner', [ClientBannerController::class, 'show'])->name('client.banner');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
@@ -69,11 +74,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
         ->name('product-attachments.destroy');
     Route::resource('posts', PostController::class);
+    Route::post('/admin/summernote-upload', [PostController::class, 'uploadImageSummernote'])->name('admin.summernote.upload');
 
     //attributes
     Route::resource('attributes', AttributeController::class);
     //attribute_values
     Route::resource('attribute_values', AttributeValueController::class);
+    //banners
+    Route::resource('banners', BannerController::class);
 
 });
 
@@ -81,7 +89,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
 Route::get('/404', function () {
     return view('404')->name('pagenotfound');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -106,9 +113,13 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 
 
-Route::controller(HomeController::class)->group(function () {
+Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
+    Route::put('/update-address/{id}', 'update')->name('update-address');
 });
 
-
+Route::controller(PostHomeController::class)->group(function () {
+    Route::get('blog' , 'index')->name('blog');
+    Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
+});

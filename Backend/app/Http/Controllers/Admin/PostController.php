@@ -135,4 +135,16 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')->with('success', 'Xóa bài viết thành công!');
     }
+
+    public function uploadImageSummernote(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $uploadedFileUrl = Cloudinary::upload($request->file('file')->getRealPath(), [
+                'folder' => 'posts',
+            ])->getSecurePath();
+            return response()->json($uploadedFileUrl);
+        }
+
+        return response()->json(['error' => 'Không có ảnh gửi lên'], 400);
+    }
 }
