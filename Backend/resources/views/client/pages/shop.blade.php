@@ -229,7 +229,7 @@
                                     <div class="row">
                                         @foreach ($products as $product)
                                             <div class="col-sm-6 col-xl-4">
-                                                <div class="productItem01">
+                                                <div class="productItem01" data-product-id="{{ $product->id }}">
                                                     <div class="pi01Thumb">
                                                         <img class="main-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
@@ -237,28 +237,9 @@
                                                         <img class="hover-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
-                                                        <div class="pi01Actions">
-                                                            <a href="javascript:void(0);" class="pi01Cart"><i
-                                                                    class="fa-solid fa-shopping-cart"></i></a>
-                                                            <a href="javascript:void(0);" class="pi01QuickView"><i
-                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                                            <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                                                    class="fa-solid fa-heart"></i></a>
-                                                        </div>
-
-                                                        <div class="productLabels clearfix">
-                                                            <span class="plSale">Sale</span>
-                                                        </div>
                                                     </div>
 
                                                     <div class="pi01Details">
-                                                        <div class="productRatings">
-                                                            <div class="productRatingWrap">
-                                                                <div class="star-rating"><span></span></div>
-                                                            </div>
-                                                            <div class="ratingCounts">10 Reviews</div>
-                                                        </div>
-
                                                         <h3 class="product-name">
                                                             <a href="{{ route('client.shop.show', $product->slug) }}">
                                                                 {{ $product->name }}
@@ -266,11 +247,13 @@
                                                         </h3>
 
                                                         <div class="pi01Price">
-                                                            <ins class="product-price">{{ number_format($product->price) }}
-                                                                VNĐ</ins>
+                                                            <ins class="product-price">
+                                                                {{ number_format($product->price) }} VNĐ
+                                                            </ins>
                                                         </div>
 
-                                                        <div class="pi01Variations d-flex justify-content-between">
+                                                        <div class="pi01Variations">
+
                                                             {{-- Màu sắc --}}
                                                             <div class="pi01VColor d-flex gap-1">
                                                                 @php
@@ -285,106 +268,89 @@
                                                                     ];
                                                                 @endphp
 
-                                                                @foreach ($product->colors ?? [] as $color)
+                                                                @foreach ($product->colors as $color)
                                                                     @php
-                                                                        $hex = $colorMap[$color] ?? '#ccc';
+                                                                        $slugColor = strtolower(Str::slug($color));
+                                                                        $hex = $colorMap[$slugColor] ?? '#ccc';
                                                                         $border = $hex === '#ffffff' ? '#999' : '#ccc';
                                                                         $boxShadow =
                                                                             $hex === '#ffffff'
                                                                                 ? 'box-shadow: 0 0 2px #999;'
                                                                                 : '';
-                                                                        $imageUrl =
-                                                                            $product->colorVariants[$color] ?? '';
-                                                                        $price = number_format(
-                                                                            $product->colorPrices[$color] ??
-                                                                                $product->price,
-                                                                        );
-                                                                        $name =
-                                                                            $product->colorNames[$color] ??
-                                                                            $product->name;
+
+                                                                        // Tách variantMap chỉ cho MÀU này
+                                                                        $variantsForColor = [];
+                                                                        foreach (
+                                                                            $product->variantMap
+                                                                            as $key => $variant
+                                                                        ) {
+                                                                            if (
+                                                                                Str::startsWith($key, $slugColor . '-')
+                                                                            ) {
+                                                                                $variantsForColor[$key] = $variant;
+                                                                            }
+                                                                        }
                                                                     @endphp
 
                                                                     <span class="color-picker"
-                                                                        data-image="{{ asset($imageUrl) }}"
-                                                                        data-name="{{ $name }}"
-                                                                        data-price="{{ $price }} VNĐ"
+                                                                        data-product-id="{{ $product->id }}"
+                                                                        data-color="{{ $slugColor }}"
+                                                                        data-map='@json($variantsForColor)'
                                                                         style="background-color: {{ $hex }};
-                 width: 16px;
-                 height: 16px;
-                 display: inline-block;
-                 border-radius: 50%;
-                 border: 1px solid {{ $border }};
-                 {{ $boxShadow }};
-                 cursor: pointer;">
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    border: 1px solid {{ $border }};
+                    {{ $boxShadow }};
+                    display: inline-block;
+                    cursor: pointer;">
                                                                     </span>
                                                                 @endforeach
-
-
                                                             </div>
+
                                                             {{-- Size --}}
-                                                            <div class="pi01VSize d-flex gap-1">
-                                                                @foreach ($product->sizes ?? [] as $size)
-                                                                    <div class="pi01VSItem">
-                                                                        <input type="radio" disabled />
-                                                                        <label>{{ $size }}</label>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
+                                                            @foreach ($product->sizes as $size)
+                                                                <div class="pi01VSItem">
+                                                                    <input type="radio"
+                                                                        id="size_{{ $product->id }}_{{ $size }}"
+                                                                        class="size-picker"
+                                                                        data-product-id="{{ $product->id }}"
+                                                                        value="{{ strtoupper($size) }}">
+                                                                    <label
+                                                                        for="size_{{ $product->id }}_{{ $size }}">{{ $size }}</label>
+                                                                </div>
+                                                            @endforeach
+
+
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         @endforeach
 
-                                        {{-- Phân trang --}}
                                         <div class="mt-4">
                                             {{ $products->links() }}
                                         </div>
                                     </div>
+
                                 </div>
                                 <div class="tab-pane" id="list-tab-pane" role="tabpanel" aria-labelledby="list-tab"
                                     tabindex="0">
                                     <div class="row">
                                         @foreach ($products as $product)
                                             <div class="col-lg-12 col-xl-6">
-                                                <div class="productItem02">
+                                                <div class="productItem02" data-product-id="{{ $product->id }}">
                                                     <div class="pi02Thumb">
-                                                        {{-- Ảnh chính và hover --}}
                                                         <img class="main-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <img class="hover-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
-                                                        <div class="pi01Actions">
-                                                            <a href="javascript:void(0);" class="pi01Cart"><i
-                                                                    class="fa-solid fa-shopping-cart"></i></a>
-                                                            <a href="javascript:void(0);" class="pi01QuickView"><i
-                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                                            <a href="javascript:void(0);" class="pi01Wishlist"><i
-                                                                    class="fa-solid fa-heart"></i></a>
-                                                        </div>
-
-                                                        <div class="productLabels clearfix">
-                                                            @if (isset($product->discount))
-                                                                <span class="plDis">- ${{ $product->discount }}</span>
-                                                            @endif
-                                                            @if (isset($product->label))
-                                                                <span
-                                                                    class="pl{{ ucfirst($product->label) }}">{{ ucfirst($product->label) }}</span>
-                                                            @endif
-                                                        </div>
                                                     </div>
 
                                                     <div class="pi02Details">
-                                                        <div class="productRatings">
-                                                            <div class="productRatingWrap">
-                                                                <div class="star-rating"><span></span></div>
-                                                            </div>
-                                                            <div class="ratingCounts">{{ $product->review_count ?? 0 }}
-                                                                Reviews</div>
-                                                        </div>
-
                                                         <h3 class="product-name">
                                                             <a href="{{ route('client.shop.show', $product->slug) }}">
                                                                 {{ $product->name }}
@@ -392,15 +358,13 @@
                                                         </h3>
 
                                                         <div class="pi01Price">
-                                                            <ins class="product-price">{{ number_format($product->price) }}
-                                                                VNĐ</ins>
+                                                            <ins class="product-price">
+                                                                {{ number_format($product->price) }} VNĐ
+                                                            </ins>
                                                         </div>
 
-                                                        <div class="pi02Desc">
-                                                            {{ Str::limit($product->description, 80) }}
-                                                        </div>
+                                                        <div class="pi01Variations d-flex justify-content-between">
 
-                                                        <div class="pi01Variations">
                                                             {{-- Màu sắc --}}
                                                             <div class="pi01VColor d-flex gap-1">
                                                                 @php
@@ -415,7 +379,7 @@
                                                                     ];
                                                                 @endphp
 
-                                                                @foreach ($product->colors ?? [] as $color)
+                                                                @foreach ($product->colors as $color)
                                                                     @php
                                                                         $hex = $colorMap[$color] ?? '#ccc';
                                                                         $border = $hex === '#ffffff' ? '#999' : '#ccc';
@@ -423,44 +387,36 @@
                                                                             $hex === '#ffffff'
                                                                                 ? 'box-shadow: 0 0 2px #999;'
                                                                                 : '';
-                                                                        $imageUrl =
-                                                                            $product->colorVariants[$color] ?? '';
-                                                                        $price = number_format(
-                                                                            $product->colorPrices[$color] ??
-                                                                                $product->price,
-                                                                        );
-                                                                        $name =
-                                                                            $product->colorNames[$color] ??
-                                                                            $product->name;
                                                                     @endphp
 
                                                                     <span class="color-picker"
-                                                                        data-image="{{ asset($imageUrl) }}"
-                                                                        data-name="{{ $name }}"
-                                                                        data-price="{{ $price }} VNĐ"
+                                                                        data-product-id="{{ $product->id }}"
+                                                                        data-color="{{ strtolower(Str::slug($color)) }}"
+                                                                        data-map='@json($product->variantMap)'
                                                                         style="background-color: {{ $hex }};
-                 width: 16px;
-                 height: 16px;
-                 display: inline-block;
-                 border-radius: 50%;
-                 border: 1px solid {{ $border }};
-                 {{ $boxShadow }};
-                 cursor: pointer;">
+                                            width: 18px; height: 18px;
+                                            border-radius: 50%;
+                                            border: 1px solid {{ $border }};
+                                            {{ $boxShadow }};
+                                            display: inline-block;
+                                            cursor: pointer;">
                                                                     </span>
                                                                 @endforeach
                                                             </div>
 
                                                             {{-- Kích cỡ --}}
-                                                            <div class="pi01VSize">
+                                                            <div class="pi01VSize d-flex gap-1">
                                                                 @foreach ($product->sizes as $index => $size)
                                                                     <div class="pi01VSItem">
-                                                                        <input type="radio"
+                                                                        <input type="radio" class="size-picker"
+                                                                            data-product-id="{{ $product->id }}"
+                                                                            value="{{ strtoupper($size) }}"
                                                                             name="size_{{ $product->id }}"
-                                                                            id="size_{{ $product->id }}_{{ $index }}"
-                                                                            value="{{ $size }}"
-                                                                            {{ $index === 0 ? 'checked' : '' }}>
+                                                                            id="size_{{ $product->id }}_{{ $index }}">
                                                                         <label
-                                                                            for="size_{{ $product->id }}_{{ $index }}">{{ $size }}</label>
+                                                                            for="size_{{ $product->id }}_{{ $index }}">
+                                                                            {{ $size }}
+                                                                        </label>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
@@ -492,26 +448,95 @@
 @endsection
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.color-picker').forEach(picker => {
-                picker.addEventListener('click', function() {
-                    const imageUrl = this.dataset.image;
-                    const price = this.dataset.price;
-                    const name = this.dataset.name;
+        const selectedState = {};
 
-                    const container = this.closest('.productItem01, .productItem02');
-                    const mainImg = container.querySelector('.main-img');
-                    const hoverImg = container.querySelector('.hover-img');
-                    const priceEl = container.querySelector('.product-price');
-                    const nameEl = container.querySelector('.product-name');
+        // === Chọn MÀU ===
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            picker.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const color = this.dataset.color;
+                const map = JSON.parse(this.dataset.map || '{}');
 
-                    if (mainImg && imageUrl) mainImg.src = imageUrl;
-                    if (hoverImg && imageUrl) hoverImg.src = imageUrl;
-                    if (priceEl && price) priceEl.textContent = price;
-                    if (nameEl && name) nameEl.textContent = name;
-                });
+                selectedState[productId] = selectedState[productId] || {};
+                selectedState[productId].color = color;
+                selectedState[productId].variantMap = map;
+
+                console.log('------------------------');
+                console.log('✅ COLOR CLICKED:', color);
+                console.log('✅ VARIANT MAP:', map);
+                console.log('✅ STATE AFTER COLOR:', selectedState[productId]);
             });
         });
-    </script>
 
+        // === Chọn SIZE ===
+        document.querySelectorAll('.size-picker').forEach(sizeInput => {
+            sizeInput.addEventListener('change', function() {
+                const productId = this.dataset.productId;
+                const size = this.value;
+
+                selectedState[productId] = selectedState[productId] || {};
+                selectedState[productId].size = size;
+
+                console.log('------------------------');
+                console.log('✅ SIZE PICKED:', size);
+                console.log('✅ STATE AFTER SIZE:', selectedState[productId]);
+
+                tryUpdate(productId);
+            });
+        });
+
+        function tryUpdate(productId) {
+            const state = selectedState[productId];
+            if (!state || !state.color || !state.size) {
+                console.warn('⛔ Missing COLOR or SIZE!');
+                return;
+            }
+
+            const key = `${state.color}-${state.size}`;
+            const variant = state.variantMap[key];
+
+            console.log('------------------------');
+            console.log('🔑 KEY TO LOOKUP:', key);
+            console.log('📂 FULL VARIANT MAP:', state.variantMap);
+            console.log('🧩 VARIANT RESULT:', variant);
+
+            if (!variant) {
+                alert('⛔ Cặp này chưa có trong CMS!');
+                return;
+            }
+
+            // === Tìm đúng block: Có thể là productItem01 (grid) hoặc productItem02 (list)
+            const block = document.querySelector(
+                `.productItem01[data-product-id="${productId}"], .productItem02[data-product-id="${productId}"]`);
+            if (!block) {
+                console.error('⛔ Block not found for productId:', productId);
+                return;
+            }
+
+            const mainImg = block.querySelector('.main-img');
+            const hoverImg = block.querySelector('.hover-img');
+            const priceEl = block.querySelector('.product-price');
+
+            console.log('🖼️ MAIN IMG ELEMENT:', mainImg);
+            console.log('🖼️ HOVER IMG ELEMENT:', hoverImg);
+            console.log('💵 PRICE ELEMENT:', priceEl);
+            console.log('📸 VARIANT IMAGE:', variant.image);
+            console.log('💰 VARIANT PRICE:', variant.price);
+
+            if (mainImg && variant.image) {
+                mainImg.src = variant.image + '?v=' + Date.now();
+                console.log('✅ MAIN IMG UPDATED!');
+            }
+            if (hoverImg && variant.image) {
+                hoverImg.src = variant.image + '?v=' + Date.now();
+                console.log('✅ HOVER IMG UPDATED!');
+            }
+            if (priceEl && variant.price) {
+                priceEl.textContent = Number(variant.price).toLocaleString() + ' VNĐ';
+                console.log('✅ PRICE UPDATED!');
+            }
+
+            console.log('🎉 DONE UPDATE for', key);
+        }
+    </script>
 @endsection

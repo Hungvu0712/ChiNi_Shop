@@ -70,17 +70,23 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-lg-6">
                     <div class="productContent">
+                        {{-- Danh mục --}}
                         <div class="pcCategory">
                             <a href="#">{{ $product->category->name ?? 'Uncategorized' }}</a>
                         </div>
+
+                        {{-- Tên biến thể: ban đầu là tên SP gốc, sau sẽ thay bằng JS --}}
                         <h2>{{ $product->name }}</h2>
+
+                        {{-- Giá: ban đầu lấy giá variant đầu tiên, sau thay bằng JS --}}
                         <div class="pi01Price">
                             <ins>{{ number_format($product->variants->first()->price ?? 0) }} VNĐ</ins>
                         </div>
+
+                        {{-- Đánh giá & tồn kho --}}
                         <div class="productRadingsStock clearfix">
                             <div class="productRatings float-start">
                                 <div class="productRatingWrap">
@@ -92,9 +98,13 @@
                                 <span>Available :</span> {{ $product->variants->first()->quantity ?? 0 }}
                             </div>
                         </div>
+
+                        {{-- Mô tả --}}
                         <div class="pcExcerpt">
                             {!! $product->description ?? 'Chưa có mô tả chi tiết cho sản phẩm này.' !!}
                         </div>
+
+                        {{-- Chọn màu & size --}}
                         <div class="pcVariations">
                             @php
                                 $colorMap = [
@@ -108,6 +118,7 @@
                                 ];
                             @endphp
 
+                            {{-- Màu --}}
                             <div class="pcVariation">
                                 <span>Color</span>
                                 <div class="pcvContainer d-flex gap-1">
@@ -117,37 +128,34 @@
                                             $border = $hex === '#ffffff' ? '#999' : '#ccc';
                                             $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
                                         @endphp
-                                        <span class="color-picker" data-image="{{ asset($variantData['image']) }}"
-                                            data-name="{{ $variantData['variant_name'] }}"
-                                            data-price="{{ number_format($variantData['price']) }} VNĐ"
-                                            data-sku="{{ $variantData['sku'] }}"
-                                            data-gallery='@json($variantData['gallery'])'
+                                        <span class="color-picker" data-color="{{ $colorKey }}"
+                                            data-variants='@json($variantData['variants'])'
                                             style="background-color: {{ $hex }};
-               width: 18px;
-               height: 18px;
-               border-radius: 50%;
-               border: 1px solid {{ $border }};
-               {{ $boxShadow }};
-               display: inline-block;">
+                            width: 18px; height: 18px; border-radius: 50%;
+                            border: 1px solid {{ $border }};
+                            {{ $boxShadow }};
+                            display: inline-block;">
                                         </span>
                                     @endforeach
-
                                 </div>
                             </div>
 
+                            {{-- Size --}}
                             <div class="pcVariation pcv2">
                                 <span>Size</span>
                                 <div class="pcvContainer">
                                     @foreach ($product->sizes as $size)
                                         <div class="pswItem">
-                                            <input type="radio" name="size" value="{{ $size }}"
-                                                id="size_{{ $size }}">
+                                            <input type="radio" class="size-picker" name="size"
+                                                value="{{ $size }}" id="size_{{ $size }}">
                                             <label for="size_{{ $size }}">{{ $size }}</label>
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Quantity, Add to cart, Wishlist --}}
                         <div class="pcBtns">
                             <div class="quantity clearfix">
                                 <button type="button" class="qtyBtn btnMinus">-</button>
@@ -158,8 +166,10 @@
                             <a href="#" class="pcWishlist"><i class="fa-solid fa-heart"></i></a>
                             <a href="#" class="pcCompare"><i class="fa-solid fa-right-left"></i></a>
                         </div>
+
+                        {{-- SKU & Tags --}}
                         <div class="pcMeta">
-                            <p><span>Sku</span> <a href="#">{{ $product->sku ?? 'N/A' }}</a></p>
+                            <p><span>Sku</span> <a class="sku-field" href="#">{{ $product->sku ?? 'N/A' }}</a></p>
                             <p class="pcmTags">
                                 <span>Tags:</span>
                                 @foreach (explode(',', $product->tags ?? '') as $tag)
@@ -178,6 +188,7 @@
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -427,36 +438,88 @@
 @section('script')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            let selectedColor = null;
+            let selectedVariants = null;
+            let selectedSize = null;
+
+            // Bấm màu
             document.querySelectorAll('.color-picker').forEach(picker => {
                 picker.addEventListener('click', function() {
-                    const imageUrl = this.getAttribute('data-image');
-                    const name = this.getAttribute('data-name');
-                    const price = this.getAttribute('data-price');
-                    const sku = this.getAttribute('data-sku');
-                    const gallery = JSON.parse(this.getAttribute('data-gallery') || '[]');
-
-                    // Đổi ảnh chính
-                    const mainImage = document.getElementById('mainProductImage');
-                    if (mainImage && imageUrl) {
-                        mainImage.src = imageUrl;
-                    }
-
-                    // Đổi bộ ảnh nhỏ (gallery)
-                    const thumbContainer = document.querySelector('.productGalleryThumb');
-                    if (thumbContainer && gallery.length) {
-                        thumbContainer.innerHTML = gallery.map(img =>
-                            `<div class="pgtImage"><img src="${img}" alt=""></div>`
-                        ).join('');
-                    }
-
-                    // Cập nhật tên, giá, SKU
-                    if (name) document.querySelector('.productContent h2').innerText = name;
-                    if (price) document.querySelector('.pi01Price ins').innerText = price;
-                    if (sku) document.querySelector('.pcMeta a').innerText = sku;
+                    selectedColor = this.getAttribute('data-color');
+                    selectedVariants = JSON.parse(this.getAttribute('data-variants') || '{}');
+                    updateProductDisplay();
                 });
             });
+
+            // Bấm size
+            document.querySelectorAll('.size-picker').forEach(sizeInput => {
+                sizeInput.addEventListener('change', function() {
+                    selectedSize = this.value;
+                    updateProductDisplay();
+                });
+            });
+
+            function updateProductDisplay() {
+                if (selectedVariants && selectedSize) {
+                    const variant = selectedVariants[selectedSize];
+
+                    if (variant) {
+                        const imageUrl = variant.variant_image;
+                        const name = variant.variant_name;
+                        const price = Number(variant.price).toLocaleString() + ' VNĐ';
+                        const sku = variant.sku;
+                        const gallery = variant.gallery || [];
+
+                        // Đổi ảnh chính — có fallback
+                        const mainImage = document.getElementById('mainProductImage');
+                        if (mainImage) {
+                            if (imageUrl && imageUrl !== 'null' && imageUrl !== '') {
+                                mainImage.src = imageUrl;
+                            } else {
+                                // fallback: gán lại ảnh gốc
+                                mainImage.src = '{{ $galleryImages[0] ?? '' }}';
+                            }
+                        }
+
+                        // Đổi bộ ảnh nhỏ nếu gallery con có
+                        const thumbContainer = document.querySelector('.productGalleryThumb');
+                        if (thumbContainer) {
+                            if (gallery.length) {
+                                thumbContainer.innerHTML = gallery.map(img =>
+                                    `<div class="pgtImage"><img src="${img}" alt=""></div>`
+                                ).join('');
+                            } else {
+                                // fallback: giữ nguyên hoặc reload lại gallery gốc
+                                thumbContainer.innerHTML = `{!! collect($galleryImages)->map(fn($img) => '<div class="pgtImage"><img src="' . $img . '" alt=""></div>')->implode('') !!}`;
+                            }
+                        }
+
+                        // Tên biến thể
+                        if (name) {
+                            const titleEl = document.querySelector('.productContent h2');
+                            if (titleEl) titleEl.innerText = name;
+                        }
+
+                        // Giá
+                        if (price) {
+                            const priceEl = document.querySelector('.pi01Price ins');
+                            if (priceEl) priceEl.innerText = price;
+                        }
+
+                        // SKU
+                        if (sku) {
+                            const skuEl = document.querySelector('.sku-field');
+                            if (skuEl) skuEl.innerText = sku;
+                        }
+                    } else {
+                        console.warn(`❗ Không tìm thấy biến thể size: ${selectedSize}`);
+                    }
+                }
+            }
+
         });
     </script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
