@@ -153,10 +153,10 @@
                             <select class="form-select" name="category_id">
                                 <option value="">-- Chọn danh mục --</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
+                                <option value="{{ $category->id }}" {{ old('category_id')==$category->id ? 'selected' : ''
+                                    }}>
+                                    {{ $category->name }}
+                                </option>
                                 @endforeach
                             </select>
                             @error('category_id')
@@ -168,8 +168,7 @@
                             <select class="form-select" name="brand_id">
                                 <option value="">-- Chọn thương hiệu --</option>
                                 @foreach ($brands as $brand)
-                                    <option value="{{ $brand->id }}"
-                                        {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}
                                     </option>
                                 @endforeach
@@ -182,7 +181,8 @@
 
                     <div class="mb-4">
                         <label class="form-label">Mô tả sản phẩm</label>
-                        <textarea class="form-control" id="summernote" name="description" rows="10">{{ old('description') }}</textarea>
+                        <textarea class="form-control" id="summernote" name="description"
+                            rows="10">{{ old('description') }}</textarea>
                         @error('description')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -279,30 +279,25 @@
                         </div>
                     </div>
 
-                    <!-- Màu sắc -->
-<div class="form-group">
-    <label class="fw-bold"><i class="fas fa-palette me-2"></i>Chọn màu</label><br>
-    @foreach ($colors as $color)
-        <div class="form-check form-check-inline">
-            <input type="checkbox" class="form-check-input color-checkbox" name="colors[]"
-                value="{{ $color->id }}" data-color-name="{{ $color->value }}"
-                id="color-{{ $color->id }}"
-                {{ in_array($color->id, $selectedValueIds ?? []) ? 'checked' : '' }}>
-            <label class="form-check-label" for="color-{{ $color->id }}">{{ $color->value }}</label>
-        </div>
-    @endforeach
-</div>
-
-<!-- Size theo màu -->
-<div id="size-selectors" class="mb-3"></div>
-
-<!-- Biến thể sản phẩm -->
-<div class="form-section">
-    <h5 class="form-section-title"><i class="fas fa-random me-2"></i>Biến thể sản phẩm</h5>
-    <div id="variant-forms"></div>
-    <input type="hidden" name="variants_json" id="variants_json" value="">
-</div>
-
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="attributeSelect">Chọn thuộc tính</label>
+                            <select class="form-control @error('attributeId') is-invalid @enderror" id="attributeSelect"
+                                multiple name="attributeId[]">
+                                @foreach ($attributes as $attribute)
+                                    <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('attributeId')
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div id="attributeForms" class="col-12"></div>
+                    <div class="col-12">
+                        <button type="button" id="saveAttributes" class="btn btn-primary">Lưu thuộc tính</button>
+                    </div>
+                    <div id="variantSection" class="col-12 mt-5"></div>
 
 
                     <div class="d-flex justify-content-between mt-4 pt-3 border-top">
@@ -324,7 +319,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
     <script>
         // Khởi tạo Tagify
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const input = document.querySelector('#tag-input');
             new Tagify(input, {
                 enforceWhitelist: false,
@@ -338,7 +333,7 @@
 
     <script>
         // Khởi tạo Summernote
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#summernote').summernote({
                 height: 250,
                 toolbar: [
@@ -361,7 +356,7 @@
         const mainImagePreview = document.getElementById('mainImagePreview');
         const mainImageWrapper = document.getElementById('mainImageWrapper');
 
-        productImageInput.addEventListener('change', function(e) {
+        productImageInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 if (file.size > 2 * 1024 * 1024) {
@@ -388,7 +383,7 @@
         // Mảng lưu toàn bộ file hợp lệ (kể cả đã chọn trước)
         let allFiles = [];
 
-        attachmentsInput.addEventListener('change', function(e) {
+        attachmentsInput.addEventListener('change', function (e) {
             const newFiles = Array.from(e.target.files);
 
             // Lọc ảnh không vượt quá 2MB
@@ -417,7 +412,7 @@
 
             allFiles.forEach((file, index) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const container = document.createElement('div');
                     container.classList.add('preview-container', 'position-relative');
 
@@ -432,7 +427,7 @@
                     btn.style.zIndex = 10;
                     btn.textContent = '×';
                     btn.type = 'button';
-                    btn.onclick = function() {
+                    btn.onclick = function () {
                         allFiles.splice(index, 1); // Xoá ảnh khỏi danh sách
                         updateAttachmentsPreview();
                         updateInputFiles();
@@ -454,184 +449,199 @@
         }
     </script>
 
+    {{-- Product variant --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let attributeValues = @json($attributeValues);
+            let attributeNames = @json($attributeNames);
 
-    {{-- biến thể --}}
-   <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sizes = @json($sizes);
-    const initialVariants = @json($productVariants ?? []);
-    const sizeSelectors = document.getElementById('size-selectors');
-    const variantForms = document.getElementById('variant-forms');
-    const variantsJsonInput = document.getElementById('variants_json');
-    let selectedVariants = {};
+            // Khi chọn thuộc tính, sẽ hiển thị các giá trị thuộc tính tương ứng
+            document.getElementById('attributeSelect').addEventListener('change', function () {
+                let selectedAttributes = Array.from(this.selectedOptions).map(option => option.value);
+                let attributeFormsContainer = document.getElementById('attributeForms');
 
-    // Bước 1: Đổ dữ liệu ban đầu
-    initialVariants.forEach(item => {
-        const key = `${item.color}/${item.size}`;
-        selectedVariants[key] = {
-            id: item.id ?? null,
-            color: item.color,
-            size: item.size,
-            sku: item.sku || '',
-            price: item.price || '',
-            quantity: item.quantity || '',
-            weight: item.weight || '',
-            variant_image: item.variant_image || ''
-        };
-    });
+                // Xóa các form con trước khi tạo lại
+                attributeFormsContainer.innerHTML = '';
 
-    // Bước 2: Render size selectors
-    function renderSizeSelectors() {
-        sizeSelectors.innerHTML = '';
-        document.querySelectorAll('.color-checkbox:checked').forEach(colorEl => {
-            const colorId = colorEl.value;
-            const colorName = colorEl.dataset.colorName;
-
-            const wrapper = document.createElement('div');
-            wrapper.className = 'border rounded p-3 mb-2';
-            wrapper.id = `size-block-${colorId}`;
-            wrapper.innerHTML = `<label class="fw-bold">Chọn size cho màu <span class="text-primary">${colorName}</span>:</label><br>`;
-
-            sizes.forEach(size => {
-                const key = `${colorName}/${size.value}`;
-                const isChecked = selectedVariants[key] ? 'checked' : '';
-                wrapper.innerHTML += `
-                    <div class="form-check form-check-inline">
-                        <input type="checkbox" class="form-check-input size-checkbox"
-                            data-color-name="${colorName}" data-size-name="${size.value}"
-                            id="size-${colorId}-${size.id}" ${isChecked}>
-                        <label class="form-check-label" for="size-${colorId}-${size.id}">${size.value}</label>
-                    </div>
-                `;
-            });
-
-            sizeSelectors.appendChild(wrapper);
-        });
-
-        attachSizeEvents();
-    }
-
-    // Bước 3: Gắn sự kiện checkbox size
-    function attachSizeEvents() {
-        document.querySelectorAll('.size-checkbox').forEach(el => {
-            el.addEventListener('change', function () {
-                const key = `${this.dataset.colorName}/${this.dataset.sizeName}`;
-                if (this.checked) {
-                    if (!selectedVariants[key]) {
-                        selectedVariants[key] = {
-                            sku: '',
-                            price: '',
-                            quantity: '',
-                            weight: '',
-                            variant_image: ''
-                        };
-                    }
-                } else {
-                    delete selectedVariants[key];
-                }
-                renderVariantForms();
-            });
-        });
-    }
-
-    // Bước 4: Render form biến thể
-    function renderVariantForms() {
-        variantForms.innerHTML = '';
-        const variantsJson = [];
-
-        Object.entries(selectedVariants).forEach(([key, data], index) => {
-            const [color, size] = key.split('/');
-            const block = document.createElement('div');
-            block.className = 'border p-3 mb-3 rounded bg-light';
-
-            block.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6>${color} / ${size}</h6>
-                    <button type="button" class="btn btn-sm btn-danger remove-variant" data-key="${key}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <input type="hidden" name="variant_keys[${index}]" value="${key}">
-                ${data.id ? `<input type="hidden" name="variant_ids[${index}]" value="${data.id}">` : ''}
-
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label>SKU</label>
-                        <input type="text" name="variants[${index}][sku]" class="form-control" value="${data.sku || ''}">
-                    </div>
-                    <div class="col-md-4">
-                        <label>Giá</label>
-                        <input type="number" name="variants[${index}][price]" class="form-control" value="${data.price || ''}" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Số lượng</label>
-                        <input type="number" name="variants[${index}][quantity]" class="form-control" value="${data.quantity || ''}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label>Trọng lượng</label>
-                        <input type="text" name="variants[${index}][weight]" class="form-control" value="${data.weight || ''}">
-                    </div>
-                    <div class="col-md-6">
-                        <label>Ảnh biến thể</label>
-                        <div class="mb-2">
-                            ${data.variant_image ? `<img src="${data.variant_image}" class="img-thumbnail" width="100">` : ''}
-                        </div>
-                        <input type="file" name="variants[${index}][variant_image]" class="form-control" accept="image/*">
-                        <small class="text-muted">* Ảnh sẽ mất nếu bạn thay đổi biến thể</small>
-                    </div>
-                </div>
-            `;
-
-            variantForms.appendChild(block);
-            variantsJson.push({
-                id: data.id || null,
-                key: key,
-                color: color,
-                size: size,
-                sku: data.sku,
-                price: data.price,
-                quantity: data.quantity,
-                weight: data.weight,
-                variant_image: data.variant_image
-            });
-        });
-
-        variantsJsonInput.value = JSON.stringify(variantsJson);
-
-        // Bắt sự kiện xóa
-        document.querySelectorAll('.remove-variant').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const key = this.dataset.key;
-                delete selectedVariants[key];
-                renderVariantForms();
-                renderSizeSelectors();
-            });
-        });
-    }
-
-    // Bước 5: Gắn sự kiện checkbox màu
-    document.querySelectorAll('.color-checkbox').forEach(el => {
-        el.addEventListener('change', () => {
-            const colorName = el.dataset.colorName;
-            if (!el.checked) {
-                document.getElementById(`size-block-${el.value}`)?.remove();
-                Object.keys(selectedVariants).forEach(key => {
-                    if (key.startsWith(`${colorName}/`)) {
-                        delete selectedVariants[key];
+                selectedAttributes.forEach(attributeId => {
+                    if (attributeValues[attributeId] && Object.keys(attributeValues[attributeId]).length > 0) {
+                        let options = '';
+                        for (const [id, name] of Object.entries(attributeValues[attributeId])) {
+                            options += `<option value="${id}">${name}</option>`;
+                        }
+                        let attributeName = attributeNames[attributeId] || '---';
+                        let formGroup = document.createElement('div');
+                        formGroup.classList.add('mb-3');
+                        formGroup.innerHTML = `
+                                                                                <label for="attributeValue_${attributeId}">Chọn giá trị cho thuộc tính <strong>${attributeName}</strong></label>
+                                                                                <select class="form-control" id="attributeValue_${attributeId}" name="attributeValues[${attributeId}][]" multiple>
+                                                                                    ${options}
+                                                                                </select>
+                                                                            `;
+                        attributeFormsContainer.appendChild(formGroup);
                     }
                 });
-                renderVariantForms();
+            });
+
+            // Khi người dùng nhấn "Lưu thuộc tính", tạo bảng biến thể sản phẩm
+            document.getElementById('saveAttributes').addEventListener('click', function () {
+                let selectedAttributes = document.querySelectorAll('select[name^="attributeValues"]');
+                let attributeCombinations = getCombinations(selectedAttributes);
+                let variantSection = document.getElementById('variantSection');
+                const isValid = attributeCombinations.length > 0 &&
+                    attributeCombinations.every(comb => comb.length > 0);
+
+                if (!isValid) return; // không render gì cả nếu không có thuộc tính
+
+                // Xóa bảng trước nếu có
+                variantSection.innerHTML = '';
+
+                if (attributeCombinations.length > 0) {
+                    let tableHtml = `
+                                                        <h3>Biến thể sản phẩm</h3>
+                                                        <table class="table table-hover" id="variantTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    ${Array.from(selectedAttributes).map((select) => {
+                        let match = select.name.match(/attributeValues\[(\d+)\]/);
+                        let attributeId = match ? match[1] : null;
+                        let attributeName = attributeNames[attributeId] || 'Thuộc tính';
+                        return `<th>${attributeName}</th>`;
+                    }).join('')}
+                                                                    <th>SKU</th>
+                                                                    <th>Giá</th>
+                                                                    <th>Số lượng</th>
+                                                                    <th>Cân nặng</th>
+                                                                    <th>Ảnh</th>
+                                                                    <th>Xóa</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                    `;
+
+                    attributeCombinations.forEach(combination => {
+
+                        let attributeCells = combination.map(attr => `
+                                                           <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
+                                            ${attr.name}
+                                            <input type="hidden" name="attributeValueIds[]" value="${attr.id}">
+                                        </td>
+                                                        `).join('');
+
+                        tableHtml += `
+                                                            <tr>
+                                                                ${attributeCells}
+                                                                <td><input type="text" class="form-control" name="sku[]" placeholder="SKU"></td>
+                                                                <td><input type="text" class="form-control" name="price[]" placeholder="Giá"></td>
+                                                                <td><input type="text" class="form-control" name="quantity[]" placeholder="Số lượng"></td>
+                                                                <td><input type="text" class="form-control" name="weight[]" placeholder="Cân nặng"></td>
+                                                                <td><input type="file" class="form-control" name="variant_image[]"></td>
+                                                                <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
+                                                            </tr>
+                                                        `;
+                    });
+                    tableHtml += `</tbody></table>`;
+                    variantSection.insertAdjacentHTML('beforeend', tableHtml);
+                }
+                // Gọi gắn sự kiện nút Xóa
+                document.querySelectorAll('.delete-variant').forEach(button => {
+                    button.addEventListener('click', function () {
+                        handleDeleteRow(this);
+                    });
+                });
+            });
+
+            // Hàm lấy các tổ hợp giá trị thuộc tính
+            function getCombinations(selectElements) {
+                let attributeValues = Array.from(selectElements).map(select => {
+                    // Lấy attributeId từ name="attributeValues[<id>][]"
+                    let match = select.name.match(/attributeValues\[(\d+)\]/);
+                    let attributeId = match ? match[1] : null;
+
+                    return Array.from(select.selectedOptions).map(option => ({
+                        id: option.value,
+                        name: option.text,
+                        attributeId: attributeId // <- Bổ sung tại đây
+                    }));
+                });
+
+                // Nếu chỉ chọn một thuộc tính, trả về giá trị thuộc tính đó
+                if (attributeValues.length === 1) {
+                    return attributeValues[0].map(item => [item]);
+                }
+
+                // Hàm đệ quy để kết hợp các giá trị thuộc tính
+                function combine(arr) {
+                    if (arr.length === 0) return [[]];
+
+                    let result = [];
+                    let restCombinations = combine(arr.slice(1));
+
+                    arr[0].forEach(item => {
+                        restCombinations.forEach(combination => {
+                            result.push([item].concat(combination));
+                        });
+                    });
+
+                    return result;
+                }
+
+                return combine(attributeValues);
             }
-            renderSizeSelectors();
+            function handleDeleteRow(button) {
+                // Tìm hàng chứa nút xóa
+                let row = button.closest('tr');
+                if (!row) return;
+
+                // Lấy tất cả các <td> có data-attribute-id và data-value-id trong hàng đó
+                let attributeCells = row.querySelectorAll('td[data-attribute-id][data-value-id]');
+
+                // Tạo danh sách các giá trị sẽ bị xóa
+                let valuesToRemove = Array.from(attributeCells).map(cell => ({
+                    attributeId: cell.getAttribute('data-attribute-id'),
+                    valueId: cell.getAttribute('data-value-id')
+                }));
+
+                // Xóa hàng khỏi bảng
+                row.remove();
+
+                // Sau khi xóa, kiểm tra nếu không còn dòng nào trong bảng thì reset giao diện
+                const remainingRows = document.querySelectorAll('#variantTable tbody tr');
+                if (remainingRows.length === 0) {
+                    resetVariantSection();
+                }
+
+                // Với mỗi giá trị bị xóa, kiểm tra còn dòng nào đang dùng không
+                valuesToRemove.forEach(({ attributeId, valueId }) => {
+                    let stillUsed = document.querySelector(
+                        `#variantTable td[data-attribute-id="${attributeId}"][data-value-id="${valueId}"]`
+                    );
+
+                    if (!stillUsed) {
+                        // Nếu không còn ai dùng, thì bỏ chọn trong select tương ứng
+                        let select = document.querySelector(`#attributeValue_${attributeId}`);
+                        if (select) {
+                            Array.from(select.options).forEach(option => {
+                                if (option.value == valueId) {
+                                    option.selected = false;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            function resetVariantSection() {
+                // Xóa bảng biến thể
+                document.getElementById('variantSection').innerHTML = '';
+
+                // Reset select thuộc tính (clear selected)
+                const attributeSelect = document.getElementById('attributeSelect');
+                Array.from(attributeSelect.options).forEach(option => option.selected = false);
+
+                // Xóa các form nhập giá trị thuộc tính
+                document.getElementById('attributeForms').innerHTML = '';
+            }
         });
-    });
-
-    // Khởi tạo
-    renderSizeSelectors();
-    renderVariantForms();
-});
-</script>
-
+    </script>
 
 @endsection

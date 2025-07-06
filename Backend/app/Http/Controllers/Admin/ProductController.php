@@ -31,22 +31,22 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
-        // Lấy toàn bộ thuộc tính
-    $attributes = Attribute::with('attributeValues')->get();
-
-    // Tách riêng Màu và Size
-    $colorAttribute = Attribute::where('name', 'Màu sắc')->first();
-    $sizeAttribute = Attribute::where('name', 'Size')->first();
-
-    $colors = $colorAttribute ? $colorAttribute->attributeValues : collect();
-    $sizes = $sizeAttribute ? $sizeAttribute->attributeValues : collect();
-        // dd($attributes);
+        $attributes = Attribute::get();
+        $attributeNames = Attribute::pluck('name', 'id');
+        $categories = Category::get();
+        $attributeValues = [];
+        foreach ($attributes as $attribute) {
+            $attributeValues[$attribute->id] = AttributeValue::where('attribute_id', $attribute->id)
+                ->get()
+                ->pluck('value', 'id')
+                ->toArray();
+        }
         return view('admin.pages.products.create', [
             'categories' => $categories,
             'brands' => $brands,
             'attributes' => $attributes,
-        'colors' => $colors,
-        'sizes' => $sizes,
+            'attributeValues'=>$attributeValues,
+            'attributeNames'=>$attributeNames,
         ]);
     }
 
