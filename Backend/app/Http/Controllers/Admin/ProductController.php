@@ -51,125 +51,113 @@ class ProductController extends Controller
     }
 
     public function store(StoreProductRequest $request)
-{
-    $validated = $request->validated();
-    DB::beginTransaction();
+    {
+        // StoreProductRequest
+        // dd($request->all());
+        $validated = $request->validated();
+        DB::beginTransaction();
 
-    try {
-        $slug = Str::slug($validated['name']);
-        $product = Product::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'category_id' => $validated['category_id'],
-            'brand_id' => $validated['brand_id'],
-            'price' => $validated['price'],
-            'description' => $validated['description'] ?? null,
-            'weight' => $validated['weight'] ?? null,
-            'quantity' => $validated['quantity'],
-            'quantity_warning' => $validated['quantity_warning'] ?? 0,
-            'tags' => $validated['tags'] ?? null,
-            'sku' => $validated['sku'] ?? null,
-            'active' => $request->has('active') ? 1 : 0,
-        ]);
-
-        // Ảnh chính sản phẩm
-        if ($request->hasFile('product_image')) {
-            $upload = Cloudinary::upload($request->file('product_image')->getRealPath(), ['folder' => 'products']);
-            $product->update([
-                'product_image' => $upload->getSecurePath(),
-                'public_product_image_id' => $upload->getPublicId(),
+        try {
+            $slug = Str::slug($validated['name']);
+            $product = Product::create([
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'category_id' => $validated['category_id'],
+                'brand_id' => $validated['brand_id'],
+                'price' => $validated['price'],
+                'description' => $validated['description'] ?? null,
+                'weight' => $validated['weight'] ?? null,
+                'quantity' => $validated['quantity'],
+                'quantity_warning' => $validated['quantity_warning'] ?? 0,
+                'tags' => $validated['tags'] ?? null,
+                'sku' => $validated['sku'] ?? null,
+                'active' => $request->has('active') ? 1 : 0,
             ]);
-        }
 
-        // Ảnh đính kèm
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $img) {
-                $upload = Cloudinary::upload($img->getRealPath(), ['folder' => 'product_attachments']);
-                $product->attachments()->create([
-                    'attachment_image' => $upload->getSecurePath(),
-                    'public_attachment_image_id' => $upload->getPublicId(),
+            // Ảnh chính sản phẩm
+            if ($request->hasFile('product_image')) {
+                $upload = Cloudinary::upload($request->file('product_image')->getRealPath(), ['folder' => 'products']);
+                $product->update([
+                    'product_image' => $upload->getSecurePath(),
+                    'public_product_image_id' => $upload->getPublicId(),
                 ]);
             }
-        }
 
-        // Gắn attribute values (màu/size) vào sản phẩm
-        if ($request->has('attributes')) {
-            foreach ($request->attributes as $attributeId => $valueIds) {
-                $product->attributeValues()->attach($valueIds);
+            // Ảnh đính kèm
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $img) {
+                    $upload = Cloudinary::upload($img->getRealPath(), ['folder' => 'product_attachments']);
+                    $product->attachments()->create([
+                        'attachment_image' => $upload->getSecurePath(),
+                        'public_attachment_image_id' => $upload->getPublicId(),
+                    ]);
+                }
             }
-        }
 
-        // Lưu biến thể
-        $variantsForJson = [];
-        if ($request->has('variants')) {
-            foreach ($request->variants as $index => $variantData) {
-                $variantKey = $request->variant_keys[$index] ?? null;
-
-                // Upload ảnh nếu có
+            // Lấy danh sách các `attributeValues` hợp lệ từ request
+            $validAttributeItems = collect($request->input("attributeValues"))
+                ->flatMap(fn($items) => $items)
+                ->toArray();
+            // dd($validAttributeItems);
+            // Duyệt qua từng product_variants
+            foreach ($request->input("product_variants") as $variant) {
+                // Kiểm tra tất cả `attribute_item_id` trong biến thể có hợp lệ không
+                $isValidVariant = collect($variant["attribute_item_id"])
+                    ->every(fn($item) => in_array($item['id'], $validAttributeItems));
+                // dd($isValidVariant);
+                // Nếu biến thể không hợp lệ, bỏ qua
+                if (!$isValidVariant) {
+                    continue;
+                }
                 $variantImageUrl = null;
                 $publicId = null;
-                if (isset($variantData['variant_image']) && $variantData['variant_image']) {
-                    $upload = Cloudinary::upload($variantData['variant_image']->getRealPath(), ['folder' => 'products/variants']);
+                if (isset($variant['variant_image']) && $variant['variant_image']) {
+                    $upload = Cloudinary::upload($variant['variant_image']->getRealPath(), ['folder' => 'products/variants']);
                     $variantImageUrl = $upload->getSecurePath();
                     $publicId = $upload->getPublicId();
                 }
-
-                $variant = Variant::create([
-                    'product_id' => $product->id,
-                    'sku' => $variantData['sku'],
-                    'price' => $variantData['price'],
-                    'quantity' => $variantData['quantity'],
-                    'weight' => $variantData['weight'] ?? null,
-                    'variant_image' => $variantImageUrl,
-                    'public_variant_image_id' => $publicId,
-                    'variant_key' => $variantKey,
-                    'active' => $request->has('active') ? 1 : 0,
+                // Thêm product_variant vào DB
+                $productVariant = Variant::query()->create([
+                    'product_id'=> $product->id,
+                    'sku'=>$variant["sku"],
+                    'price'=>$variant["price"],
+                    'quantity'=>$variant["quantity"],
+                    'weight'=>$variantData['weight'] ?? null,
+                    'variant_image'=>$variantImageUrl,
+                    'public_variant_image_id'=>$publicId,
                 ]);
 
-                // Gán các attribute_value theo label (Đỏ/S)
-                if ($variantKey) {
-                    $labels = explode('/', $variantKey);
-                    foreach ($labels as $label) {
-                        $attrValue = AttributeValue::where('value', trim($label))->first();
-                        if ($attrValue) {
-                            VariantAttributeValue::create([
-                                'variant_id' => $variant->id,
-                                'attribute_value_id' => $attrValue->id,
-                                'attribute_id' => $attrValue->attribute_id,
-                            ]);
+                // Gắn attribute_item_id cho biến thể
+                foreach ($variant["attribute_item_id"] as $value) {
+                    $attribute_id = null;
+
+                    foreach ($request->input('attributeId') as $attr_id) {
+                        if (in_array($value['id'], $request->input('attributeValues')[$attr_id])) {
+                            $attribute_id = $attr_id;
+                            break;
                         }
                     }
+
+                    if ($attribute_id !== null) {
+                        $productVariant->attributes()->attach(
+                            $attribute_id,
+                            ["attribute_value_id" => $value["id"], "value" => $value['value']]
+                        );
+                    }
                 }
-
-                $variantsForJson[] = [
-                    'id' => $variant->id,
-                    'color' => explode('/', $variantKey)[0] ?? '',
-                    'size' => explode('/', $variantKey)[1] ?? '',
-                    'sku' => $variant->sku,
-                    'price' => $variant->price,
-                    'quantity' => $variant->quantity,
-                    'weight' => $variant->weight,
-                    'variant_image' => $variant->variant_image,
-                ];
             }
+
+            DB::commit();
+            return redirect()->route('products.index')->with('success', 'Tạo sản phẩm thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi khi tạo sản phẩm', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withErrors(['error' => 'Đã xảy ra lỗi: ' . $e->getMessage()])->withInput();
         }
-
-        // Lưu lại JSON biến thể vào DB
-        $product->update([
-            'variants_json' => json_encode($variantsForJson, JSON_UNESCAPED_UNICODE)
-        ]);
-
-        DB::commit();
-        return redirect()->route('products.index')->with('success', 'Tạo sản phẩm thành công!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Lỗi khi tạo sản phẩm', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-        return back()->withErrors(['error' => 'Đã xảy ra lỗi: ' . $e->getMessage()])->withInput();
     }
-}
 
 
     public function show(string $id)

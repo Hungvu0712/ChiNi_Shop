@@ -149,14 +149,23 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
+                           @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                             <label class="form-label" for="category_id">Danh mục <span class="text-danger">*</span></label>
                             <select class="form-select" name="category_id">
                                 <option value="">-- Chọn danh mục --</option>
                                 @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category_id')==$category->id ? 'selected' : ''
-                                    }}>
-                                    {{ $category->name }}
-                                </option>
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : ''
+                                            }}>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('category_id')
@@ -304,7 +313,7 @@
                         <a class="btn btn-secondary" href="{{ route('products.index') }}">
                             <i class="fas fa-arrow-left me-2"></i>Quay lại
                         </a>
-                        <button class="btn btn-success" type="submit">
+                        <button  class="btn btn-success" type="submit">
                             <i class="fas fa-save me-2"></i>Tạo sản phẩm
                         </button>
                     </div>
@@ -450,10 +459,10 @@
     </script>
 
     {{-- Product variant --}}
-    <script>
+    <script> 
+        var attributeValues = @json($attributeValues);
+        var attributeNames = @json($attributeNames);
         document.addEventListener('DOMContentLoaded', function () {
-            let attributeValues = @json($attributeValues);
-            let attributeNames = @json($attributeNames);
 
             // Khi chọn thuộc tính, sẽ hiển thị các giá trị thuộc tính tương ứng
             document.getElementById('attributeSelect').addEventListener('change', function () {
@@ -473,11 +482,11 @@
                         let formGroup = document.createElement('div');
                         formGroup.classList.add('mb-3');
                         formGroup.innerHTML = `
-                                                                                <label for="attributeValue_${attributeId}">Chọn giá trị cho thuộc tính <strong>${attributeName}</strong></label>
-                                                                                <select class="form-control" id="attributeValue_${attributeId}" name="attributeValues[${attributeId}][]" multiple>
-                                                                                    ${options}
-                                                                                </select>
-                                                                            `;
+                                                                                    <label for="attributeValue_${attributeId}">Chọn giá trị cho thuộc tính <strong>${attributeName}</strong></label>
+                                                                                    <select class="form-control" id="attributeValue_${attributeId}" name="attributeValues[${attributeId}][]" multiple>
+                                                                                        ${options}
+                                                                                    </select>
+                                                                                `;
                         attributeFormsContainer.appendChild(formGroup);
                     }
                 });
@@ -498,47 +507,48 @@
 
                 if (attributeCombinations.length > 0) {
                     let tableHtml = `
-                                                        <h3>Biến thể sản phẩm</h3>
-                                                        <table class="table table-hover" id="variantTable">
-                                                            <thead>
-                                                                <tr>
-                                                                    ${Array.from(selectedAttributes).map((select) => {
+                                                            <h3>Biến thể sản phẩm</h3>
+                                                            <table class="table table-hover" id="variantTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        ${Array.from(selectedAttributes).map((select) => {
                         let match = select.name.match(/attributeValues\[(\d+)\]/);
                         let attributeId = match ? match[1] : null;
                         let attributeName = attributeNames[attributeId] || 'Thuộc tính';
                         return `<th>${attributeName}</th>`;
                     }).join('')}
-                                                                    <th>SKU</th>
-                                                                    <th>Giá</th>
-                                                                    <th>Số lượng</th>
-                                                                    <th>Cân nặng</th>
-                                                                    <th>Ảnh</th>
-                                                                    <th>Xóa</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                    `;
+                                                                        <th>SKU</th>
+                                                                        <th>Giá</th>
+                                                                        <th>Số lượng</th>
+                                                                        <th>Cân nặng</th>
+                                                                        <th>Ảnh</th>
+                                                                        <th>Xóa</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                        `;
 
-                    attributeCombinations.forEach(combination => {
+                    attributeCombinations.forEach((combination,rowIndex) => {
 
-                        let attributeCells = combination.map(attr => `
-                                                           <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
-                                            ${attr.name}
-                                            <input type="hidden" name="attributeValueIds[]" value="${attr.id}">
-                                        </td>
-                                                        `).join('');
+                        let attributeCells = combination.map((attr,index) => `
+                                                               <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
+                                                ${attr.name}
+                                                <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][id]" value="${attr.id}">
+            <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][value]" value="${attr.name}">
+                                            </td>
+                                                            `).join('');
 
                         tableHtml += `
-                                                            <tr>
-                                                                ${attributeCells}
-                                                                <td><input type="text" class="form-control" name="sku[]" placeholder="SKU"></td>
-                                                                <td><input type="text" class="form-control" name="price[]" placeholder="Giá"></td>
-                                                                <td><input type="text" class="form-control" name="quantity[]" placeholder="Số lượng"></td>
-                                                                <td><input type="text" class="form-control" name="weight[]" placeholder="Cân nặng"></td>
-                                                                <td><input type="file" class="form-control" name="variant_image[]"></td>
-                                                                <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
-                                                            </tr>
-                                                        `;
+                                                                <tr>
+                                                                    ${attributeCells}
+                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" placeholder="SKU"></td>
+                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" placeholder="Giá"></td>
+                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" placeholder="Số lượng"></td>
+                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" placeholder="Cân nặng"></td>
+                                                                    <td><input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]"></td>
+                                                                    <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
+                                                                </tr>
+                                                            `;
                     });
                     tableHtml += `</tbody></table>`;
                     variantSection.insertAdjacentHTML('beforeend', tableHtml);
