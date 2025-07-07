@@ -118,12 +118,30 @@
 @section('content')
     <div class="container my-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header">
-                <h4 class="mb-0 text-white"><i class="fas fa-plus-circle me-2"></i>Tạo sản phẩm mới</h4>
-            </div>
+           <div class="card-header bg-primary bg-gradient text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Thêm mới sản phẩm</h4>
+                            <a href="{{ route('products.index') }}" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
+                    </div>
             <div class="card-body">
                 <form action="{{ route('products.store') }}" enctype="multipart/form-data" method="POST">
                     @csrf
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        </div>
+                    </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
@@ -149,15 +167,6 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                           @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
                             <label class="form-label" for="category_id">Danh mục <span class="text-danger">*</span></label>
                             <select class="form-select" name="category_id">
                                 <option value="">-- Chọn danh mục --</option>
