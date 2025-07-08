@@ -93,24 +93,33 @@ class VoucherController extends Controller
     {
         $voucher = Voucher::findOrFail($id);
 
-        $voucher->update([
-            'code' => $request->code,
-            'title' => $request->title,
-            'voucher_type' => $request->voucher_type,
-            'value' => $request->value,
-            'discount_type' => $request->discount_type,
-            'min_order_value' => $request->min_order_value,
-            'max_discount_value' => $request->max_discount_value,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'limit' => $request->limit,
-            'is_active' => $request->has('is_active') ? 1 : 0,
-        ]);
+        $voucher->code = $request->code;
+        $voucher->title = $request->title;
+        $voucher->voucher_type = $request->voucher_type;
+        $voucher->start_date = $request->start_date;
+        $voucher->end_date = $request->end_date;
+        $voucher->limit = $request->limit;
+        $voucher->is_active = $request->has('is_active') ? 1 : 0;
+
+        if ($voucher->voucher_type === 'discount') {
+            $voucher->discount_type = $request->discount_type;
+            $voucher->value = $request->value;
+            $voucher->min_order_value = $request->min_order_value ?? 0;
+            $voucher->max_discount_value = $request->max_discount_value ?? 0;
+        } else {
+            $voucher->discount_type = 'none'; // ✅ RESET về none
+            $voucher->value = 0;
+            $voucher->min_order_value = 0;
+            $voucher->max_discount_value = 0;
+        }
+
+        $voucher->save();
 
         return redirect()
             ->route('vouchers.index')
             ->with('success', 'Cập nhật voucher thành công!');
     }
+
 
     /**
      * Remove the specified resource from storage.

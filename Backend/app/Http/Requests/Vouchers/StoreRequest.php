@@ -30,10 +30,19 @@ class StoreRequest extends FormRequest
 
         if ($this->voucher_type === 'discount') {
             $rules['discount_type'] = 'required|in:amount,percent';
-            $rules['value'] = 'required|numeric|min:0';
+
+            if ($this->discount_type === 'percent') {
+                $rules['value'] = 'required|numeric|min:1|max:100';
+                $rules['max_discount_value'] = 'required|numeric|min:0';
+            } else {
+                $rules['value'] = 'required|numeric|min:1';
+                $rules['max_discount_value'] = 'required|numeric|min:0|gte:value'; // ✅ Chặn nhỏ hơn value
+            }
+
             $rules['min_order_value'] = 'nullable|numeric|min:0';
-            $rules['max_discount_value'] = 'nullable|numeric|min:0';
         }
+
+
 
         return $rules;
     }
@@ -51,11 +60,13 @@ class StoreRequest extends FormRequest
             'discount_type.in' => 'Kiểu giảm không hợp lệ.',
             'value.required' => 'Vui lòng nhập giá trị giảm.',
             'value.numeric' => 'Giá trị giảm phải là số.',
-            'value.min' => 'Giá trị giảm phải lớn hơn hoặc bằng 0.',
+            'value.min' => 'Giá trị giảm phải lớn hơn 0.',
+            'value.max' => 'Giá trị phần trăm tối đa là 100%.', // ✅ Thêm dòng này!
             'min_order_value.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
             'min_order_value.min' => 'Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0.',
             'max_discount_value.numeric' => 'Mức giảm tối đa phải là số.',
             'max_discount_value.min' => 'Mức giảm tối đa phải lớn hơn hoặc bằng 0.',
+            'max_discount_value.gte' => 'Mức giảm tối đa phải lớn hơn hoặc bằng giá trị giảm.',
             'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
             'start_date.date' => 'Ngày bắt đầu không hợp lệ.',
             'end_date.required' => 'Vui lòng chọn ngày kết thúc.',

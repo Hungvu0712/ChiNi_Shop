@@ -40,7 +40,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Loại voucher:</label>
-                    <select name="voucher_type" class="form-select">
+                    <select name="voucher_type" id="voucher_type" class="form-select">
                         <option value="discount"
                             {{ old('voucher_type', $voucher->voucher_type) == 'discount' ? 'selected' : '' }}>Discount
                         </option>
@@ -53,47 +53,52 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Giá trị giảm:</label>
-                    <input type="number" step="0.01" name="value" class="form-control"
-                        value="{{ old('value', $voucher->value) }}" placeholder="Giá trị giảm">
-                    @error('value')
-                        <div style="color: red">{{ $message }}</div>
-                    @enderror
-                </div>
+                {{-- 🔥 BỌC KHỐI CÁC TRƯỜNG GIẢM GIÁ --}}
+                <div id="discount_fields">
+                    <div class="mb-3">
+                        <label class="form-label">Giá trị giảm:</label>
+                        <input type="number" step="0.01" name="value" class="form-control"
+                            value="{{ old('value', $voucher->value) }}" placeholder="Giá trị giảm">
+                        @error('value')
+                            <div style="color: red">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Kiểu giảm:</label>
-                    <select name="discount_type" class="form-select">
-                        <option value="amount"
-                            {{ old('discount_type', $voucher->discount_type) == 'amount' ? 'selected' : '' }}>Số tiền
-                        </option>
-                        <option value="percent"
-                            {{ old('discount_type', $voucher->discount_type) == 'percent' ? 'selected' : '' }}>Phần trăm
-                        </option>
-                    </select>
-                    @error('discount_type')
-                        <div style="color: red">{{ $message }}</div>
-                    @enderror
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kiểu giảm:</label>
+                        <select name="discount_type" class="form-select">
+                            <option value="amount"
+                                {{ old('discount_type', $voucher->discount_type) == 'amount' ? 'selected' : '' }}>Số tiền
+                            </option>
+                            <option value="percent"
+                                {{ old('discount_type', $voucher->discount_type) == 'percent' ? 'selected' : '' }}>Phần
+                                trăm
+                            </option>
+                        </select>
+                        @error('discount_type')
+                            <div style="color: red">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Giá trị đơn hàng tối thiểu:</label>
-                    <input type="number" step="0.01" name="min_order_value" class="form-control"
-                        value="{{ old('min_order_value', $voucher->min_order_value) }}">
-                    @error('min_order_value')
-                        <div style="color: red">{{ $message }}</div>
-                    @enderror
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Giá trị đơn hàng tối thiểu:</label>
+                        <input type="number" step="0.01" name="min_order_value" class="form-control"
+                            value="{{ old('min_order_value', $voucher->min_order_value) }}">
+                        @error('min_order_value')
+                            <div style="color: red">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Mức giảm tối đa:</label>
-                    <input type="number" step="0.01" name="max_discount_value" class="form-control"
-                        value="{{ old('max_discount_value', $voucher->max_discount_value) }}">
-                    @error('max_discount_value')
-                        <div style="color: red">{{ $message }}</div>
-                    @enderror
+                    <div class="mb-3">
+                        <label class="form-label">Mức giảm tối đa:</label>
+                        <input type="number" step="0.01" name="max_discount_value" class="form-control"
+                            value="{{ old('max_discount_value', $voucher->max_discount_value) }}">
+                        @error('max_discount_value')
+                            <div style="color: red">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
+                {{-- 🔥 END BỌC KHỐI --}}
 
                 <div class="mb-3">
                     <label class="form-label">Ngày bắt đầu:</label>
@@ -148,6 +153,22 @@
         $(document).ready(function() {
             $('#summernote').summernote({
                 height: 300
+            });
+
+            function toggleVoucherFields() {
+                var type = $('#voucher_type').val();
+                if (type === 'discount') {
+                    $('#discount_fields').show();
+                } else {
+                    $('#discount_fields').hide();
+                }
+            }
+
+            // Gọi khi load:
+            toggleVoucherFields();
+
+            $('#voucher_type').change(function() {
+                toggleVoucherFields();
             });
         });
     </script>
