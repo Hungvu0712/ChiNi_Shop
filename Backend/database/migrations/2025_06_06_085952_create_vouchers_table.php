@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('title');
             $table->enum('voucher_type', ['discount', 'freeship'])->default('discount');
-            $table->decimal('value', 8, 2);
-            $table->enum('discount_type', ['amount', 'percent'])->default('amount');
-            $table->decimal('min_order_value', 8, 2);
-            $table->decimal('max_discount_value', 8, 2);
+            $table->enum('discount_type', ['amount', 'percent', 'none'])->default('none');
+            $table->decimal('value', 8, 2)->default(0);
+            $table->decimal('min_order_value', 8, 2)->default(0);
+            $table->decimal('max_discount_value', 8, 2)->default(0);
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('limit')->default(1);
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
