@@ -380,7 +380,10 @@
 
                                 <!-- Nơi hiển thị các select value -->
                                 <div id="attributeForms" class="col-12"></div>
-
+                               
+                                @error('attributeValues')
+                                            <p class="text-danger">{{ $message }}</p>
+                                @enderror
                                 <!-- Nút tạo biến thể -->
                                 <div class="col-12">
                                     <button type="button" id="saveAttributes" class="btn btn-primary">Lưu thuộc tính</button>
@@ -388,6 +391,9 @@
 
                                 <!-- Nơi hiển thị bảng biến thể -->
                                 <div id="variantSection" class="col-12 mt-5"></div>
+                                 @error('product_variants')
+                                            <p class="text-danger">{{ $message }}</p>
+                                @enderror
                                 <!-- Form Actions -->
                                 <div class="d-flex justify-content-between mt-4">
                                     <a class="btn btn-secondary" href="{{ route('products.index') }}">
@@ -575,7 +581,7 @@
         // Tự động render form chọn giá trị thuộc tính
         renderSelectedAttributeForms();
 
-        // Sau khi render xong, nếu có variants thì render bảng
+        // Sau khi render xong, nếu có variants thì render bảng product_variant
         if (oldVariants.length > 0) {
             renderVariantsFromExisting(oldVariants);
         }
@@ -599,6 +605,7 @@
             renderVariantTable(attributeCombinations);
         });
 
+        // Tự động render form chọn giá trị thuộc tính
         function renderSelectedAttributeForms() {
             let selectedAttributes = Array.from(attributeSelect.selectedOptions).map(option => option.value);
             let attributeFormsContainer = document.getElementById('attributeForms');
@@ -656,55 +663,79 @@
             return combine(attributeValues);
         }
 
-        function renderVariantTable(attributeCombinations) {
-            let variantSection = document.getElementById('variantSection');
-            let tableHtml = `
-                <h3>Biến thể sản phẩm</h3>
-                <table class="table table-hover" id="variantTable">
-                    <thead>
-                        <tr>
-                            ${attributeCombinations[0].map(attr => `<th>${attributeNames[attr.attributeId]}</th>`).join('')}
-                            <th>SKU</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Cân nặng</th>
-                            <th>Ảnh</th>
-                            <th>Xóa</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+        //render variant table(hiển thị các biến thể khi bấm lưu thuộc tính)
+       function renderVariantTable(attributeCombinations) {
+    let variantSection = document.getElementById('variantSection');
+    let tableHtml = `
+        <h3>Biến thể sản phẩm</h3>
+        <table class="table table-hover" id="variantTable">
+            <thead>
+                <tr>
+                    ${attributeCombinations[0].map(attr => `<th>${attributeNames[attr.attributeId]}</th>`).join('')}
+                    <th>SKU</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Cân nặng</th>
+                    <th>Ảnh</th>
+                    <th>Xóa</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-            attributeCombinations.forEach((combination, rowIndex) => {
-                let attributeCells = combination.map((attr, index) => `
-                    <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
-                        ${attr.name}
-                        <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][id]" value="${attr.id}">
-                        <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][value]" value="${attr.name}">
-                    </td>`).join('');
+    attributeCombinations.forEach((combination, rowIndex) => {
+        // Kiểm tra xem combination hiện tại có trong oldVariants không
+        let matchedVariant = oldVariants.find(variant => {
+            if (!variant.attributes || variant.attributes.length !== combination.length) return false;
 
-                tableHtml += `
-                    <tr>
-                        ${attributeCells}
-                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" placeholder="SKU"></td>
-                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" placeholder="Giá"></td>
-                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" placeholder="Số lượng"></td>
-                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" placeholder="Cân nặng"></td>
-                        <td><input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]"></td>
-                        <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
-                    </tr>`;
+            return combination.every((attr, i) => {
+                return variant.attributes.some(va =>
+                    parseInt(va.id) === parseInt(attr.attributeId) &&
+                    parseInt(va.pivot.attribute_value_id) === parseInt(attr.id)
+                );
             });
+        });
 
-            tableHtml += '</tbody></table>';
-            variantSection.innerHTML = tableHtml;
+        const sku = matchedVariant?.sku ?? '';
+        const price = matchedVariant?.price ?? '';
+        const quantity = matchedVariant?.quantity ?? '';
+        const weight = matchedVariant?.weight ?? '';
+        const imageUrl = matchedVariant?.variant_image ?? '';
 
-            document.querySelectorAll('.delete-variant').forEach(button => {
-                button.addEventListener('click', function () {
-                    handleDeleteRow(this);
-                });
-            });
-        }
+        let attributeCells = combination.map((attr, index) => `
+            <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
+                ${attr.name}
+                <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][id]" value="${attr.id}">
+                <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][value]" value="${attr.name}">
+            </td>`).join('');
 
+        tableHtml += `
+            <tr>
+                ${attributeCells}
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" value="${sku}" placeholder="SKU"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" value="${price}" placeholder="Giá"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" value="${quantity}" placeholder="Số lượng"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" value="${weight}" placeholder="Cân nặng"></td>
+                <td>
+                    <input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]">
+                    ${imageUrl ? `<img src="${imageUrl}" class="img-thumbnail current-image" width="60">` : ''}
+                </td>
+                <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
+            </tr>`;
+    });
+
+    tableHtml += '</tbody></table>';
+    variantSection.innerHTML = tableHtml;
+
+    document.querySelectorAll('.delete-variant').forEach(button => {
+        button.addEventListener('click', function () {
+            handleDeleteRow(this);
+        });
+    });
+}
+
+
+        //render variant.
         function renderVariantsFromExisting(variants) {
             let variantSection = document.getElementById('variantSection');
             variantSection.innerHTML = '';

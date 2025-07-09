@@ -33,8 +33,11 @@ class UpdateProductRequest extends FormRequest
         'removed_attachments' => 'nullable|string',
         'active' => 'nullable|in:true,false,1,0,on,off',
 
+        //Thuộc tính
+        'attributeId' => 'required|array|min:1',
+        'attributeValues' => 'required|array|min:1',
         // Biến thể
-        'product_variants' => 'nullable|array',
+        'product_variants' => 'required|array',
         'product_variants.*.sku' => [
             'required',
             'string',
@@ -103,9 +106,14 @@ class UpdateProductRequest extends FormRequest
         'removed_attachments.string' => 'Danh sách tệp xoá phải là chuỗi.',
 
         'active.in' => 'Trạng thái sản phẩm không hợp lệ.',
-
+        //thuộc tính
+        'attributeId.required' => 'Bạn phải chọn ít nhất một thuộc tính.',
+        'attributeId.*.integer' => 'Mỗi thuộc tính phải là số nguyên.',
+        'attributeValues.required' => 'Bạn phải chọn giá trị cho các thuộc tính.',
+    
         // Biến thể
         'product_variants.array' => 'Dữ liệu biến thể không hợp lệ.',
+        'product_variants.required' => 'Trường product_variants bắt buộc phải nhập',
 
         'product_variants.*.sku.required' => 'SKU của biến thể không được để trống.',
         'product_variants.*.sku.string' => 'SKU của biến thể phải là chuỗi.',

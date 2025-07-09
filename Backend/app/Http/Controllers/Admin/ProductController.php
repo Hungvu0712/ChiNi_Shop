@@ -157,7 +157,7 @@ class ProductController extends Controller
         }
     }
 
-    public function edit(string $id)
+    public function show(string $id)
     {
         try {
             $product = Product::query()->findOrFail($id)->load(['attachments', 'variants.attributes']);

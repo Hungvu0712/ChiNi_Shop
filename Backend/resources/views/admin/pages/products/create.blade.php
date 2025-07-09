@@ -307,16 +307,21 @@
                                 @endforeach
                             </select>
                             @error('attributeId')
-                                <p class="text-danger">{{ $message }}</p>
+                                <p class="invalid-feedback d-block">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
                     <div id="attributeForms" class="col-12"></div>
+                    @error('attributeValues')
+                            <p class="invalid-feedback d-block">{{ $message }}</p>
+                    @enderror
                     <div class="col-12">
                         <button type="button" id="saveAttributes" class="btn btn-primary">Lưu thuộc tính</button>
                     </div>
                     <div id="variantSection" class="col-12 mt-5"></div>
-
+                    @error('product_variants')
+                        <p class="invalid-feedback d-block">{{ $message }}</p>
+                    @enderror
 
                     <div class="d-flex justify-content-between mt-4 pt-3 border-top">
                         <a class="btn btn-secondary" href="{{ route('products.index') }}">

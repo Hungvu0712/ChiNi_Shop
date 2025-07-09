@@ -30,8 +30,11 @@ class StoreProductRequest extends FormRequest
             'removed_attachments' => 'nullable|string',
             'active' => 'nullable|in:true,false,1,0,on,off',
 
+            //Thuộc tính
+            'attributeId' => 'required|array|min:1',
+            'attributeValues' => 'required|array|min:1',
             // Biến thể
-            'product_variants' => 'nullable|array',
+            'product_variants' => 'required|array',
             'product_variants.*.attribute_item_id' => 'required|array|min:1',
             'product_variants.*.attribute_item_id.*.id' => 'required|integer',
             'product_variants.*.attribute_item_id.*.value' => 'string|max:255',
@@ -99,9 +102,14 @@ class StoreProductRequest extends FormRequest
         'removed_attachments.string' => 'Danh sách tệp xoá phải là chuỗi.',
 
         'active.in' => 'Trạng thái hoạt động không hợp lệ.',
-
+        //thuộc tính
+        'attributeId.required' => 'Bạn phải chọn ít nhất một thuộc tính.',
+        'attributeId.*.integer' => 'Mỗi thuộc tính phải là số nguyên.',
+        'attributeValues.required' => 'Bạn phải chọn giá trị cho các thuộc tính.',
+ 
         // Biến thể
         'product_variants.array' => 'Danh sách biến thể không hợp lệ.',
+        'product_variants.required' => 'Trường product_variants bắt buộc phải nhập',
 
         'product_variants.*.attribute_item_id.required' => 'Biến thể phải có ít nhất một thuộc tính.',
         'product_variants.*.attribute_item_id.array' => 'Danh sách thuộc tính của biến thể phải là mảng.',
