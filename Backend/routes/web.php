@@ -13,11 +13,15 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\Client\AddressController;
+use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ShopController;
+use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use GuzzleHttp\Middleware;
@@ -38,6 +42,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('/banner', [ClientBannerController::class, 'show'])->name('client.banner');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'role:admin|staff'])->name('dashboard');
 
@@ -77,13 +82,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::resource('attributes', AttributeController::class);
     //attribute_values
     Route::resource('attribute_values', AttributeValueController::class);
+    //banners
+    Route::resource('banners', BannerController::class);
+
 });
 
 //Trang 404
 Route::get('/404', function () {
     return view('404')->name('pagenotfound');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -116,4 +123,15 @@ Route::prefix('client')->group(function () {
     Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
     Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
+});
+=======
+Route::controller(AddressController::class)->group(function () {
+    Route::get('diachi' ,  'danhsachdiachi')->name('address');
+    Route::post('add-address' , 'addAddress')->name('add-address');
+    Route::put('/update-address/{id}', 'update')->name('update-address');
+});
+
+Route::controller(PostHomeController::class)->group(function () {
+    Route::get('blog' , 'index')->name('blog');
+    Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
 });

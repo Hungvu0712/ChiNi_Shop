@@ -94,296 +94,321 @@
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 @endsection
 
 @section('content')
-    <div class="container-fluid py-4">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary bg-gradient text-white">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Chỉnh sửa sản phẩm</h4>
-                            <a href="{{ route('products.index') }}" class="btn btn-light btn-sm">
-                                <i class="fas fa-arrow-left me-1"></i> Quay lại
-                            </a>
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary bg-gradient text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">Chỉnh sửa sản phẩm</h4>
+                                <a href="{{ route('products.index') }}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data"
-                            method="POST">
-                            @csrf
-                            @method('put')
-
-                            <!-- Basic Information Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Tên sản phẩm <span
-                                                class="text-danger">*</span></label>
-                                        <input class="form-control" name="name" type="text"
-                                            value="{{ old('name', $product->name) }}" />
-                                        @error('name')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold" for="price">Giá <span
-                                                class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <input class="form-control" name="price" step="0.01" type="number"
-                                                value="{{ old('price', $product->price) }}" />
-                                            <span class="input-group-text">VNĐ</span>
-                                        </div>
-                                        @error('price')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                        <div class="card-body">
+                            <form action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data"
+                                method="POST">
+                                @csrf
+                                @method('put')
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-12">
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul>
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
+                                <!-- Basic Information Section -->
+                                <div class="form-section">
+                                    <h5 class="form-section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Tên sản phẩm <span
+                                                    class="text-danger">*</span></label>
+                                            <input class="form-control" name="name" type="text"
+                                                value="{{ old('name', $product->name) }}" />
+                                            @error('name')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold" for="price">Giá <span
+                                                    class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input class="form-control" name="price" step="0.01" type="number"
+                                                    value="{{ old('price', $product->price) }}" />
+                                                <span class="input-group-text">VNĐ</span>
+                                            </div>
+                                            @error('price')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
 
-                                <div class="row g-3 mt-2">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold" for="category_id">Danh mục</label>
-                                        <select class="form-select" name="category_id">
-                                            <option value="">-- Chọn danh mục --</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                    <div class="row g-3 mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold" for="category_id">Danh mục</label>
+                                            <select class="form-select" name="category_id">
+                                                <option value="">-- Chọn danh mục --</option>
+                                                @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('category_id', $product->category_id)
+            == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
                                                 </option>
-                                            @endforeach
-                                        </select>
-                                        @error('category_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold" for="brand_id">Thương hiệu</label>
-                                        <select class="form-select" name="brand_id">
-                                            <option value="">-- Chọn thương hiệu --</option>
-                                            @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}"
-                                                    {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
-                                                    {{ $brand->name }}
+                                                @endforeach
+                                            </select>
+                                            @error('category_id')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold" for="brand_id">Thương hiệu</label>
+                                            <select class="form-select" name="brand_id">
+                                                <option value="">-- Chọn thương hiệu --</option>
+                                                @foreach ($brands as $id => $name)
+                                                <option value="{{ $id }}" {{ old('brand_id', $product->brand_id) == $id ?
+            'selected' : '' }}>
+                                                    {{ $name }}
                                                 </option>
-                                            @endforeach
-                                        </select>
-                                        @error('brand_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                                @endforeach
+                                            </select>
+                                            @error('brand_id')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Mô tả sản phẩm</label>
+                                            <textarea class="form-control" id="summernote" name="description"
+                                                rows="10">{{ old('description', $product->description) }}</textarea>
+                                            @error('description')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold">Mô tả sản phẩm</label>
-                                        <textarea class="form-control" id="summernote" name="description" rows="10">{{ old('description', $product->description) }}</textarea>
-                                        @error('description')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
+                                <!-- Images Section -->
+                                <div class="form-section">
+                                    <h5 class="form-section-title"><i class="fas fa-images me-2"></i>Hình ảnh sản phẩm</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Ảnh chính</label>
+                                            <input class="form-control" id="product_image" name="product_image" type="file" />
 
-                            <!-- Images Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-images me-2"></i>Hình ảnh sản phẩm</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Ảnh chính</label>
-                                        <input class="form-control" id="product_image" name="product_image"
-                                            type="file" />
+                                            @if ($product->product_image)
+                                                <div class="mt-3">
+                                                    <p class="text-muted small mb-2">Ảnh hiện tại:</p>
+                                                    <div class="preview-container">
+                                                        <img src="{{ $product->product_image }}" class="img-thumbnail current-image"
+                                                            width="150" id="current-thumbnail">
+                                                        <button type="button" class="remove-btn" id="remove-thumbnail"
+                                                            title="Xóa ảnh">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endif
 
-                                        @if ($product->product_image)
-                                            <div class="mt-3">
-                                                <p class="text-muted small mb-2">Ảnh hiện tại:</p>
+                                            <div class="mt-3" id="mainImageWrapper" style="display:none;">
+                                                <p class="text-muted small mb-2">Ảnh mới:</p>
                                                 <div class="preview-container">
-                                                    <img src="{{ $product->product_image }}"
-                                                        class="img-thumbnail current-image" width="150"
-                                                        id="current-thumbnail">
-                                                    <button type="button" class="remove-btn" id="remove-thumbnail"
+                                                    <img alt="Ảnh chính" class="img-thumbnail" id="mainImagePreview" src="#"
+                                                        width="150" />
+                                                    <button class="remove-btn" onclick="removeMainImage()" type="button"
                                                         title="Xóa ảnh">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </div>
                                             </div>
-                                        @endif
 
-                                        <div class="mt-3" id="mainImageWrapper" style="display:none;">
-                                            <p class="text-muted small mb-2">Ảnh mới:</p>
-                                            <div class="preview-container">
-                                                <img alt="Ảnh chính" class="img-thumbnail" id="mainImagePreview"
-                                                    src="#" width="150" />
-                                                <button class="remove-btn" onclick="removeMainImage()" type="button"
-                                                    title="Xóa ảnh">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
+                                            @error('product_image')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Ảnh đính kèm</label>
+                                            <input class="form-control" id="attachments" name="attachments[]" type="file"
+                                                multiple />
+
+                                            <div class="mt-3">
+                                                @if ($product->attachments->count() > 0)
+                                                    <p class="text-muted small mb-2">Ảnh hiện tại:</p>
+                                                    <div class="d-flex flex-wrap gap-3" id="current-images">
+                                                        @foreach ($product->attachments as $attachment)
+                                                            <div class="preview-container">
+                                                                <img src="{{ $attachment->attachment_image }}"
+                                                                    class="img-thumbnail current-image" width="120">
+                                                                <button type="button" class="remove-btn remove-image"
+                                                                    data-id="{{ $attachment->id }}" title="Xóa ảnh">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                <div class="mt-3 d-flex flex-wrap gap-3" id="attachmentsPreview"></div>
                                             </div>
+
+                                            <input type="hidden" name="removed_attachments" id="removed_attachments">
+                                            @error('attachments.*')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
-
-                                        @error('product_image')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Ảnh đính kèm</label>
-                                        <input class="form-control" id="attachments" name="attachments[]" type="file"
-                                            multiple />
-
-                                        <div class="mt-3">
-                                            @if ($product->attachments->count() > 0)
-                                                <p class="text-muted small mb-2">Ảnh hiện tại:</p>
-                                                <div class="d-flex flex-wrap gap-3" id="current-images">
-                                                    @foreach ($product->attachments as $attachment)
-                                                        <div class="preview-container">
-                                                            <img src="{{ $attachment->attachment_image }}"
-                                                                class="img-thumbnail current-image" width="120">
-                                                            <button type="button" class="remove-btn remove-image"
-                                                                data-id="{{ $attachment->id }}" title="Xóa ảnh">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-
-                                            <div class="mt-3 d-flex flex-wrap gap-3" id="attachmentsPreview"></div>
-                                        </div>
-
-                                        <input type="hidden" name="removed_attachments" id="removed_attachments">
-                                        @error('attachments.*')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Inventory Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-boxes me-2"></i>Thông tin kho hàng</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Trọng lượng (gram)</label>
-                                        <div class="input-group">
-                                            <input class="form-control" name="weight" type="text"
-                                                value="{{ old('weight', $product->weight) }}" />
-                                            <span class="input-group-text">g</span>
+                                <!-- Inventory Section -->
+                                <div class="form-section">
+                                    <h5 class="form-section-title"><i class="fas fa-boxes me-2"></i>Thông tin kho hàng</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">Trọng lượng (gram)</label>
+                                            <div class="input-group">
+                                                <input class="form-control" name="weight" type="text"
+                                                    value="{{ old('weight', $product->weight) }}" />
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            @error('weight')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
-                                        @error('weight')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Số lượng</label>
-                                        <input class="form-control" name="quantity" type="number"
-                                            value="{{ old('quantity', $product->quantity) }}" />
-                                        @error('quantity')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Cảnh báo tồn kho</label>
-                                        <input class="form-control" name="quantity_warning" type="number"
-                                            value="{{ old('quantity_warning', $product->quantity_warning) }}" />
-                                        @error('quantity_warning')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">SKU</label>
-                                        <input class="form-control" name="sku" type="text"
-                                            value="{{ old('sku', $product->sku) }}" />
-                                        @error('sku')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">Số lượng</label>
+                                            <input class="form-control" name="quantity" type="number"
+                                                value="{{ old('quantity', $product->quantity) }}" />
+                                            @error('quantity')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">Cảnh báo tồn kho</label>
+                                            <input class="form-control" name="quantity_warning" type="number"
+                                                value="{{ old('quantity_warning', $product->quantity_warning) }}" />
+                                            @error('quantity_warning')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">SKU</label>
+                                            <input class="form-control" name="sku" type="text"
+                                                value="{{ old('sku', $product->sku) }}" />
+                                            @error('sku')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Tags & Status Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-tags me-2"></i>Tags & Trạng thái</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-9">
-                                        <label class="form-label fw-semibold">Tags (phân cách bằng dấu phẩy)</label>
-                                        <input id="tag-input" name="tags" class="form-control"
-                                            value="{{ old('tags', $product->tags) }}">
-                                        @error('tags')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold d-block">Trạng thái</label>
-                                        <div class="form-check form-switch">
-                                            <input name="active" type="hidden" value="0" />
-                                            <input class="form-check-input" id="activeCheck" name="active"
-                                                type="checkbox" value="1"
-                                                {{ old('active', $product->active) ? 'checked' : '' }}
-                                                style="width: 3em; height: 1.5em;">
-                                            <label class="form-check-label" for="activeCheck">Kích hoạt</label>
+                                <!-- Tags & Status Section -->
+                                <div class="form-section">
+                                    <h5 class="form-section-title"><i class="fas fa-tags me-2"></i>Tags & Trạng thái</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-9">
+                                            <label class="form-label fw-semibold">Tags (phân cách bằng dấu phẩy)</label>
+                                            <input id="tag-input" name="tags" class="form-control"
+                                                value="{{ old('tags', $product->tags) }}">
+                                            @error('tags')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
                                         </div>
-                                        @error('active')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold d-block">Trạng thái</label>
+                                            <div class="form-check form-switch">
+                                                <input name="active" type="hidden" value="0" />
+                                                <input class="form-check-input" id="activeCheck" name="active" type="checkbox"
+                                                    value="1" {{ old('active', $product->active) ? 'checked' : '' }}
+                                                    style="width: 3em; height: 1.5em;">
+                                                <label class="form-check-label" for="activeCheck">Kích hoạt</label>
+                                            </div>
+                                            @error('active')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Attributes Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-list-ul me-2"></i>Thuộc tính sản phẩm</h5>
-                                @foreach ($attributes as $attribute)
-                                    <div class="mb-4">
-                                        <label class="fw-bold d-block mb-2">{{ $attribute->name }}</label>
-                                        <div class="d-flex flex-wrap">
-                                            @foreach ($attribute->attributeValues as $value)
-                                                <div class="form-check attribute-checkbox">
-                                                    <input type="checkbox" class="form-check-input attr-checkbox"
-                                                        name="attributes[{{ $attribute->id }}][]"
-                                                        data-attr-name="{{ $attribute->name }}"
-                                                        data-attr-id="{{ $attribute->id }}" value="{{ $value->id }}"
-                                                        id="attr_{{ $attribute->id }}_{{ $value->id }}"
-                                                        {{ in_array($value->id, $selectedValueIds ?? []) ? 'checked' : '' }}>
-                                                    <label class="form-check-label"
-                                                        for="attr_{{ $attribute->id }}_{{ $value->id }}">
-                                                        {{ $value->value }}
-                                                    </label>
-                                                </div>
+                                <!-- Form chọn thuộc tính -->
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="attributeSelect">Chọn thuộc tính</label>
+                                        <select class="form-control @error('attributeId') is-invalid @enderror"
+                                            id="attributeSelect" multiple name="attributeId[]">
+                                            @foreach ($attributes as $attribute)
+                                                <option value="{{ $attribute->id }}" @if (in_array($attribute->id, $selectedAttributeIds)) selected @endif>
+                                                    {{ $attribute->name }}
+                                                </option>
                                             @endforeach
-                                        </div>
+                                        </select>
+                                        @error('attributeId')
+                                            <p class="text-danger">{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                @endforeach
-                            </div>
-
-                            <!-- Variants Section -->
-                            <div class="form-section">
-                                <h5 class="form-section-title"><i class="fas fa-random me-2"></i>Biến thể sản phẩm</h5>
-                                <div id="variant-list">
-
-
                                 </div>
-                                <input type="hidden" name="variants_json" id="variants_json"
-                                    value="{{ $product->variants_json }}">
-                            </div>
 
-                            <!-- Form Actions -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <a class="btn btn-secondary" href="{{ route('products.index') }}">
-                                    <i class="fas fa-arrow-left me-1"></i> Quay lại
-                                </a>
-                                <button class="btn btn-success" type="submit">
-                                    <i class="fas fa-save me-1"></i> Cập nhật sản phẩm
-                                </button>
-                            </div>
-                        </form>
+                                <!-- Nơi hiển thị các select value -->
+                                <div id="attributeForms" class="col-12"></div>
+                               
+                                @error('attributeValues')
+                                            <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                                <!-- Nút tạo biến thể -->
+                                <div class="col-12">
+                                    <button type="button" id="saveAttributes" class="btn btn-primary">Lưu thuộc tính</button>
+                                </div>
+
+                                <!-- Nơi hiển thị bảng biến thể -->
+                                <div id="variantSection" class="col-12 mt-5"></div>
+                                 @error('product_variants')
+                                            <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                                <!-- Form Actions -->
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a class="btn btn-secondary" href="{{ route('products.index') }}">
+                                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                    </a>
+                                    <button class="btn btn-success" type="submit">
+                                        <i class="fas fa-save me-1"></i> Cập nhật sản phẩm
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 @endsection
 
 @section('script')
@@ -392,8 +417,136 @@
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 
     <script>
-        // Initialize Summernote
-        $(document).ready(function() {
+        // Khởi tạo Tagify
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.querySelector('#tag-input');
+            new Tagify(input, {
+                enforceWhitelist: false,
+                dropdown: {
+                    enabled: 0
+                },
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
+            });
+        });
+    </script>
+
+    <script>
+        const productImageInput = document.getElementById('product_image');
+        const mainImagePreview = document.getElementById('mainImagePreview');
+        const mainImageWrapper = document.getElementById('mainImageWrapper');
+
+        productImageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ảnh không được vượt quá 5MB');
+                    this.value = '';
+                    mainImageWrapper.style.display = 'none';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    mainImagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                mainImageWrapper.style.display = 'block';
+            } else {
+                mainImageWrapper.style.display = 'none';
+            }
+        });
+
+        window.removeMainImage = function () {
+            productImageInput.value = '';
+            mainImagePreview.src = '#';
+            mainImageWrapper.style.display = 'none';
+        };
+
+        // ==== ẢNH ĐÍNH KÈM ====
+        const attachmentsInput = document.getElementById('attachments');
+        const attachmentsPreview = document.getElementById('attachmentsPreview');
+        const removedInput = document.getElementById('removed_attachments');
+        let allFiles = [];
+
+        attachmentsInput.addEventListener('change', function (e) {
+            const newFiles = Array.from(e.target.files);
+
+            const validFiles = newFiles.filter(file => {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert(`File "${file.name}" vượt quá 2MB và sẽ bị bỏ qua`);
+                    return false;
+                }
+                return true;
+            });
+
+            validFiles.forEach(file => {
+                if (!allFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    allFiles.push(file);
+                }
+            });
+
+            updateAttachmentsPreview();
+            updateInputFiles();
+        });
+
+        function updateAttachmentsPreview() {
+            attachmentsPreview.innerHTML = '';
+
+            allFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const container = document.createElement('div');
+                    container.classList.add('preview-container', 'position-relative');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('img-thumbnail');
+                    img.style.width = '120px';
+                    img.style.height = '120px';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'remove-btn btn btn-sm btn-danger position-absolute top-0 end-0';
+                    btn.textContent = '×';
+                    btn.type = 'button';
+                    btn.style.zIndex = 10;
+                    btn.onclick = function () {
+                        allFiles.splice(index, 1);
+                        updateAttachmentsPreview();
+                        updateInputFiles();
+                    };
+
+                    container.appendChild(img);
+                    container.appendChild(btn);
+                    attachmentsPreview.appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateInputFiles() {
+            const dt = new DataTransfer();
+            allFiles.forEach(file => dt.items.add(file));
+            attachmentsInput.files = dt.files;
+        }
+
+        // ==== XÓA ẢNH ĐÍNH KÈM CŨ (hiển thị sẵn từ DB) ====
+        document.querySelectorAll('.remove-image').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const container = this.closest('.preview-container');
+                if (container) container.remove();
+
+                let current = removedInput.value ? removedInput.value.split(',') : [];
+                if (!current.includes(id)) {
+                    current.push(id);
+                }
+                removedInput.value = current.join(',');
+            });
+        });
+    </script>
+
+    <script>
+        // Khởi tạo Summernote
+        $(document).ready(function () {
             $('#summernote').summernote({
                 height: 250,
                 toolbar: [
@@ -408,218 +561,291 @@
                 ]
             });
         });
-
-        // Image Upload Handling
-        const productImageInput = document.getElementById('product_image');
-        const mainImagePreview = document.getElementById('mainImagePreview');
-        const mainImageWrapper = document.getElementById('mainImageWrapper');
-        const currentThumbnail = document.getElementById('current-thumbnail');
-        const removeThumbnailBtn = document.getElementById('remove-thumbnail');
-
-        productImageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    mainImagePreview.src = e.target.result;
-                    mainImageWrapper.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function removeMainImage() {
-            productImageInput.value = '';
-            mainImagePreview.src = '#';
-            mainImageWrapper.style.display = 'none';
-        }
-
-        if (removeThumbnailBtn) {
-            removeThumbnailBtn.addEventListener('click', function() {
-                if (currentThumbnail) {
-                    currentThumbnail.style.display = 'none';
-                }
-                this.style.display = 'none';
-                productImageInput.value = '';
-            });
-        }
-
-        // Attachments Handling
-        const attachmentsInput = document.getElementById('attachments');
-        const attachmentsPreview = document.getElementById('attachmentsPreview');
-
-        attachmentsInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            attachmentsPreview.innerHTML = '';
-
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = document.createElement('div');
-                    container.classList.add('preview-container');
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('img-thumbnail');
-                    img.style.width = '120px';
-                    img.style.height = '120px';
-                    img.style.objectFit = 'cover';
-
-                    const btn = document.createElement('button');
-                    btn.className = 'remove-btn';
-                    btn.innerHTML = '<i class="fas fa-times"></i>';
-                    btn.onclick = function() {
-                        const dt = new DataTransfer();
-                        const oldFiles = Array.from(attachmentsInput.files);
-                        oldFiles.forEach((f, i) => {
-                            if (i !== index) dt.items.add(f);
-                        });
-                        attachmentsInput.files = dt.files;
-                        container.remove();
-                    };
-
-                    container.appendChild(img);
-                    container.appendChild(btn);
-                    attachmentsPreview.appendChild(container);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // Tagify Initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.querySelector('#tag-input');
-            if (input) {
-                new Tagify(input, {
-                    enforceWhitelist: false,
-                    dropdown: {
-                        enabled: 0
-                    },
-                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
-                });
-            }
-        });
-
-
-
-        // Handle removal of existing attachments
-        let removedAttachmentIds = [];
-        document.querySelectorAll('.remove-image').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                if (id) {
-                    removedAttachmentIds.push(id);
-                    document.getElementById('removed_attachments').value = removedAttachmentIds.join(',');
-                    this.closest('.preview-container').remove();
-                }
-            });
-        });
     </script>
-
+    {{-- pr variant --}}
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const variantList = document.getElementById('variant-list');
-        const variantsJsonInput = document.getElementById('variants_json');
-        const oldVariants = JSON.parse(variantsJsonInput.value || '[]');
-
-        function generateCombinations(attrMap) {
-            const keys = Object.keys(attrMap);
-            if (keys.length < 2) return [];
-
-            const cartesian = arr => arr.reduce((a, b) =>
-                a.flatMap(d => b.map(e => [...d, e])), [[]]);
-
-            const valuesArray = keys.map(k => attrMap[k]);
-            return cartesian(valuesArray).map(comb => {
-                const label = comb.map(v => v.name).join(' / ');
-                const ids = comb.map(v => v.id).sort().join(',');
-                return { label, ids };
-            });
-        }
-
-        function renderVariants() {
-            const checked = document.querySelectorAll('.attr-checkbox:checked');
-            const attrMap = {};
-
-            checked.forEach(cb => {
-                const attrName = cb.dataset.attrName;
-                if (!attrMap[attrName]) attrMap[attrName] = [];
-                attrMap[attrName].push({
-                    id: cb.value,
-                    name: cb.nextElementSibling.innerText.trim()
-                });
-            });
-
-            const combos = generateCombinations(attrMap);
-            const newKeys = combos.map(c => c.ids);
-
-            // 1. XÓA CÁC BLOCK ĐƯỢC SINH RA BỞI JS mà KHÔNG CÒN TRONG COMBO MỚI
-            document.querySelectorAll('.variant-block.variant-new').forEach(el => {
-                const keyInput = el.querySelector('input[name="variant_keys[]"]');
-                if (keyInput && !newKeys.includes(keyInput.value)) {
-                    el.remove();
-                }
-            });
-
-            // 2. Lấy tất cả các keys đang tồn tại (từ Blade và từ JS)
-            const existingKeys = new Set(
-                Array.from(document.querySelectorAll('input[name="variant_keys[]"]'))
-                    .map(i => i.value)
-            );
-
-            // 3. Thêm các combo mới chưa tồn tại
-            combos.forEach(combo => {
-                if (existingKeys.has(combo.ids)) return;
-
-                const index = document.querySelectorAll('.variant-block').length;
-                const old = oldVariants.find(v => v.variant_key === combo.ids);
-
-                const block = document.createElement('div');
-                block.className = 'variant-block variant-new border p-3 rounded mb-3';
-                block.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong class="text-primary">${combo.label}</strong>
-                    </div>
-                    <input type="hidden" name="variant_keys[]" value="${combo.ids}">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label>SKU</label>
-                            <input type="text" name="variants_new[${index}][sku]" class="form-control" value="${old?.sku || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Giá</label>
-                            <input type="number" name="variants_new[${index}][price]" class="form-control" value="${old?.price || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Số lượng</label>
-                            <input type="number" name="variants_new[${index}][quantity]" class="form-control" value="${old?.quantity || ''}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Trọng lượng</label>
-                            <input type="text" name="variants_new[${index}][weight]" class="form-control" value="${old?.weight || ''}">
-                        </div>
-                        <div class="col-md-12">
-                            <label>Ảnh biến thể</label>
-                            <input type="file" name="variants_new[${index}][variant_image]" class="form-control">
-                            <img src="${old?.variant_image || ''}" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">
-                        </div>
-                    </div>
-                `;
-
-                variantList.appendChild(block);
-                existingKeys.add(combo.ids);
-            });
-        }
-
-        // Gắn sự kiện change
-        document.querySelectorAll('.attr-checkbox').forEach(cb => {
-            cb.addEventListener('change', renderVariants);
+        var attributeValues = @json($attributeValues);
+        var attributeNames = @json($attributeNames);
+        var selectedAttributeIds = @json($selectedAttributeIds); // [1, 2]
+        var selectedAttributeValueIds = @json($selectedAttributeValueIds); // {1: [3,4], 2: [6,7]}
+        var oldVariants = @json($product->variants);
+        document.addEventListener('DOMContentLoaded', function () {
+        // Gán selected thuộc tính
+        const attributeSelect = document.getElementById('attributeSelect');
+        Array.from(attributeSelect.options).forEach(option => {
+            if (selectedAttributeIds.includes(parseInt(option.value))) {
+                option.selected = true;
+            }
         });
 
-        // Gọi khi load trang
-        renderVariants();
+        // Tự động render form chọn giá trị thuộc tính
+        renderSelectedAttributeForms();
+
+        // Sau khi render xong, nếu có variants thì render bảng product_variant
+        if (oldVariants.length > 0) {
+            renderVariantsFromExisting(oldVariants);
+        }
+
+        // Khi chọn thuộc tính thủ công
+        attributeSelect.addEventListener('change', function () {
+            renderSelectedAttributeForms();
+        });
+        //save attribitues
+        document.getElementById('saveAttributes').addEventListener('click', function () {
+            let selectedAttributes = document.querySelectorAll('select[name^="attributeValues"]');
+            let attributeCombinations = getCombinations(selectedAttributes);
+            let variantSection = document.getElementById('variantSection');
+
+            const isValid = attributeCombinations.length > 0 &&
+                attributeCombinations.every(comb => comb.length > 0);
+
+            if (!isValid) return;
+
+            variantSection.innerHTML = '';
+            renderVariantTable(attributeCombinations);
+        });
+
+        // Tự động render form chọn giá trị thuộc tính
+        function renderSelectedAttributeForms() {
+            let selectedAttributes = Array.from(attributeSelect.selectedOptions).map(option => option.value);
+            let attributeFormsContainer = document.getElementById('attributeForms');
+            attributeFormsContainer.innerHTML = '';
+
+            selectedAttributes.forEach(attributeId => {
+                if (attributeValues[attributeId]) {
+                    let options = '';
+                    for (const [id, name] of Object.entries(attributeValues[attributeId])) {
+                        let selected = selectedAttributeValueIds[attributeId] && selectedAttributeValueIds[attributeId].includes(parseInt(id)) ? 'selected' : '';
+                        options += `<option value="${id}" ${selected}>${name}</option>`;
+                    }
+                    let attributeName = attributeNames[attributeId] || '---';
+                    let formGroup = document.createElement('div');
+                    formGroup.classList.add('mb-3');
+                    formGroup.innerHTML = `
+                        <label for="attributeValue_${attributeId}">Chọn giá trị cho <strong>${attributeName}</strong></label>
+                        <select class="form-control" id="attributeValue_${attributeId}" name="attributeValues[${attributeId}][]" multiple>
+                            ${options}
+                        </select>
+                    `;
+                    attributeFormsContainer.appendChild(formGroup);
+                }
+            });
+        }
+
+        function getCombinations(selectElements) {
+            let attributeValues = Array.from(selectElements).map(select => {
+                let match = select.name.match(/attributeValues\[(\d+)\]/);
+                let attributeId = match ? match[1] : null;
+
+                return Array.from(select.selectedOptions).map(option => ({
+                    id: option.value,
+                    name: option.text,
+                    attributeId: attributeId
+                }));
+            });
+
+            if (attributeValues.length === 1) {
+                return attributeValues[0].map(item => [item]);
+            }
+
+            function combine(arr) {
+                if (arr.length === 0) return [[]];
+                let result = [];
+                let restCombinations = combine(arr.slice(1));
+                arr[0].forEach(item => {
+                    restCombinations.forEach(combination => {
+                        result.push([item].concat(combination));
+                    });
+                });
+                return result;
+            }
+
+            return combine(attributeValues);
+        }
+
+        //render variant table(hiển thị các biến thể khi bấm lưu thuộc tính)
+       function renderVariantTable(attributeCombinations) {
+    let variantSection = document.getElementById('variantSection');
+    let tableHtml = `
+        <h3>Biến thể sản phẩm</h3>
+        <table class="table table-hover" id="variantTable">
+            <thead>
+                <tr>
+                    ${attributeCombinations[0].map(attr => `<th>${attributeNames[attr.attributeId]}</th>`).join('')}
+                    <th>SKU</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Cân nặng</th>
+                    <th>Ảnh</th>
+                    <th>Xóa</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    attributeCombinations.forEach((combination, rowIndex) => {
+        // Kiểm tra xem combination hiện tại có trong oldVariants không
+        let matchedVariant = oldVariants.find(variant => {
+            if (!variant.attributes || variant.attributes.length !== combination.length) return false;
+
+            return combination.every((attr, i) => {
+                return variant.attributes.some(va =>
+                    parseInt(va.id) === parseInt(attr.attributeId) &&
+                    parseInt(va.pivot.attribute_value_id) === parseInt(attr.id)
+                );
+            });
+        });
+
+        const sku = matchedVariant?.sku ?? '';
+        const price = matchedVariant?.price ?? '';
+        const quantity = matchedVariant?.quantity ?? '';
+        const weight = matchedVariant?.weight ?? '';
+        const imageUrl = matchedVariant?.variant_image ?? '';
+
+        let attributeCells = combination.map((attr, index) => `
+            <td data-attribute-id="${attr.attributeId}" data-value-id="${attr.id}">
+                ${attr.name}
+                <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][id]" value="${attr.id}">
+                <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][value]" value="${attr.name}">
+            </td>`).join('');
+
+        tableHtml += `
+            <tr>
+                ${attributeCells}
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" value="${sku}" placeholder="SKU"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" value="${price}" placeholder="Giá"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" value="${quantity}" placeholder="Số lượng"></td>
+                <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" value="${weight}" placeholder="Cân nặng"></td>
+                <td>
+                    <input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]">
+                    ${imageUrl ? `<img src="${imageUrl}" class="img-thumbnail current-image" width="60">` : ''}
+                </td>
+                <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
+            </tr>`;
     });
-</script>
+
+    tableHtml += '</tbody></table>';
+    variantSection.innerHTML = tableHtml;
+
+    document.querySelectorAll('.delete-variant').forEach(button => {
+        button.addEventListener('click', function () {
+            handleDeleteRow(this);
+        });
+    });
+}
 
 
+        //render variant.
+        function renderVariantsFromExisting(variants) {
+            let variantSection = document.getElementById('variantSection');
+            variantSection.innerHTML = '';
+
+            if (!variants || variants.length === 0) return;
+
+            let headers = variants[0].attributes.map(attr => attr.name);
+            let tableHtml = `
+                <h3>Biến thể sản phẩm</h3>
+                <table class="table table-hover" id="variantTable">
+                    <thead>
+                        <tr>
+                            ${headers.map(h => `<th>${h}</th>`).join('')}
+                            <th>SKU</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Cân nặng</th>
+                            <th>Ảnh</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            variants.forEach((variant, rowIndex) => {
+                let attributeCells = variant.attributes.map((attr, index) => `
+                    <td data-attribute-id="${attr.id}" data-value-id="${attr.pivot.attribute_value_id}">
+                        ${attr.pivot.value}
+                        <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][id]" value="${attr.pivot.attribute_value_id}">
+                        <input type="hidden" name="product_variants[${rowIndex}][attribute_item_id][${index}][value]" value="${attr.pivot.value}">
+                    </td>`).join('');
+
+                tableHtml += `
+                    <tr>
+                        ${attributeCells}
+                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" value="${variant.sku ?? ''}" placeholder="SKU"></td>
+                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" value="${variant.price ?? ''}" placeholder="Giá"></td>
+                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" value="${variant.quantity ?? ''}" placeholder="Số lượng"></td>
+                        <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" value="${variant.weight ?? ''}" placeholder="Cân nặng"></td>
+                        <td><input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]">
+                            <img src="${variant.variant_image}" class="img-thumbnail current-image"
+                                                        width="60" id="current-thumbnail">
+                        </td>
+                        <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
+                    </tr>`;
+            });
+
+            tableHtml += '</tbody></table>';
+            variantSection.innerHTML = tableHtml;
+             // Gọi gắn sự kiện nút Xóa
+            document.querySelectorAll('.delete-variant').forEach(button => {
+                button.addEventListener('click', function () {
+                    handleDeleteRow(this);
+                });
+            });
+        }
+
+        function handleDeleteRow(button) {
+                // Tìm hàng chứa nút xóa
+                let row = button.closest('tr');
+                if (!row) return;
+
+                // Lấy tất cả các <td> có data-attribute-id và data-value-id trong hàng đó
+                let attributeCells = row.querySelectorAll('td[data-attribute-id][data-value-id]');
+
+                // Tạo danh sách các giá trị sẽ bị xóa
+                let valuesToRemove = Array.from(attributeCells).map(cell => ({
+                    attributeId: cell.getAttribute('data-attribute-id'),
+                    valueId: cell.getAttribute('data-value-id')
+                }));
+
+                // Xóa hàng khỏi bảng
+                row.remove();
+
+                // Sau khi xóa, kiểm tra nếu không còn dòng nào trong bảng thì reset giao diện
+                const remainingRows = document.querySelectorAll('#variantTable tbody tr');
+                if (remainingRows.length === 0) {
+                    resetVariantSection();
+                }
+
+                // Với mỗi giá trị bị xóa, kiểm tra còn dòng nào đang dùng không
+                valuesToRemove.forEach(({ attributeId, valueId }) => {
+                    let stillUsed = document.querySelector(
+                        `#variantTable td[data-attribute-id="${attributeId}"][data-value-id="${valueId}"]`
+                    );
+
+                    if (!stillUsed) {
+                        // Nếu không còn ai dùng, thì bỏ chọn trong select tương ứng
+                        let select = document.querySelector(`#attributeValue_${attributeId}`);
+                        if (select) {
+                            Array.from(select.options).forEach(option => {
+                                if (option.value == valueId) {
+                                    option.selected = false;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        function resetVariantSection() {
+                // Xóa bảng biến thể
+                document.getElementById('variantSection').innerHTML = '';
+
+                // Reset select thuộc tính (clear selected)
+                const attributeSelect = document.getElementById('attributeSelect');
+                Array.from(attributeSelect.options).forEach(option => option.selected = false);
+
+                // Xóa các form nhập giá trị thuộc tính
+                document.getElementById('attributeForms').innerHTML = '';
+            }
+    });
+    </script>
 @endsection

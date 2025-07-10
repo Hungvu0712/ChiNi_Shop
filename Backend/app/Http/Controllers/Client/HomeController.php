@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Product;
+use App\Models\Banner;
+use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -74,4 +76,10 @@ class HomeController extends Controller
         ];
         Address::create($address);
     }
+    public function index(){
+        $banner = Banner::where('active', 1)->first();
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
+        return view('client.pages.home', compact('banner', 'menus'));
+    }
+
 }

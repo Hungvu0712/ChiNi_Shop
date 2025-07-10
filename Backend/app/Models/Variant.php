@@ -36,4 +36,8 @@ class Variant extends Model
         return $this->hasMany(VariantAttributeValue::class);
     }
     
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, "variant_attribute_values")->withPivot("attribute_value_id", 'value');
+    }
 }
