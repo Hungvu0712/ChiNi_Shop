@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Brand;
+use App\Models\Menu;
 use Illuminate\Support\Str;
 
 class ShopController extends Controller
 {
     public function index()
     {
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
         $products = Product::with([
             'variants.variantAttributeValues.attributeValue'
         ])
@@ -44,13 +46,14 @@ class ShopController extends Controller
             $product->sizes = collect(array_unique(array_map(fn($key) => explode('-', $key)[1], array_keys($variantMap))))->values()->all();
         }
 
-        return view('client.pages.shop', compact('products'));
+        return view('client.pages.shop', compact('products', 'menus'));
     }
 
 
 
     public function show($slug)
     {
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
         $product = Product::with([
             'variants.variantAttributeValues.attributeValue',
             'category',
@@ -135,6 +138,6 @@ class ShopController extends Controller
             $related->colorVariants = $colorVariants;
         }
 
-        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts'));
+        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts', 'menus'));
     }
 }

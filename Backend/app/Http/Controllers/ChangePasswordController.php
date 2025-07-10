@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
+use App\Models\Menu;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ class ChangePasswordController extends Controller
 {
     public function showChangePasswordForm()
     {
-        return view('auth.change-password');
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
+        return view('auth.change-password', compact('menus'));
     }
 
     public function changePassword(ChangePasswordRequest $request)

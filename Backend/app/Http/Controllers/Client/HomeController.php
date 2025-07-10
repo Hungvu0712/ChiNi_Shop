@@ -16,6 +16,10 @@ class HomeController extends Controller
 
     public function index()
     {
+
+        $banner = Banner::where('active', 1)->first();
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
+
         $products = Product::with([
             'variants.variantAttributeValues.attributeValue'
         ])
@@ -56,7 +60,7 @@ class HomeController extends Controller
             $product->setAttribute('colors', array_unique($colorSet));
         }
 
-        return view('client.pages.home', compact('products'));
+        return view('client.pages.home', compact('products', 'banner', 'menus'));
     }
 
     public function danhsachdiachi()
@@ -75,11 +79,6 @@ class HomeController extends Controller
             'specific_address' => $request->specific_address,
         ];
         Address::create($address);
-    }
-    public function index(){
-        $banner = Banner::where('active', 1)->first();
-        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
-        return view('client.pages.home', compact('banner', 'menus'));
     }
 
 }

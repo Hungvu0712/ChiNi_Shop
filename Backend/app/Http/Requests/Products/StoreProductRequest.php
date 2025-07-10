@@ -24,7 +24,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'tags' => 'required|string|max:255',
-            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:5120',
             'removed_attachments' => 'nullable|string',
@@ -34,12 +34,6 @@ class StoreProductRequest extends FormRequest
             'attributeId' => 'required|array|min:1',
             'attributeValues' => 'required|array|min:1',
             // Biến thể
-            'variants' => 'nullable|array',
-            'variants.*.sku' => 'required|string|max:100|distinct|unique:variants,sku',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.quantity' => 'required|integer|min:0',
-            'variants.*.weight' => 'nullable|string|max:50',
-            'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'product_variants' => 'required|array',
             'product_variants.*.attribute_item_id' => 'required|array|min:1',
             'product_variants.*.attribute_item_id.*.id' => 'required|integer',
@@ -112,7 +106,7 @@ class StoreProductRequest extends FormRequest
         'attributeId.required' => 'Bạn phải chọn ít nhất một thuộc tính.',
         'attributeId.*.integer' => 'Mỗi thuộc tính phải là số nguyên.',
         'attributeValues.required' => 'Bạn phải chọn giá trị cho các thuộc tính.',
- 
+
         // Biến thể
         'product_variants.array' => 'Danh sách biến thể không hợp lệ.',
         'product_variants.required' => 'Trường product_variants bắt buộc phải nhập',

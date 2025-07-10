@@ -124,7 +124,6 @@ Route::prefix('client')->group(function () {
     Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
 });
-=======
 Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
