@@ -20,8 +20,10 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -57,7 +59,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     //permissions
     Route::resource('permissions', PermissionController::class);
 
-    Route::resource('menus',MenuController::class);
+    Route::resource('menus', MenuController::class);
 
     //categories
     Route::resource('categories', CategoryController::class);
@@ -70,7 +72,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::resource('post-categories', PostCategoryController::class)->parameters(['post-categories' => 'post_category']);
 
     //products
-     Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class);
     Route::delete('product-attachments/{id}', [ProductAttachmentController::class, 'destroy'])
         ->name('product-attachments.destroy');
     Route::resource('posts', PostController::class);
@@ -113,6 +115,16 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 
 
+Route::controller(HomeController::class)->group(function () {
+    Route::get('diachi',  'danhsachdiachi')->name('address');
+    Route::post('add-address', 'addAddress')->name('add-address');
+});
+Route::prefix('client')->group(function () {
+    Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+    Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
+    Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
+});
+=======
 Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
