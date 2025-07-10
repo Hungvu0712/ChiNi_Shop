@@ -33,19 +33,22 @@ class UpdateProductRequest extends FormRequest
         'removed_attachments' => 'nullable|string',
         'active' => 'nullable|in:true,false,1,0,on,off',
 
+        //Thuộc tính
+        'attributeId' => 'required|array|min:1',
+        'attributeValues' => 'required|array|min:1',
         // Biến thể
-        'variants' => 'nullable|array',
-        'variants.*.sku' => [
+        'product_variants' => 'required|array',
+        'product_variants.*.sku' => [
             'required',
             'string',
             'max:100',
             'distinct',
             Rule::unique('variants', 'sku')->ignore($productId, 'product_id'),
         ],
-        'variants.*.price' => 'required|numeric|min:0',
-        'variants.*.quantity' => 'required|integer|min:0',
-        'variants.*.weight' => 'nullable|string|max:50',
-        'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'product_variants.*.price' => 'required|numeric|min:0',
+        'product_variants.*.quantity' => 'required|integer|min:0',
+        'product_variants.*.weight' => 'nullable|string|max:50',
+        'product_variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
 
         'variant_keys' => 'nullable|array',
         'variant_keys.*' => 'nullable|string',
@@ -103,30 +106,35 @@ class UpdateProductRequest extends FormRequest
         'removed_attachments.string' => 'Danh sách tệp xoá phải là chuỗi.',
 
         'active.in' => 'Trạng thái sản phẩm không hợp lệ.',
-
+        //thuộc tính
+        'attributeId.required' => 'Bạn phải chọn ít nhất một thuộc tính.',
+        'attributeId.*.integer' => 'Mỗi thuộc tính phải là số nguyên.',
+        'attributeValues.required' => 'Bạn phải chọn giá trị cho các thuộc tính.',
+    
         // Biến thể
-        'variants.array' => 'Dữ liệu biến thể không hợp lệ.',
+        'product_variants.array' => 'Dữ liệu biến thể không hợp lệ.',
+        'product_variants.required' => 'Trường product_variants bắt buộc phải nhập',
 
-        'variants.*.sku.required' => 'SKU của biến thể không được để trống.',
-        'variants.*.sku.string' => 'SKU của biến thể phải là chuỗi.',
-        'variants.*.sku.max' => 'SKU của biến thể không được vượt quá 100 ký tự.',
-        'variants.*.sku.distinct' => 'SKU của các biến thể không được trùng nhau.',
-        'variants.*.sku.unique' => 'SKU của biến thể đã tồn tại trong hệ thống.',
+        'product_variants.*.sku.required' => 'SKU của biến thể không được để trống.',
+        'product_variants.*.sku.string' => 'SKU của biến thể phải là chuỗi.',
+        'product_variants.*.sku.max' => 'SKU của biến thể không được vượt quá 100 ký tự.',
+        'product_variants.*.sku.distinct' => 'SKU của các biến thể không được trùng nhau.',
+        'product_variants.*.sku.unique' => 'SKU của biến thể đã tồn tại trong hệ thống.',
 
-        'variants.*.price.required' => 'Giá của biến thể không được để trống.',
-        'variants.*.price.numeric' => 'Giá của biến thể phải là số.',
-        'variants.*.price.min' => 'Giá của biến thể phải lớn hơn hoặc bằng 0.',
+        'product_variants.*.price.required' => 'Giá của biến thể không được để trống.',
+        'product_variants.*.price.numeric' => 'Giá của biến thể phải là số.',
+        'product_variants.*.price.min' => 'Giá của biến thể phải lớn hơn hoặc bằng 0.',
 
-        'variants.*.quantity.required' => 'Số lượng của biến thể không được để trống.',
-        'variants.*.quantity.integer' => 'Số lượng của biến thể phải là số nguyên.',
-        'variants.*.quantity.min' => 'Số lượng của biến thể phải lớn hơn hoặc bằng 0.',
+        'product_variants.*.quantity.required' => 'Số lượng của biến thể không được để trống.',
+        'product_variants.*.quantity.integer' => 'Số lượng của biến thể phải là số nguyên.',
+        'product_variants.*.quantity.min' => 'Số lượng của biến thể phải lớn hơn hoặc bằng 0.',
 
-        'variants.*.weight.string' => 'Khối lượng của biến thể phải là chuỗi.',
-        'variants.*.weight.max' => 'Khối lượng của biến thể không được vượt quá 50 ký tự.',
+        'product_variants.*.weight.string' => 'Khối lượng của biến thể phải là chuỗi.',
+        'product_variants.*.weight.max' => 'Khối lượng của biến thể không được vượt quá 50 ký tự.',
 
-        'variants.*.variant_image.image' => 'Ảnh của biến thể phải là hình ảnh.',
-        'variants.*.variant_image.mimes' => 'Ảnh của biến thể phải có định dạng jpeg, png, jpg hoặc webp.',
-        'variants.*.variant_image.max' => 'Ảnh của biến thể không được vượt quá 2MB.',
+        'product_variants.*.variant_image.image' => 'Ảnh của biến thể phải là hình ảnh.',
+        'product_variants.*.variant_image.mimes' => 'Ảnh của biến thể phải có định dạng jpeg, png, jpg hoặc webp.',
+        'product_variants.*.variant_image.max' => 'Ảnh của biến thể không được vượt quá 2MB.',
 
         'variant_keys.array' => 'Danh sách khóa biến thể không hợp lệ.',
         'variant_keys.*.string' => 'Khóa biến thể phải là chuỗi.',

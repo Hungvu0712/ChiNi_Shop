@@ -47,7 +47,7 @@
                             </td>
                             <td style="background-color: #f9f9f9;" class="px-3 py-2">
                                 <div class="d-flex gap-2 align-items-center h-100">
-                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
+                                    <a href="{{ route('products.show', $product->id) }}" class="btn btn-info">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
 
