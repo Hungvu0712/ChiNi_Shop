@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\ProductReviewController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -123,6 +125,7 @@ Route::prefix('client')->group(function () {
     Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
     Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
+    Route::post('/review', [ProductReviewController::class, 'store'])->name('client.shop.review');
 });
 Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
@@ -133,4 +136,9 @@ Route::controller(AddressController::class)->group(function () {
 Route::controller(PostHomeController::class)->group(function () {
     Route::get('blog' , 'index')->name('blog');
     Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
+});
+
+Route::controller(ReviewController::class)->group(function () {
+    Route::get('review', 'index')->name('admin.reviews.index');
+    Route::delete('/reviews/{id}',  'destroy')->name('admin.reviews.destroy');
 });

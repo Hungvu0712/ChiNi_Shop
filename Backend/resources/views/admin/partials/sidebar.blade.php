@@ -3,7 +3,8 @@
     <div class="sidebar-logo">
         <div class="logo-header" data-background-color="dark">
             <a href="#" class="logo">
-                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand" height="20" />
+                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand"
+                    height="20" />
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button>
@@ -30,15 +31,17 @@
                 <!-- Quản lý tài khoản -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#users"
-                       aria-expanded="{{ request()->routeIs('permissions.*') || request()->routeIs('roles.*') || request()->routeIs('admin.users.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('permissions.*') || request()->routeIs('roles.*') || request()->routeIs('admin.users.*') ? 'true' : 'false' }}">
                         <i class="fas fa-users-cog"></i>
                         <p>Quản lý tài khoản</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse {{ request()->routeIs('permissions.*') || request()->routeIs('roles.*') || request()->routeIs('admin.users.*') ? 'show' : '' }}" id="users">
+                    <div class="collapse {{ request()->routeIs('permissions.*') || request()->routeIs('roles.*') || request()->routeIs('admin.users.*') ? 'show' : '' }}"
+                        id="users">
                         <ul class="nav nav-collapse">
                             <li class="{{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-                                <a href="{{ route('permissions.index') }}"><span class="sub-item">Quyền truy cập</span></a>
+                                <a href="{{ route('permissions.index') }}"><span class="sub-item">Quyền truy
+                                        cập</span></a>
                             </li>
                             <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
                                 <a href="{{ route('roles.index') }}"><span class="sub-item">Vai trò</span></a>
@@ -53,7 +56,7 @@
                 <!-- Quản lý sản phẩm -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#products"
-                       aria-expanded="{{ request()->routeIs('products.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('products.*') ? 'true' : 'false' }}">
                         <i class="fas fa-box"></i>
                         <p>Quản lý sản phẩm</p>
                         <span class="caret"></span>
@@ -77,7 +80,7 @@
                 <!-- Quản lý danh mục -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#categories"
-                       aria-expanded="{{ request()->routeIs('categories.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('categories.*') ? 'true' : 'false' }}">
                         <i class="fas fa-th-large"></i>
                         <p>Quản lý danh mục</p>
                         <span class="caret"></span>
@@ -88,7 +91,8 @@
                                 <a href="{{ route('categories.index') }}"><span class="sub-item">Danh sách</span></a>
                             </li>
                             <li class="{{ request()->routeIs('categories.create') ? 'active' : '' }}">
-                                <a href="{{ route('categories.create') }}"><span class="sub-item">Thêm danh mục</span></a>
+                                <a href="{{ route('categories.create') }}"><span class="sub-item">Thêm danh
+                                        mục</span></a>
                             </li>
                         </ul>
                     </div>
@@ -97,7 +101,7 @@
                 <!-- Quản lý thương hiệu -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#brand"
-                       aria-expanded="{{ request()->routeIs('brands.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('brands.*') ? 'true' : 'false' }}">
                         <i class="fas fa-tags"></i>
                         <p>Quản lý thương hiệu</p>
                         <span class="caret"></span>
@@ -105,10 +109,12 @@
                     <div class="collapse {{ request()->routeIs('brands.*') ? 'show' : '' }}" id="brand">
                         <ul class="nav nav-collapse">
                             <li class="{{ request()->routeIs('brands.index') ? 'active' : '' }}">
-                                <a href="{{ route('brands.index') }}"><span class="sub-item">Danh sách thương hiệu</span></a>
+                                <a href="{{ route('brands.index') }}"><span class="sub-item">Danh sách thương
+                                        hiệu</span></a>
                             </li>
                             <li class="{{ request()->routeIs('brands.create') ? 'active' : '' }}">
-                                <a href="{{ route('brands.create') }}"><span class="sub-item">Thêm thương hiệu</span></a>
+                                <a href="{{ route('brands.create') }}"><span class="sub-item">Thêm thương
+                                        hiệu</span></a>
                             </li>
                         </ul>
                     </div>
@@ -117,18 +123,21 @@
                 <!-- Quản lý danh mục bài viết -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#postCategories"
-                       aria-expanded="{{ request()->routeIs('post-categories.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('post-categories.*') ? 'true' : 'false' }}">
                         <i class="fas fa-folder"></i>
                         <p>Danh mục bài viết</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse {{ request()->routeIs('post-categories.*') ? 'show' : '' }}" id="postCategories">
+                    <div class="collapse {{ request()->routeIs('post-categories.*') ? 'show' : '' }}"
+                        id="postCategories">
                         <ul class="nav nav-collapse">
                             <li class="{{ request()->routeIs('post-categories.index') ? 'active' : '' }}">
-                                <a href="{{ route('post-categories.index') }}"><span class="sub-item">Danh sách</span></a>
+                                <a href="{{ route('post-categories.index') }}"><span class="sub-item">Danh
+                                        sách</span></a>
                             </li>
                             <li class="{{ request()->routeIs('post-categories.create') ? 'active' : '' }}">
-                                <a href="{{ route('post-categories.create') }}"><span class="sub-item">Thêm danh mục</span></a>
+                                <a href="{{ route('post-categories.create') }}"><span class="sub-item">Thêm danh
+                                        mục</span></a>
                             </li>
                         </ul>
                     </div>
@@ -137,7 +146,7 @@
                 <!-- Quản lý bài viết -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#posts"
-                       aria-expanded="{{ request()->routeIs('posts.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('posts.*') ? 'true' : 'false' }}">
                         <i class="fas fa-pen"></i>
                         <p>Quản lý bài viết</p>
                         <span class="caret"></span>
@@ -157,7 +166,7 @@
                 <!-- Quản lý menu -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#menu"
-                       aria-expanded="{{ request()->routeIs('menus.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('menus.*') ? 'true' : 'false' }}">
                         <i class="fas fa-list"></i>
                         <p>Quản lý Menus</p>
                         <span class="caret"></span>
@@ -177,7 +186,7 @@
                 <!-- Quản lý Attributes -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attributes"
-                       aria-expanded="{{ request()->routeIs('attributes.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('attributes.*') ? 'true' : 'false' }}">
                         <i class="fas fa-cog"></i>
                         <p>Quản lý Attributes</p>
                         <span class="caret"></span>
@@ -197,27 +206,38 @@
                 <!-- Quản lý Attribute Values -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attribute_values"
-                       aria-expanded="{{ request()->routeIs('attribute_values.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('attribute_values.*') ? 'true' : 'false' }}">
                         <i class="fas fa-sliders-h"></i>
                         <p>Attribute Values</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse {{ request()->routeIs('attribute_values.*') ? 'show' : '' }}" id="attribute_values">
+                    <div class="collapse {{ request()->routeIs('attribute_values.*') ? 'show' : '' }}"
+                        id="attribute_values">
                         <ul class="nav nav-collapse">
                             <li class="{{ request()->routeIs('attribute_values.index') ? 'active' : '' }}">
-                                <a href="{{ route('attribute_values.index') }}"><span class="sub-item">Danh sách</span></a>
+                                <a href="{{ route('attribute_values.index') }}"><span class="sub-item">Danh
+                                        sách</span></a>
                             </li>
                             <li class="{{ request()->routeIs('attribute_values.create') ? 'active' : '' }}">
-                                <a href="{{ route('attribute_values.create') }}"><span class="sub-item">Thêm</span></a>
+                                <a href="{{ route('attribute_values.create') }}"><span
+                                        class="sub-item">Thêm</span></a>
                             </li>
                         </ul>
                     </div>
                 </li>
 
+                {{-- quản lí bình luận --}}
+                <li class="nav-item">
+                    <a class="nav-link text-primary fw-semibold" href="{{ route('admin.reviews.index') }}">
+                        <i class="fas fa-comments me-2"></i> Quản lý bình luận
+                    </a>
+                </li>
+
+
                 <!-- Quản lý Banners -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#banners"
-                       aria-expanded="{{ request()->routeIs('banners.*') ? 'true' : 'false' }}">
+                        aria-expanded="{{ request()->routeIs('banners.*') ? 'true' : 'false' }}">
                         <i class="fas fa-sliders-h"></i>
                         <p>Banners</p>
                         <span class="caret"></span>
@@ -233,6 +253,8 @@
                         </ul>
                     </div>
                 </li>
+
+
 
             </ul>
         </div>

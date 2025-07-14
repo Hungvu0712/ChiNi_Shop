@@ -28,6 +28,9 @@
     <link rel="stylesheet" href="{{ asset('client/css/theme.css') }}">
     <link rel="stylesheet" href="{{ asset('client/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 
 
     @yield('css')

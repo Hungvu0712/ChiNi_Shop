@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Menu;
 use Illuminate\Support\Str;
+use App\Models\ProductReview;
 
 class ShopController extends Controller
 {
@@ -137,7 +138,13 @@ class ShopController extends Controller
             $related->sizes = $sizeSet->unique()->values()->all();
             $related->colorVariants = $colorVariants;
         }
+        // $reviews = ProductReview::with('user')->where('product_id', $product->id)->get();
+        $reviews = ProductReview::with('user', 'images')
+            ->where('product_id', $product->id)
+            ->latest()
+            ->get();
 
-        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts', 'menus'));
+        $reviewCount = $reviews->count();
+        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts', 'menus', 'reviews', 'reviewCount'));
     }
 }

@@ -29,8 +29,36 @@
             height: 100%;
             object-fit: cover;
         }
-    </style>
 
+        input[type="file"] {
+            height: 45px;
+            line-height: 45px;
+            padding-left: 15px;
+        }
+
+        .rating-stars {
+            direction: rtl;
+            /* để đảo thứ tự ngôi sao */
+            display: inline-flex;
+        }
+
+        .rating-stars input[type="radio"] {
+            display: none;
+        }
+
+        .rating-stars label {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ddd;
+            /* Màu sao chưa chọn */
+            margin: 0 2px;
+        }
+
+        .rating-stars input[type="radio"]:checked~label i {
+            color: #ffc107;
+            /* Màu sao đã chọn */
+        }
+    </style>
 
 @endsection
 @section('content')
@@ -240,98 +268,116 @@
                             <div class="productReviewArea">
                                 <div class="row">
                                     <div class="col-lg-6">
-                                        <h3>10 Reviews</h3>
+                                        <h3>{{ $reviewCount }} đánh giá</h3>
+
                                         <div class="reviewList">
                                             <ol>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/7.jpg" alt="Post Review">
-                                                        <h2>Greaet product. Packaging was also good!</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
+                                                @forelse ($reviews as $review)
+                                                    <li>
+                                                        <div class="postReview d-flex gap-3 mb-4">
+                                                            {{-- Avatar --}}
+                                                            <div>
+                                                                <img src="{{ $review->user->avatar ?? asset('images/author/default.jpg') }}"
+                                                                    alt="{{ $review->user->name ?? 'Ẩn danh' }}"
+                                                                    class="rounded-circle" width="60" height="60"
+                                                                    style="object-fit: cover;">
+                                                            </div>
+
+                                                            {{-- Nội dung --}}
+                                                            <div class="flex-grow-1">
+                                                                <div class="mb-1">
+                                                                    <h5 class="mb-1">
+                                                                        {{ $review->user->name ?? 'Ẩn danh' }}</h5>
+
+                                                                </div>
+
+
+                                                                {{-- Số sao --}}
+
+                                                                <div class="productRatingWrap mb-2">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        <i
+                                                                            class="{{ $i <= $review->rating ? 'fas' : 'far' }} fa-star text-warning"></i>
+                                                                    @endfor
+                                                                </div>
+
+                                                                {{-- Nội dung đánh giá --}}
+
+                                                                <div class="mb-1">
+                                                                    <h5 class="mb-1">{{ $review->review }}</h5>
+                                                                    <small
+                                                                        class="text-muted d-block">{{ $review->created_at->format('d/m/Y H:i') }}</small>
+                                                                </div>
+
+
+                                                                {{-- Hình ảnh đính kèm --}}
+
+                                                                @if ($review->images && $review->images->count())
+                                                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                                                        @foreach ($review->images as $image)
+                                                                            <a href="{{ $image->image_url }}"
+                                                                                target="_blank">
+                                                                                <img src="{{ $image->image_url }}"
+                                                                                    alt="Review image"
+                                                                                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;">
+                                                                            </a>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+
+
+                                                            </div>
                                                         </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>John Manna</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/8.jpg" alt="Post Review">
-                                                        <h2>The item is very comfortable and soft!</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
-                                                        </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>Robert Thomas</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/9.jpg" alt="Post Review">
-                                                        <h2>I liked the product, it is awesome.</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
-                                                        </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>Ken Williams</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
+                                                    </li>
+                                                @empty
+                                                    <li>
+                                                        <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+                                                    </li>
+                                                @endforelse
                                             </ol>
                                         </div>
+
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="commentFormArea">
                                             <h3>Add A Review</h3>
                                             <div class="reviewFrom">
-                                                <form method="post" action="#" class="row">
-                                                    <div class="col-lg-12">
-                                                        <div class="reviewStar">
-                                                            <label>Your Rating</label>
-                                                            <div class="rsStars"><i class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i></div>
-                                                        </div>
+                                                <form method="POST" action="{{ route('client.shop.review') }}"
+                                                    enctype="multipart/form-data">
+                                                    @csrf
+
+                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                                    <div class="mb-3 rating-stars">
+                                                        <label class="form-label">Rating</label><br>
+                                                        @for ($i = 5; $i >= 1; $i--)
+                                                            <input type="radio" name="rating"
+                                                                id="star{{ $i }}"
+                                                                value="{{ $i }}" />
+                                                            <label for="star{{ $i }}"><i
+                                                                    class="fa fa-star"></i></label>
+                                                        @endfor
                                                     </div>
-                                                    <div class="col-lg-12">
-                                                        <input type="text" name="comTitle" placeholder="Review title">
+
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Your Review</label>
+                                                        <textarea name="review" class="form-control" rows="4" required></textarea>
+
                                                     </div>
-                                                    <div class="col-lg-12">
-                                                        <textarea name="comComment" placeholder="Write your review here"></textarea>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Upload Images</label>
+                                                        <input type="file" name="comAttachments[]"
+                                                            class="form-control" multiple accept="image/*">
                                                     </div>
-                                                    <div class="col-lg-6">
-                                                        <input type="text" name="comName" placeholder="Your name">
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <input type="email" name="comEmail" placeholder="Your email">
-                                                    </div>
-                                                    <div class="col-lg-12">
-                                                        <button type="submit" name="reviewtSubmit"
-                                                            class="ulinaBTN"><span>Submit Now</span></button>
+
+                                                    <div class="text-center">
+                                                        <button class="btn btn-primary rounded-pill px-4">Submit
+                                                            Review</button>
                                                     </div>
                                                 </form>
+
                                             </div>
                                         </div>
                                     </div>
@@ -520,7 +566,6 @@
         });
     </script>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mainImage = document.getElementById('mainProductImage');
@@ -530,6 +575,23 @@
                     if (mainImage && this.src) {
                         mainImage.src = this.src;
                     }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const starInputs = document.querySelectorAll('.rating-stars input');
+            const starLabels = document.querySelectorAll('.rating-stars label');
+
+            starInputs.forEach((input, index) => {
+                input.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+
+                    starLabels.forEach((label, i) => {
+                        label.classList.toggle('checked', 5 - i < value + 1);
+                    });
                 });
             });
         });
