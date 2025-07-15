@@ -8,13 +8,6 @@
             outline-offset: 2px;
         }
 
-        .productGalleryThumb {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
         .pgtImage {
             width: 80px;
             height: 80px;
@@ -28,6 +21,11 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .pcvContainer label.disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
     </style>
 
@@ -442,16 +440,18 @@
             let selectedVariants = null;
             let selectedSize = null;
 
-            // Bấm màu
+            // Bấm chọn màu
             document.querySelectorAll('.color-picker').forEach(picker => {
                 picker.addEventListener('click', function() {
                     selectedColor = this.getAttribute('data-color');
                     selectedVariants = JSON.parse(this.getAttribute('data-variants') || '{}');
-                    updateProductDisplay();
+
+                    updateAvailableSizes(); // 👈 Cập nhật size hiển thị theo màu
+                    updateProductDisplay(); // 👈 Cập nhật ảnh, thông tin
                 });
             });
 
-            // Bấm size
+            // Bấm chọn size
             document.querySelectorAll('.size-picker').forEach(sizeInput => {
                 sizeInput.addEventListener('change', function() {
                     selectedSize = this.value;
@@ -459,68 +459,103 @@
                 });
             });
 
+            // Cập nhật giao diện theo size + màu đang chọn
             function updateProductDisplay() {
                 if (selectedVariants && selectedSize) {
                     const variant = selectedVariants[selectedSize];
 
                     if (variant) {
-                        const imageUrl = variant.variant_image;
                         const name = variant.variant_name;
                         const price = Number(variant.price).toLocaleString() + ' VNĐ';
                         const sku = variant.sku;
                         const gallery = variant.gallery || [];
 
-                        // Đổi ảnh chính — có fallback
+                        // === ẢNH CHÍNH ===
                         const mainImage = document.getElementById('mainProductImage');
-                        if (mainImage) {
-                            if (imageUrl && imageUrl !== 'null' && imageUrl !== '') {
-                                mainImage.src = imageUrl;
-                            } else {
-                                // fallback: gán lại ảnh gốc
-                                mainImage.src = '{{ $galleryImages[0] ?? '' }}';
-                            }
+                        let imageUrl = null;
+
+                        if (gallery.length > 0) {
+                            imageUrl = gallery[0];
+                        } else if (variant.variant_image && variant.variant_image !== 'null') {
+                            imageUrl = variant.variant_image;
+                        } else {
+                            imageUrl = '{{ $galleryImages[0] ?? '' }}';
                         }
 
-                        // Đổi bộ ảnh nhỏ nếu gallery con có
+                        if (mainImage) {
+                            mainImage.src = imageUrl;
+                        }
+
+                        // === ẢNH PHỤ ===
                         const thumbContainer = document.querySelector('.productGalleryThumb');
                         if (thumbContainer) {
-                            if (gallery.length) {
+                            if (gallery.length > 0) {
                                 thumbContainer.innerHTML = gallery.map(img =>
                                     `<div class="pgtImage"><img src="${img}" alt=""></div>`
                                 ).join('');
                             } else {
-                                // fallback: giữ nguyên hoặc reload lại gallery gốc
                                 thumbContainer.innerHTML = `{!! collect($galleryImages)->map(fn($img) => '<div class="pgtImage"><img src="' . $img . '" alt=""></div>')->implode('') !!}`;
                             }
+                            bindThumbnailClickEvents();
                         }
 
-                        // Tên biến thể
-                        if (name) {
-                            const titleEl = document.querySelector('.productContent h2');
-                            if (titleEl) titleEl.innerText = name;
-                        }
+                        // Tên
+                        const titleEl = document.querySelector('.productContent h2');
+                        if (titleEl && name) titleEl.innerText = name;
 
                         // Giá
-                        if (price) {
-                            const priceEl = document.querySelector('.pi01Price ins');
-                            if (priceEl) priceEl.innerText = price;
-                        }
+                        const priceEl = document.querySelector('.pi01Price ins');
+                        if (priceEl && price) priceEl.innerText = price;
 
                         // SKU
-                        if (sku) {
-                            const skuEl = document.querySelector('.sku-field');
-                            if (skuEl) skuEl.innerText = sku;
-                        }
+                        const skuEl = document.querySelector('.sku-field');
+                        if (skuEl && sku) skuEl.innerText = sku;
+
                     } else {
                         console.warn(`❗ Không tìm thấy biến thể size: ${selectedSize}`);
                     }
                 }
             }
 
+            // Gán lại sự kiện click cho thumbnail ảnh
+            function bindThumbnailClickEvents() {
+                const mainImage = document.getElementById('mainProductImage');
+                document.querySelectorAll('.pgtImage img').forEach((thumb) => {
+                    thumb.addEventListener('click', function() {
+                        if (mainImage && this.src) {
+                            mainImage.src = this.src;
+                        }
+                    });
+                });
+            }
+
+            // Cập nhật danh sách size khả dụng theo màu
+            function updateAvailableSizes() {
+                document.querySelectorAll('.size-picker').forEach(input => {
+                    const label = input.nextElementSibling;
+                    input.disabled = false;
+                    label.classList.remove('disabled');
+                });
+
+                if (selectedVariants) {
+                    document.querySelectorAll('.size-picker').forEach(input => {
+                        const size = input.value;
+                        if (!selectedVariants[size]) {
+                            input.disabled = true;
+                            input.checked = false;
+                            const label = input.nextElementSibling;
+                            if (label) {
+                                label.classList.add('disabled');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Gán sự kiện thumbnail khi load lần đầu
+            bindThumbnailClickEvents();
         });
     </script>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mainImage = document.getElementById('mainProductImage');
