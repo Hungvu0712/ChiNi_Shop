@@ -79,7 +79,7 @@
                             <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
                             </div>
                             <div class="anCart">
-                                <a href="javascript:void(0);"><i
+                                <a href="{{ route('cart.index')}}"><i
                                         class="fa-solid fa-shopping-cart"></i><span>3</span></a>
                                 <div class="cartWidgetArea">
                                     <div class="cartWidgetProduct">
@@ -87,24 +87,6 @@
                                         <a href="shop_details1.html">Ulina luxurious bag for men women</a>
                                         <div class="cartProductPrice clearfix">
                                             <span class="price"><span><span>$</span>19.00</span></span>
-                                        </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/2.jpg') }}" alt="Draped Neck">
-                                        <a href="shop_details2.html">Nasio stainless steel watch</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>41.00</span></span>
-                                        </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/3.jpg') }}" alt="Long Pleated">
-                                        <a href="shop_details1.html">Winner men’s comfortable t-shirt</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>52.00</span></span>
                                         </div>
                                         <a href="javascript:void(0);" class="cartRemoveProducts"><i
                                                 class="fa-solid fa-xmark"></i></a>

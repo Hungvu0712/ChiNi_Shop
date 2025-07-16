@@ -136,7 +136,4 @@ Route::controller(PostHomeController::class)->group(function () {
     Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
 });
 
-Route::prefix('cart')->controller(CartController::class)->group(function () {
-    Route::get('/', 'index')->name('cart');
-});
-
+Route::resource('cart', CartController::class);

@@ -610,7 +610,7 @@
 .h01Mode2.fixedHeader .cartWidgetArea{
     top: calc(100% + 24px);
 }
-.cartWidgetProduct{
+.cartWidgetProduct {
     position: relative;
     min-height: 60px;
     text-align: left;
@@ -650,23 +650,27 @@
     color: #7b9496;
     line-height: 1;
 }
-.cartWidgetProduct .cartRemoveProducts{
-    font-size: 10px;
+.cartWidgetProduct .cartRemoveProducts {
+    font-size: 12px;
     color: #7f8495;
     position: absolute;
-    right: -8px;
-    top: 0px;
+    right: 5px;
+    top: 5px;
     margin: 0;
     width: 19px;
     height: 19px;
     border: 1px solid #c5d0cf;
     border-radius: 50%;
+    background: #fff;
     text-align: center;
-    line-height: 18px;
-    padding: 0px 0 0 1px;
+    line-height: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
 }
-.cartWidgetProduct .cartRemoveProducts:hover{
-    color: #FFF;
+.cartWidgetProduct .cartRemoveProducts:hover {
+    color: #fff;
     border-color: #9ebbbd;
     background: #9ebbbd;
 }

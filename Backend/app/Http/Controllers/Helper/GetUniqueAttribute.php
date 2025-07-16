@@ -13,7 +13,7 @@ trait GetUniqueAttribute
             foreach ($variant['attributes'] as $attribute) {
                 $attrName = $attribute['name'];
                 $attrValue = $attribute['pivot']['value'];
-                $attributeId = $attribute['pivot']['attribute_id'];
+                // $attributeId = $attribute['pivot']['attribute_id'];
                 if (!isset($uniqueAttributes[$attrName])) {
                     $uniqueAttributes[$attrName] = [];
                 }

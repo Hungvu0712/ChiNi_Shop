@@ -23,5 +23,13 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(MenuSeeder::class);
         $this->call(PermissionSeeder::class);
+        $this->call([
+            AttributeSeeder::class,
+            AttributeItemSeeder::class,
+            CategorySeeder::class,
+            BrandSeeder::class,
+            ProductWithVariantsSeeder::class,
+            CartSeeder::class
+        ]);
     }
 }
