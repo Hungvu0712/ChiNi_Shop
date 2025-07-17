@@ -89,53 +89,53 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($cart['cartitems'] as $item)
-                                                                <tr>
-                                                                    <td>
-                                                                        <input type="checkbox" class="item-checkbox" value="{{ $item['id'] }}">
-                                                                    </td>
-                                                                    <td class="product-thumbnail">
-                                                                        <img src="{{ $item['productvariant']['variant_image'] }}" style="width: 100px; height: 100px;">
-                                                                    </td>
-                                                                    <td class="product-name">
-                                                                        {{ $item['product']['name'] }}
-                                                                    </td>
-                                                                    <td>
-                                                                        @foreach ($item['productvariant']['attributes'] as $attribute)
-                                                                        <div class="attribute-group">
-                                                                            <strong>{{ $attribute['name'] }}:</strong>
-                                                                            @php
-                                        $value = mb_strtolower($attribute['pivot']['value']);
-                                                                            @endphp
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="item-checkbox" value="{{ $item['id'] }}">
+                                            </td>
+                                            <td class="product-thumbnail">
+                                                <img src="{{ $item['productvariant']['variant_image'] }}" style="width: 100px; height: 100px;">
+                                            </td>
+                                            <td class="product-name">
+                                                {{ $item['product']['name'] }}
+                                            </td>
+                                            <td>
+                                                @foreach ($item['productvariant']['attributes'] as $attribute)
+                                                <div class="attribute-group">
+                                                    <strong>{{ $attribute['name'] }}:</strong>
+                                                    @php
+                                                    $value = mb_strtolower($attribute['pivot']['value']);
+                                                    @endphp
 
-                                                                            @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
-                                                                            <span class="color-dot"
-                                                                                style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
-                                                                            </span>
-                                                                            <span>{{ $attribute['pivot']['value'] }}</span>
-                                                                            @else
-                                                                            <span>{{ $attribute['pivot']['value'] }}</span>
-                                                                            @endif
-                                                                        </div>
-                                                                        @endforeach
-                                                                    </td>
-                                                                    <td>{{ $item['productvariant']['price'] }} VND</td>
-                                                                    <td class="product-quantity">
-                                                                    <div class="quantity clearfix">
-                                                                        {{-- @dd($item["productvariant"]["attributes"]->toArray()) --}}
-                                                                       <button type="button" class="qtyBtn btnMinus"  data-cart-id="{{ $item['id'] }}">_</button>
+                                                    @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
+                                                    <span class="color-dot"
+                                                        style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
+                                                    </span>
+                                                    <span>{{ $attribute['pivot']['value'] }}</span>
+                                                    @else
+                                                    <span>{{ $attribute['pivot']['value'] }}</span>
+                                                    @endif
+                                                </div>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ number_format($item['productvariant']['price']) }} VND</td>
+                                            <td class="product-quantity">
+                                            <div class="quantity clearfix">
+                                                {{-- @dd($item["productvariant"]["attributes"]->toArray()) --}}
+                                               <button type="button" class="qtyBtn btnMinus"  data-cart-id="{{ $item['id'] }}">-</button>
 
-                                                                    <input type="number" readonly class="carqty input-text qty text" name="quantity" value="{{ $item['quantity'] }}"
-                                                                        data-cart-id="{{ $item['id'] }}" id="qty_{{ $item['id'] }}"
-                                                                        data-price="{{ $item['productvariant']['price'] }}"
-                                                                        data-variant='@json(collect($item["productvariant"]["attributes"])->pluck("pivot.attribute_value_id", "name"))'>
+                                            <input type="number" readonly class="carqty input-text qty text" name="quantity" value="{{ $item['quantity'] }}"
+                                                data-cart-id="{{ $item['id'] }}" id="qty_{{ $item['id'] }}"
+                                                data-price="{{ $item['productvariant']['price'] }}"
+                                                data-variant='@json(collect($item["productvariant"]["attributes"])->pluck("pivot.attribute_value_id", "name"))'>
 
-                                                                    <button type="button" class="qtyBtn btnPlus" data-cart-id="{{ $item['id'] }}">+</button>
+                                            <button type="button" class="qtyBtn btnPlus" data-cart-id="{{ $item['id'] }}">+</button>
 
-                                                                    </div>
-                                                                    </td>
-                                                                    <td id="total_{{ $item['id'] }}">{{ number_format($item['quantity'] * $item['productvariant']['price']) }} VND</td>
-                                                                    <td></td>
-                                                                </tr>
+                                            </div>
+                                            </td>
+                                            <td id="total_{{ $item['id'] }}">{{ number_format($item['quantity'] * $item['productvariant']['price']) }} VND</td>
+                                            <td></td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -196,149 +196,154 @@
 
 @endsection
 @section('script')
-       <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const checkAllBox = document.getElementById('checkAll');
-            const itemCheckboxes = document.querySelectorAll('.item-checkbox');
-            const deleteBtn = document.getElementById('deleteSelectedBtn');
-            const deleteForm = document.getElementById('deleteForm');
-            const hiddenInput = document.getElementById('cart_item_ids_json');
+           <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const checkAllBox = document.getElementById('checkAll');
+                const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+                const deleteBtn = document.getElementById('deleteSelectedBtn');
+                const deleteForm = document.getElementById('deleteForm');
+                const hiddenInput = document.getElementById('cart_item_ids_json');
 
-            if (!checkAllBox || !deleteBtn || !deleteForm || !hiddenInput) return;
+                if (!checkAllBox || !deleteBtn || !deleteForm || !hiddenInput) return;
 
-            // Khi click checkAll
-            checkAllBox.addEventListener('change', function () {
-                itemCheckboxes.forEach(cb => cb.checked = this.checked);
-            });
+                // Khi click checkAll
+                checkAllBox.addEventListener('change', function () {
+                    itemCheckboxes.forEach(cb => cb.checked = this.checked);
+                });
 
-            // Khi click từng checkbox
-            itemCheckboxes.forEach(cb => {
-                cb.addEventListener('change', function () {
-                    const allChecked = Array.from(itemCheckboxes).every(c => c.checked);
-                    const noneChecked = Array.from(itemCheckboxes).every(c => !c.checked);
+                // Khi click từng checkbox
+                itemCheckboxes.forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        const allChecked = Array.from(itemCheckboxes).every(c => c.checked);
+                        const noneChecked = Array.from(itemCheckboxes).every(c => !c.checked);
 
-                    if (allChecked) {
-                        checkAllBox.checked = true;
-                        checkAllBox.indeterminate = false;
-                    } else if (noneChecked) {
-                        checkAllBox.checked = false;
-                        checkAllBox.indeterminate = false;
-                    } else {
-                        checkAllBox.checked = false;
-                        checkAllBox.indeterminate = true;
+                        if (allChecked) {
+                            checkAllBox.checked = true;
+                            checkAllBox.indeterminate = false;
+                        } else if (noneChecked) {
+                            checkAllBox.checked = false;
+                            checkAllBox.indeterminate = false;
+                        } else {
+                            checkAllBox.checked = false;
+                            checkAllBox.indeterminate = true;
+                        }
+                    });
+                });
+
+                // Xoá đã chọn
+                deleteBtn.addEventListener('click', function () {
+                    const checked = Array.from(itemCheckboxes).filter(cb => cb.checked);
+                    if (checked.length === 0) {
+                        alert('Vui lòng chọn ít nhất một sản phẩm để xoá.');
+                        return;
+                    }
+
+                    const ids = checked.map(cb => cb.value);
+                    const jsonIds = JSON.stringify(ids);
+
+                    deleteForm.action = deleteForm.action.replace('__ID__', encodeURIComponent(jsonIds));
+                    hiddenInput.value = jsonIds;
+
+                    if (confirm('Bạn có chắc chắn muốn xoá các sản phẩm đã chọn không?')) {
+                        deleteForm.submit();
                     }
                 });
             });
+        </script>
+        {{-- Cập nhật sản phẩm --}}
+       <script>
+    document.querySelectorAll('.btnPlus, .btnMinus').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const cartId = this.dataset.cartId;
+            const input = document.querySelector('#qty_' + cartId);
 
-            // Xoá đã chọn
-            deleteBtn.addEventListener('click', function () {
-                const checked = Array.from(itemCheckboxes).filter(cb => cb.checked);
-                if (checked.length === 0) {
-                    alert('Vui lòng chọn ít nhất một sản phẩm để xoá.');
+            if (!input) {
+                console.error("Không tìm thấy input với ID: qty_" + cartId);
+                return;
+            }
+
+            let currentQty = parseInt(input.value);
+            let newQty = currentQty;
+
+            if (this.classList.contains('btnPlus')) {
+                newQty++;
+            } else if (this.classList.contains('btnMinus')) {
+               if (currentQty > 1) {
+                    newQty--;
+                } else {
+                    alert("⚠ Số lượng tối thiểu là 1");
                     return;
                 }
+            }
 
-                const ids = checked.map(cb => cb.value);
-                const jsonIds = JSON.stringify(ids);
+            // Lấy product_variant từ data-variant
+            let variantData = input.dataset.variant;
+            let product_variant = {};
+            try {
+                product_variant = variantData ? JSON.parse(variantData) : {};
+            } catch (e) {
+                console.error("Lỗi khi parse JSON variant:", e);
+            }
 
-                deleteForm.action = deleteForm.action.replace('__ID__', encodeURIComponent(jsonIds));
-                hiddenInput.value = jsonIds;
+            try {
+                const res = await fetch(`/cart/${cartId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quantity: newQty,
+                        product_variant: product_variant
+                    })
+                });
 
-                if (confirm('Bạn có chắc chắn muốn xoá các sản phẩm đã chọn không?')) {
-                    deleteForm.submit();
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert("❌ " + (error.message || 'Có lỗi xảy ra'));
+                    return; // ❌ không cập nhật giao diện nếu lỗi
                 }
-            });
+
+                const data = await res.json();
+                alert("✅ " + data.message);
+
+                // ✅ Nếu OK thì cập nhật giao diện
+                input.value = newQty;
+
+                // Cập nhật tổng tiền sản phẩm (nếu bạn có thẻ hiển thị riêng)
+                const pricePerItem = parseFloat(input.dataset.price); // bạn cần gắn data-price vào input
+                const totalCell = document.querySelector('#total_' + cartId);
+
+
+                if (totalCell && pricePerItem) {
+                    totalCell.innerText = new Intl.NumberFormat('vi-VN').format(newQty * pricePerItem) + ' VND';
+                    updateGrandTotal();
+                }
+
+            } catch (err) {
+                console.error("Lỗi khi gọi API:", err);
+                alert("❌ Không thể cập nhật. Vui lòng thử lại sau.");
+            }
         });
-    </script>
-    {{-- Cập nhật sản phẩm --}}
-   <script>
-document.querySelectorAll('.btnPlus, .btnMinus').forEach(btn => {
-    btn.addEventListener('click', async function () {
-        const cartId = this.dataset.cartId;
-        const input = document.querySelector('#qty_' + cartId);
-
-        if (!input) {
-            console.error("Không tìm thấy input với ID: qty_" + cartId);
-            return;
-        }
-
-        let currentQty = parseInt(input.value);
-        let newQty = currentQty;
-
-        if (this.classList.contains('btnPlus')) {
-            newQty++;
-        } else if (this.classList.contains('btnMinus') && currentQty > 1) {
-            newQty--;
-        }
-
-        // Lấy product_variant từ data-variant
-        let variantData = input.dataset.variant;
-        let product_variant = {};
-        try {
-            product_variant = variantData ? JSON.parse(variantData) : {};
-        } catch (e) {
-            console.error("Lỗi khi parse JSON variant:", e);
-        }
-
-        try {
-            const res = await fetch(`/cart/${cartId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    quantity: newQty,
-                    product_variant: product_variant
-                })
-            });
-
-            if (!res.ok) {
-                const error = await res.json();
-                alert("❌ " + (error.message || 'Có lỗi xảy ra'));
-                return; // ❌ không cập nhật giao diện nếu lỗi
-            }
-
-            const data = await res.json();
-            alert("✅ " + data.message);
-
-            // ✅ Nếu OK thì cập nhật giao diện
-            input.value = newQty;
-
-            // Cập nhật tổng tiền sản phẩm (nếu bạn có thẻ hiển thị riêng)
-            const pricePerItem = parseFloat(input.dataset.price); // bạn cần gắn data-price vào input
-            const totalCell = document.querySelector('#total_' + cartId);
-
-            
-            if (totalCell && pricePerItem) {
-                totalCell.innerText = new Intl.NumberFormat('vi-VN').format(newQty * pricePerItem) + ' VND';
-                updateGrandTotal();
-            }
-
-        } catch (err) {
-            console.error("Lỗi khi gọi API:", err);
-            alert("❌ Không thể cập nhật. Vui lòng thử lại sau.");
-        }
     });
-});
-function updateGrandTotal() {
-    let total = 0;
-    document.querySelectorAll('[id^="total_"]').forEach(el => {
-        let text = el.innerText.replace(/[^\d]/g, ''); // loại bỏ ' VND' và dấu phẩy
-        if (text) {
-            total += parseFloat(text);
-        }
-    });
+    function updateGrandTotal() {
+        let total = 0;
+        document.querySelectorAll('[id^="total_"]').forEach(el => {
+            let text = el.innerText.replace(/[^\d]/g, ''); // loại bỏ ' VND' và dấu phẩy
+            if (text) {
+                total += parseFloat(text);
+            }
+        });
 
-    // Gán lại vào ô subtotal
-    const grandTotalEl = document.querySelector('.order-total ins');
-    if (grandTotalEl) {
-        grandTotalEl.innerText = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+        // Gán lại vào ô subtotal
+        const grandTotalEl = document.querySelector('.order-total ins');
+        if (grandTotalEl) {
+            grandTotalEl.innerText = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+        }
     }
-}
 
-</script>
+    </script>
 
 
 

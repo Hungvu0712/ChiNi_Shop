@@ -22,8 +22,25 @@ class ViewServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('client.partials.header', function ($view) {
+        View::composer('*', function ($view) {
             if (Auth::check()) {
+                $colorMap = [
+                    'red' => 'red',
+                    'màu đỏ' => 'red',
+                    'blue' => 'blue',
+                    'màu xanh' => 'blue',
+                    'green' => 'green',
+                    'màu xanh lá' => 'green',
+                    'black' => 'black',
+                    'đen' => 'black',
+                    'white' => 'white',
+                    'trắng' => 'white',
+                    'yellow' => 'yellow',
+                    'vàng' => 'yellow',
+                    'xám' => 'gray',
+                    'gray' => 'gray',
+                    // ... thêm tùy ý
+                ];
                 $user_id = Auth::id();
                 $cart = Cart::with([
                     'cartitems',
@@ -40,8 +57,8 @@ class ViewServiceProvider extends ServiceProvider
                         }
                     }
                 }
-
-                $view->with(compact('cart', 'sub_total'));
+                $countCart = isset($cart['cartitems']) ?count($cart['cartitems']):0;
+                $view->with(compact('cart', 'sub_total','colorMap','countCart'));
             } else {
                 $view->with(['cart' => null, 'sub_total' => 0]);
             }

@@ -44,24 +44,7 @@ class CartController extends Controller
                 }
                 $sub_total += $cart["cartitems"][$key]["total_price"];
             }
-            $colorMap = [
-                'red' => 'red',
-                'màu đỏ' => 'red',
-                'blue' => 'blue',
-                'màu xanh' => 'blue',
-                'green' => 'green',
-                'màu xanh lá' => 'green',
-                'black' => 'black',
-                'đen' => 'black',
-                'white' => 'white',
-                'trắng' => 'white',
-                'yellow' => 'yellow',
-                'vàng' => 'yellow',
-                'xám' => 'gray',
-                'gray' => 'gray',
-                // ... thêm tùy ý
-            ];
-            return view('client.pages.cart',compact('cart','sub_total','colorMap'));
+            return view('client.pages.cart',compact('cart','sub_total'));
         }catch (\Exception $e) {
             Log::error('Lỗi khi lấy danh sách cart', [
                 'message' => $e->getMessage(),
