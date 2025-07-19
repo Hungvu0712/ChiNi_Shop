@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use Database\Seeders\OrderSeeder as SeedersOrderSeeder;
+use Database\Seeders\VoucherSeeder as SeedersVoucherSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,5 +26,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(MenuSeeder::class);
         $this->call(PermissionSeeder::class);
+        $this->call(AddressSeeder::class);
+         $this->call(VoucherSeeder::class);
+        $this->call(OrderSeeder::class);
     }
 }
