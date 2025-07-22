@@ -116,25 +116,6 @@
                 <div class="col-lg-12">
                     <div class="productCarousel owl-carousel">
                         @foreach ($products as $product)
-                            @php
-                                $firstVariant = $product->variants->first();
-                                $colors = [];
-                                $sizes = [];
-
-                                if ($firstVariant && $firstVariant->attributeValues) {
-                                    foreach ($firstVariant->attributeValues as $value) {
-                                        $attrName = strtolower($value->attribute->name ?? '');
-
-                                        if ($attrName === 'màu sắc') {
-                                            $colors[] = $value->value;
-                                        }
-
-                                        if ($attrName === 'size') {
-                                            $sizes[] = $value->value;
-                                        }
-                                    }
-                                }
-                            @endphp
                             <div class="productItem01">
                                 <div class="pi01Thumb">
                                     <img class="main-img"
@@ -158,7 +139,6 @@
                                         </a>
                                     </h3>
 
-
                                     <div class="pi01Price">
                                         <ins class="product-price">{{ number_format($product->price ?? 0) }} VNĐ</ins>
                                     </div>
@@ -172,51 +152,81 @@
                                             'black' => '#2c3e50',
                                             'white' => '#ffffff',
                                         ];
+
+                                        // Thu thập tất cả các sizes và chất liệu duy nhất từ tất cả các biến thể
+                                        $allSizes = [];
+                                        $allMaterials = [];
+                                        foreach ($product->allVariants as $variantData) {
+                                            if (isset($variantData['attributes']['size'])) {
+                                                $allSizes[] = $variantData['attributes']['size'];
+                                            }
+                                            if (isset($variantData['attributes']['chat-lieu'])) {
+                                                // Giả sử tên thuộc tính chất liệu là 'chat-lieu'
+                                                $allMaterials[] = $variantData['attributes']['chat-lieu'];
+                                            }
+                                        }
+                                        $allSizes = array_unique($allSizes);
+                                        $allMaterials = array_unique($allMaterials);
                                     @endphp
 
-                                    {{-- Màu sắc và Size song song nhau --}}
+                                    {{-- Khối chính chứa màu sắc và các thuộc tính khác (size, chất liệu) --}}
                                     <div class="d-flex justify-content-between align-items-center mt-2">
-                                        {{-- Màu sắc bên trái --}}
+                                        {{-- Màu sắc ở bên trái --}}
                                         <div class="d-flex gap-1">
                                             @foreach ($product->colors ?? [] as $colorKey)
-    @php
-        $hex = $colorMap[$colorKey] ?? '#ccc';
-        $border = $hex === '#ffffff' ? '#999' : '#ccc';
-        $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
+                                                @php
+                                                    $hex = $colorMap[$colorKey] ?? '#ccc';
+                                                    $border = $hex === '#ffffff' ? '#999' : '#ccc';
+                                                    $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
 
-        $imageUrl = $product->colorVariants[$colorKey] ?? $product->product_image;
-        $price = number_format($product->colorPrices[$colorKey] ?? $product->price);
-        $name = $product->colorNames[$colorKey] ?? $product->name;
-    @endphp
-    <span class="color-picker"
-        data-image="{{ asset($imageUrl) }}"
-        data-name="{{ $name }}"
-        data-price="{{ $price }} VNĐ"
-        style="background-color: {{ $hex }};
-               width: 16px;
-               height: 16px;
-               display: inline-block;
-               border-radius: 50%;
-               border: 1px solid {{ $border }};
-               {{ $boxShadow }};
-               cursor: pointer;"
-        title="{{ $colorKey }}">
-    </span>
-@endforeach
-                                        </div>
-                                        {{-- Size bên phải --}}
-                                        <div class="d-flex gap-1">
-                                            @foreach ($sizes as $size)
-                                                <div class="pi01VSItem">
-                                                    <input type="radio" disabled>
-                                                    <label>{{ $size }}</label>
-                                                </div>
+                                                    $imageUrl =
+                                                        $product->colorVariants[$colorKey] ?? $product->product_image;
+                                                    $price = number_format(
+                                                        $product->colorPrices[$colorKey] ?? $product->price,
+                                                    );
+                                                    $name = $product->colorNames[$colorKey] ?? $product->name;
+                                                @endphp
+                                                <span class="color-picker" data-image="{{ asset($imageUrl) }}"
+                                                    data-name="{{ $name }}" data-price="{{ $price }} VNĐ"
+                                                    style="background-color: {{ $hex }};
+                        width: 16px;
+                        height: 16px;
+                        display: inline-block;
+                        border-radius: 50%;
+                        border: 1px solid {{ $border }};
+                        {{ $boxShadow }};
+                        cursor: pointer;"
+                                                    title="{{ $colorKey }}">
+                                                </span>
                                             @endforeach
+                                        </div>
+
+                                        {{-- Các thuộc tính khác (size, chất liệu) ở bên phải --}}
+                                        <div class="d-flex gap-1 flex-wrap"> {{-- Thêm flex-wrap để nếu nhiều quá thì xuống dòng --}}
+                                            @if (!empty($allSizes))
+                                                @foreach ($allSizes as $size)
+                                                    <div class="pi01VSItem">
+                                                        <input type="radio" disabled>
+                                                        <label>{{ $size }}</label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                            @if (!empty($allMaterials))
+                                                @foreach ($allMaterials as $material)
+                                                    <div class="pi01VSItem">
+                                                        <input type="radio" disabled>
+                                                        <label>{{ $material }}</label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
+
+                        {{-- ... (phần script của bạn) --}}
                     </div>
 
                 </div>
