@@ -13,7 +13,7 @@ trait GetUniqueAttribute
             foreach ($variant['attributes'] as $attribute) {
                 $attrName = $attribute['name'];
                 $attrValue = $attribute['pivot']['value'];
-                $attributeId = $attribute['pivot']['attribute_id'];
+                // $attributeId = $attribute['pivot']['attribute_id'];
                 if (!isset($uniqueAttributes[$attrName])) {
                     $uniqueAttributes[$attrName] = [];
                 }
@@ -32,7 +32,7 @@ trait GetUniqueAttribute
             foreach ($variant['attributes'] as $attribute) {
 
                 $attrName = $attribute['name'];
-                $attrItemId = $attribute['pivot']['attribute_item_id'];
+                $attrItemId = $attribute['pivot']['attribute_value_id'];
                
                 // Kiểm tra xem attribute_item_id đã chọn có khớp với biến thể không
                 if (!isset($selectedAttributeItemIds[$attrName]) || $selectedAttributeItemIds[$attrName] != $attrItemId) {

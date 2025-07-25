@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\BannerController as ClientBannerController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
@@ -134,3 +135,5 @@ Route::controller(PostHomeController::class)->group(function () {
     Route::get('blog' , 'index')->name('blog');
     Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
 });
+
+Route::resource('cart', CartController::class);
