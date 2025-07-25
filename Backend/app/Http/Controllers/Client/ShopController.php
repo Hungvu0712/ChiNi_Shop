@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Menu;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ShopController extends Controller
@@ -55,9 +54,8 @@ class ShopController extends Controller
     public function show($slug)
     {
         $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
-
         $product = Product::with([
-            'variants.variantAttributeValues.attributeValue.attribute',
+            'variants.variantAttributeValues.attributeValue',
             'category',
             'brand',
             'attachments',
@@ -72,49 +70,38 @@ class ShopController extends Controller
             $product->attachments->pluck('attachment_image')->toArray()
         );
 
-        // Xử lý thuộc tính động
-        $attributeNames = [];
-        $attributeValues = [];
-        $variantsMap = [];
+        // Chuẩn bị tập hợp
+        $colorSet = collect();
+        $sizeSet = collect();
+        $variantByColor = [];
 
         foreach ($product->variants as $variant) {
-            $attrPairs = [];
+            $colorAttr = $variant->variantAttributeValues->firstWhere('attribute_id', 1);
+            $sizeAttr = $variant->variantAttributeValues->firstWhere('attribute_id', 2);
 
-            foreach ($variant->variantAttributeValues as $attrValue) {
-                if (!$attrValue->attributeValue || !$attrValue->attributeValue->attribute) continue;
+            if ($colorAttr && $sizeAttr && $colorAttr->attributeValue && $sizeAttr->attributeValue) {
+                $colorSlug = strtolower(Str::slug($colorAttr->attributeValue->value));
+                $sizeSlug = strtoupper($sizeAttr->attributeValue->value);
 
-                $attrName = strtolower($attrValue->attributeValue->attribute->name);
-                $value = $attrValue->attributeValue->value;
+                $colorSet->push($colorSlug);
+                $sizeSet->push($sizeSlug);
 
-                $attributeNames[] = $attrName;
-                $attributeValues[$attrName][] = $value;
-
-                $attrPairs[$attrName] = $value;
+                // ✅ Biến thể lồng: color → size
+                $variantByColor[$colorSlug]['variants'][$sizeSlug] = [
+                    'variant_name' => $variant->variant_name ?? $product->name,
+                    'price' => $variant->price ?? $product->price,
+                    'sku' => $variant->sku ?? $product->sku,
+                    'image' => $variant->variant_image,
+                    'gallery' => [$variant->variant_image],
+                ];
             }
-
-            $attributeNames = array_unique($attributeNames);
-
-            $keyParts = [];
-            foreach ($attributeNames as $name) {
-                $keyParts[] = $attrPairs[$name] ?? '';
-            }
-
-            $key = implode('-', $keyParts);
-
-            $variantsMap[$key] = [
-                'id' => $variant->id,
-                'name' => $product->name . ' - ' . implode(' / ', array_values($attrPairs)),
-                'price' => $variant->price ?? $product->price,
-                'quantity' => $variant->quantity ?? 0,
-                'variant_image' => $variant->variant_image ?? $product->product_image, // ✅ Dữ liệu này đã có sẵn
-            ];
         }
 
-        foreach ($attributeValues as $key => $vals) {
-            $attributeValues[$key] = array_unique($vals);
-        }
+        $product->colors = $colorSet->unique()->values()->all();
+        $product->sizes = $sizeSet->unique()->values()->all();
+        $product->variantByColor = $variantByColor;
 
-        // Sản phẩm cùng thương hiệu
+        // Sản phẩm cùng thương hiệu (giữ nguyên phần dưới)
         $relatedProducts = Product::with([
             'variants.variantAttributeValues.attributeValue'
         ])
@@ -150,21 +137,7 @@ class ShopController extends Controller
             $related->sizes = $sizeSet->unique()->values()->all();
             $related->colorVariants = $colorVariants;
         }
-        Log::info('Product Price: ' . $product->price);
-        if ($product->variants->first()) {
-            Log::info('First Variant Price: ' . $product->variants->first()->price);
-        } else {
-            Log::info('No variants found for this product.');
-        }
 
-        return view('client.pages.product_detail', compact(
-            'product',
-            'galleryImages',
-            'relatedProducts',
-            'menus',
-            'attributeNames',
-            'attributeValues',
-            'variantsMap'
-        ));
+        return view('client.pages.product_detail', compact('product', 'galleryImages', 'relatedProducts', 'menus'));
     }
 }
