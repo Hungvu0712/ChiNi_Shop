@@ -79,43 +79,46 @@
                             <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
                             </div>
                             <div class="anCart">
-                                <a href="javascript:void(0);"><i
-                                        class="fa-solid fa-shopping-cart"></i><span>3</span></a>
-                                <div class="cartWidgetArea">
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/1.jpg') }}" alt="Marine Design">
-                                        <a href="shop_details1.html">Ulina luxurious bag for men women</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>19.00</span></span>
+                                <a href="{{ route('cart.index')}}"><i
+                                        class="fa-solid fa-shopping-cart"></i><span>{{isset($countCart)? $countCart:0}}</span></a>
+                               
+                                    @if (isset($cart['cartitems'])) <div class="cartWidgetArea">
+                                        @foreach ($cart['cartitems'] as $item)
+                                        <div class="cartWidgetProduct">
+                                            <img src="{{ $item['productvariant']['variant_image'] }}" alt="Marine Design">
+                                            <a href="shop_details1.html">{{ $item['product']['name'] }}</a>
+                                            <div class="cartProductPrice clearfix">
+                                                <span class="price"><span>{{number_format($item['productvariant']['price'])}}<span>VND</span></span></span>
+                                            </div>
+                                            @foreach ($item['productvariant']['attributes'] as $attribute)
+                                            <div class="attribute-group">
+                                                <strong>{{ $attribute['name'] }}:</strong>
+                                                @php
+                                                $value = mb_strtolower($attribute['pivot']['value']);
+                                                @endphp
+                                    
+                                                @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
+                                                <span class="color-dot"
+                                                    style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
+                                                </span>
+                                                <span>{{ $attribute['pivot']['value'] }}</span>
+                                                @else
+                                                <span>{{ $attribute['pivot']['value'] }}</span>
+                                                @endif
+                                            </div>
+                                            @endforeach
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/2.jpg') }}" alt="Draped Neck">
-                                        <a href="shop_details2.html">Nasio stainless steel watch</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>41.00</span></span>
+                                        @endforeach
+                                        <div class="totalPrice">Subtotal: <span class="price"><span>{{ number_format($sub_total) ??
+                                                    ""}}<span>VND</span></span></span></div>
+                                        <div class="cartWidgetBTN clearfix">
+                                            <a class="cart" href="{{ route('cart.index')}}">View Cart</a>
+                                            <a class="checkout" href="checkout.html">Checkout</a>
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
                                     </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/3.jpg') }}" alt="Long Pleated">
-                                        <a href="shop_details1.html">Winner men’s comfortable t-shirt</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>52.00</span></span>
-                                        </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="totalPrice">Subtotal: <span
-                                            class="price"><span><span>$</span>112.00</span></span></div>
-                                    <div class="cartWidgetBTN clearfix">
-                                        <a class="cart" href="cart.html">View Cart</a>
-                                        <a class="checkout" href="checkout.html">Checkout</a>
-                                    </div>
-                                </div>
+                                    @endif
+                                    
+                                
                             </div>
                         </div>
                         <div class="anSupport">
