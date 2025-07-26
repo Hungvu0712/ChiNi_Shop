@@ -3,9 +3,22 @@
 @section('title', 'Shop')
 @section('css')
     <style>
+        .color-picker {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .color-picker:hover {
+            transform: scale(1.2);
+            border-color: #333;
+        }
+
         .color-picker.active {
-            outline: 2px solid #000;
-            outline-offset: 2px;
+            outline: 2px solid black;
+            outline-offset: 1px;
         }
 
         .main-img,
@@ -237,6 +250,14 @@
                                                         <img class="hover-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
+                                                        <div class="pi01Actions">
+                                                            <a href="#" class="pi01Cart"><i
+                                                                    class="fa-solid fa-shopping-cart"></i></a>
+                                                            <a href="#" class="pi01QuickView"><i
+                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
+                                                            <a href="#" class="pi01Wishlist"><i
+                                                                    class="fa-solid fa-heart"></i></a>
+                                                        </div>
                                                     </div>
 
                                                     <div class="pi01Details">
@@ -248,80 +269,43 @@
 
                                                         <div class="pi01Price">
                                                             <ins class="product-price">
-                                                                {{ number_format($product->price) }} VNĐ
+                                                                {{ number_format($product->price ?? 0) }} VNĐ
                                                             </ins>
                                                         </div>
 
-                                                        <div class="pi01Variations">
+                                                        <div class="d-flex flex-column mt-2 gap-2">
+                                                            <div
+                                                                class="variant-row d-flex justify-content-between align-items-center flex-wrap">
+                                                                {{-- Màu sắc --}}
+                                                                @if (!empty($product->colorData) && is_array($product->colorData))
+                                                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                                        @foreach ($product->colorData as $color)
+                                                                            <span class="color-picker"
+                                                                                data-image="{{ asset($color['image']) }}"
+                                                                                data-name="{{ $color['variant_name'] }}"
+                                                                                data-price="{{ number_format($color['price']) }} VNĐ"
+                                                                                style="background-color: {{ $color['hex'] }};"
+                                                                                title="{{ ucfirst($color['name']) }}">
+                                                                            </span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
 
-                                                            {{-- Màu sắc --}}
-                                                            <div class="pi01VColor d-flex gap-1">
-                                                                @php
-                                                                    $colorMap = [
-                                                                        'do' => '#e74c3c',
-                                                                        'xanh' => '#3498db',
-                                                                        'trang' => '#ffffff',
-                                                                        'den' => '#2c3e50',
-                                                                        'vang' => '#f1c40f',
-                                                                        'black' => '#2c3e50',
-                                                                        'white' => '#ffffff',
-                                                                    ];
-                                                                @endphp
-
-                                                                @foreach ($product->colors as $color)
-                                                                    @php
-                                                                        $slugColor = strtolower(Str::slug($color));
-                                                                        $hex = $colorMap[$slugColor] ?? '#ccc';
-                                                                        $border = $hex === '#ffffff' ? '#999' : '#ccc';
-                                                                        $boxShadow =
-                                                                            $hex === '#ffffff'
-                                                                                ? 'box-shadow: 0 0 2px #999;'
-                                                                                : '';
-
-                                                                        // Tách variantMap chỉ cho MÀU này
-                                                                        $variantsForColor = [];
-                                                                        foreach (
-                                                                            $product->variantMap
-                                                                            as $key => $variant
-                                                                        ) {
-                                                                            if (
-                                                                                Str::startsWith($key, $slugColor . '-')
-                                                                            ) {
-                                                                                $variantsForColor[$key] = $variant;
-                                                                            }
-                                                                        }
-                                                                    @endphp
-
-                                                                    <span class="color-picker"
-                                                                        data-product-id="{{ $product->id }}"
-                                                                        data-color="{{ $slugColor }}"
-                                                                        data-map='@json($variantsForColor)'
-                                                                        style="background-color: {{ $hex }};
-                    width: 18px;
-                    height: 18px;
-                    border-radius: 50%;
-                    border: 1px solid {{ $border }};
-                    {{ $boxShadow }};
-                    display: inline-block;
-                    cursor: pointer;">
-                                                                    </span>
-                                                                @endforeach
+                                                                {{-- Các thuộc tính khác --}}
+                                                                @if (!empty($product->attributesGroup) && is_array($product->attributesGroup))
+                                                                    <div
+                                                                        class="variant-right d-flex align-items-center gap-2 flex-wrap">
+                                                                        @foreach ($product->attributesGroup as $name => $values)
+                                                                            @if ($name != 'Màu sắc')
+                                                                                @foreach ($values as $value)
+                                                                                    <span
+                                                                                        class="attribute-item">{{ $value }}</span>
+                                                                                @endforeach
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
                                                             </div>
-
-                                                            {{-- Size --}}
-                                                            @foreach ($product->sizes as $size)
-                                                                <div class="pi01VSItem">
-                                                                    <input type="radio"
-                                                                        id="size_{{ $product->id }}_{{ $size }}"
-                                                                        class="size-picker"
-                                                                        data-product-id="{{ $product->id }}"
-                                                                        value="{{ strtoupper($size) }}">
-                                                                    <label
-                                                                        for="size_{{ $product->id }}_{{ $size }}">{{ $size }}</label>
-                                                                </div>
-                                                            @endforeach
-
-
                                                         </div>
 
                                                     </div>
@@ -333,24 +317,31 @@
                                             {{ $products->links() }}
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="tab-pane" id="list-tab-pane" role="tabpanel" aria-labelledby="list-tab"
                                     tabindex="0">
                                     <div class="row">
                                         @foreach ($products as $product)
-                                            <div class="col-lg-12 col-xl-6">
-                                                <div class="productItem02" data-product-id="{{ $product->id }}">
-                                                    <div class="pi02Thumb">
+                                            <div class="col-sm-6 col-xl-4">
+                                                <div class="productItem01" data-product-id="{{ $product->id }}">
+                                                    <div class="pi01Thumb">
                                                         <img class="main-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
                                                         <img class="hover-img"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
+                                                        <div class="pi01Actions">
+                                                            <a href="#" class="pi01Cart"><i
+                                                                    class="fa-solid fa-shopping-cart"></i></a>
+                                                            <a href="#" class="pi01QuickView"><i
+                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
+                                                            <a href="#" class="pi01Wishlist"><i
+                                                                    class="fa-solid fa-heart"></i></a>
+                                                        </div>
                                                     </div>
 
-                                                    <div class="pi02Details">
+                                                    <div class="pi01Details">
                                                         <h3 class="product-name">
                                                             <a href="{{ route('client.shop.show', $product->slug) }}">
                                                                 {{ $product->name }}
@@ -359,72 +350,52 @@
 
                                                         <div class="pi01Price">
                                                             <ins class="product-price">
-                                                                {{ number_format($product->price) }} VNĐ
+                                                                {{ number_format($product->price ?? 0) }} VNĐ
                                                             </ins>
                                                         </div>
 
-                                                        <div class="pi01Variations d-flex justify-content-between">
-
-                                                            {{-- Màu sắc --}}
-                                                            <div class="pi01VColor d-flex gap-1">
-                                                                @php
-                                                                    $colorMap = [
-                                                                        'do' => '#e74c3c',
-                                                                        'xanh' => '#3498db',
-                                                                        'trang' => '#ffffff',
-                                                                        'den' => '#2c3e50',
-                                                                        'vang' => '#f1c40f',
-                                                                        'black' => '#2c3e50',
-                                                                        'white' => '#ffffff',
-                                                                    ];
-                                                                @endphp
-
-                                                                @foreach ($product->colors as $color)
-                                                                    @php
-                                                                        $hex = $colorMap[$color] ?? '#ccc';
-                                                                        $border = $hex === '#ffffff' ? '#999' : '#ccc';
-                                                                        $boxShadow =
-                                                                            $hex === '#ffffff'
-                                                                                ? 'box-shadow: 0 0 2px #999;'
-                                                                                : '';
-                                                                    @endphp
-
-                                                                    <span class="color-picker"
-                                                                        data-product-id="{{ $product->id }}"
-                                                                        data-color="{{ strtolower(Str::slug($color)) }}"
-                                                                        data-map='@json($product->variantMap)'
-                                                                        style="background-color: {{ $hex }};
-                                            width: 18px; height: 18px;
-                                            border-radius: 50%;
-                                            border: 1px solid {{ $border }};
-                                            {{ $boxShadow }};
-                                            display: inline-block;
-                                            cursor: pointer;">
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-
-                                                            {{-- Kích cỡ --}}
-                                                            <div class="pi01VSize d-flex gap-1">
-                                                                @foreach ($product->sizes as $index => $size)
-                                                                    <div class="pi01VSItem">
-                                                                        <input type="radio" class="size-picker"
-                                                                            data-product-id="{{ $product->id }}"
-                                                                            value="{{ strtoupper($size) }}"
-                                                                            name="size_{{ $product->id }}"
-                                                                            id="size_{{ $product->id }}_{{ $index }}">
-                                                                        <label
-                                                                            for="size_{{ $product->id }}_{{ $index }}">
-                                                                            {{ $size }}
-                                                                        </label>
+                                                        <div class="d-flex flex-column mt-2 gap-2">
+                                                            {{-- Hiển thị MÀU SẮC + THUỘC TÍNH trên cùng dòng --}}
+                                                            <div class="variant-row">
+                                                                {{-- Màu sắc --}}
+                                                                @if (!empty($product->colorData) && is_array($product->colorData))
+                                                                    <div class="d-flex align-items-center gap-2">
+                                                                        @foreach ($product->colorData as $color)
+                                                                            <span class="color-picker"
+                                                                                data-image="{{ asset($color['image']) }}"
+                                                                                data-name="{{ $color['variant_name'] }}"
+                                                                                data-price="{{ number_format($color['price']) }} VNĐ"
+                                                                                style="background-color: {{ $color['hex'] }};"
+                                                                                title="{{ ucfirst($color['name']) }}">
+                                                                            </span>
+                                                                        @endforeach
                                                                     </div>
-                                                                @endforeach
+                                                                @endif
+
+                                                                {{-- Các thuộc tính khác --}}
+                                                                @if (!empty($product->attributesGroup) && is_array($product->attributesGroup))
+                                                                    <div class="variant-right">
+                                                                        @foreach ($product->attributesGroup as $name => $values)
+                                                                            @if ($name != 'Màu sắc')
+                                                                                @foreach ($values as $value)
+                                                                                    <span
+                                                                                        class="attribute-item">{{ $value }}</span>
+                                                                                @endforeach
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         @endforeach
+
+                                        <div class="mt-4">
+                                            {{ $products->links() }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
