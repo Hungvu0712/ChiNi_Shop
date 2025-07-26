@@ -150,6 +150,7 @@ class ShopController extends Controller
 
 
                     $variantsMap[$variantKey] = [
+                        'id' => $variant->id, // Đúng chuẩn để JS đọc được variant.id
                         'name' => $variant->variant_name ?? $product->name,
                         'price' => $variant->price ?? $product->price,
                         'sku' => $variant->sku ?? $product->sku,
