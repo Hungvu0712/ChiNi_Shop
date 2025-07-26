@@ -16,46 +16,65 @@ class ShopController extends Controller
     {
         $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
         $products = Product::with([
-            'variants.variantAttributeValues.attributeValue'
+            'variants.variantAttributeValues.attributeValue.attribute'
         ])
             ->where('active', 1)
             ->paginate(12);
 
-        // ✅ 2. Lấy thuộc tính bằng tên một lần để tái sử dụng
+        // ✅ Lấy map mã màu từ config
+        $colorMap = config('custom.color_map', []);
+
+        // ✅ Lấy thuộc tính "Màu sắc" một lần để sử dụng
         $colorAttribute = Attribute::where('name', 'Màu sắc')->first();
-        $sizeAttribute = Attribute::where('name', 'Kích thước')->first();
 
         foreach ($products as $product) {
-            $variantMap = [];
+            $attributesByProduct = [];
+            $colorDataForView = [];
 
-            // Bỏ qua nếu không có thuộc tính
-            if (!$colorAttribute || !$sizeAttribute) continue;
+            if ($product->variants->isNotEmpty()) {
+                foreach ($product->variants as $variant) {
+                    if ($variant->variantAttributeValues->isNotEmpty()) {
+                        foreach ($variant->variantAttributeValues as $vav) {
+                            if (!$vav->attributeValue || !$vav->attributeValue->attribute) {
+                                continue;
+                            }
 
-            foreach ($product->variants as $variant) {
-                // ✅ 3. Tìm thuộc tính bằng ID động
-                $colorAttr = $variant->variantAttributeValues->firstWhere('attribute_id', $colorAttribute->id);
-                $sizeAttr  = $variant->variantAttributeValues->firstWhere('attribute_id', $sizeAttribute->id);
+                            $attributeName = $vav->attributeValue->attribute->name;
+                            $attributeValue = $vav->attributeValue->value;
 
-                if ($colorAttr && $sizeAttr && $colorAttr->attributeValue && $sizeAttr->attributeValue) {
-                    // ✅ 4. Dùng giá trị gốc, không dùng slug
-                    $color = strtolower($colorAttr->attributeValue->value);
-                    $size  = strtoupper($sizeAttr->attributeValue->value);
-                    $key = "{$color}-{$size}";
-
-                    $variantMap[$key] = [
-                        'image' => $variant->variant_image ?? $product->product_image,
-                        'price' => $variant->price ?? $product->price,
-                    ];
+                            // ✅ Xử lý riêng cho màu sắc
+                            if ($colorAttribute && $vav->attribute_id == $colorAttribute->id) {
+                                $colorKey = trim($attributeValue); // KHÔNG dùng strtolower
+                                if (!collect($colorDataForView)->contains('name', $attributeValue)) {
+                                    $colorDataForView[] = [
+                                        'name' => $attributeValue,
+                                        'hex' => $colorMap[$colorKey] ?? '#cccccc', // Sử dụng đúng key
+                                        'image' => $variant->variant_image ?? $product->product_image,
+                                        'price' => $variant->price ?? $product->price,
+                                        'variant_name' => $variant->variant_name ?? $product->name,
+                                    ];
+                                }
+                            }
+                            // ✅ Gom nhóm các thuộc tính khác (không chỉ màu)
+                            if (!isset($attributesByProduct[$attributeName])) {
+                                $attributesByProduct[$attributeName] = [];
+                            }
+                            if (!in_array($attributeValue, $attributesByProduct[$attributeName])) {
+                                $attributesByProduct[$attributeName][] = $attributeValue;
+                            }
+                        }
+                    }
                 }
             }
 
-            $product->variantMap = $variantMap;
-            $product->colors = collect(array_unique(array_map(fn($key) => explode('-', $key)[0], array_keys($variantMap))))->values()->all();
-            $product->sizes = collect(array_unique(array_map(fn($key) => explode('-', $key)[1], array_keys($variantMap))))->values()->all();
+            // ✅ Luôn gán vào sản phẩm (dù có hoặc không có biến thể)
+            $product->setAttribute('colorData', $colorDataForView);
+            $product->setAttribute('attributesGroup', $attributesByProduct);
         }
 
         return view('client.pages.shop', compact('products', 'menus'));
     }
+
 
     public function show($slug)
     {
