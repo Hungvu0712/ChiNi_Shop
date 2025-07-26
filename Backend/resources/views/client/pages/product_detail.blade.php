@@ -124,24 +124,48 @@
                             {!! $product->description ?? 'Chưa có mô tả chi tiết cho sản phẩm này.' !!}
                         </div>
 
-                        <div class="pcVariations">
-                            @foreach ($attributeNames as $attr)
+                        <div class="pcVariations d-flex flex-column gap-2 mt-3">
+                            {{-- ✅ Hiển thị Màu sắc --}}
+                            @if (!empty($product->colorData))
                                 <div class="pcVariation">
-                                    <span>{{ ucfirst($attr) }}</span>
-                                    <div class="pcvContainer">
-                                        @foreach ($attributeValues[$attr] as $val)
-                                            <div class="pswItem">
-                                                <input type="radio" class="variant-picker" name="{{ $attr }}"
-                                                    value="{{ $val }}"
-                                                    id="{{ $attr }}_{{ $val }}">
-                                                <label
-                                                    for="{{ $attr }}_{{ $val }}">{{ $val }}</label>
-                                            </div>
+                                    <span>Màu sắc</span>
+                                    <div class="pcvContainer d-flex align-items-center gap-2">
+                                        @foreach ($product->colorData as $index => $color)
+                                            <span class="color-picker"
+                                                style="background-color: {{ $color['hex'] }};
+                                 width: 24px; height: 24px; border-radius: 50%;
+                                 border: 1px solid {{ $color['hex'] === '#ffffff' ? '#ccc' : $color['hex'] }};
+                                 cursor: pointer;"
+                                                title="{{ ucfirst($color['name']) }}" data-attribute-name="Màu sắc"
+                                                data-value="{{ $color['name'] }}" data-image="{{ $color['image'] }}"
+                                                data-name="{{ $color['variant_name'] }}"
+                                                data-price="{{ number_format($color['price']) }} VNĐ">
+                                            </span>
                                         @endforeach
                                     </div>
                                 </div>
+                            @endif
+
+                            {{-- ✅ Hiển thị các thuộc tính khác --}}
+                            @foreach ($product->attributesGroup as $name => $values)
+                                @if (strtolower($name) !== 'màu sắc')
+                                    <div class="pcVariation">
+                                        <span>{{ ucfirst($name) }}</span>
+                                        <div class="pcvContainer d-flex flex-wrap gap-2">
+                                            @foreach ($values as $index => $value)
+                                                <label class="attribute-item" style="cursor: pointer;">
+                                                    <input type="radio" name="{{ $name }}"
+                                                        value="{{ $value }}" class="variant-picker d-none">
+                                                    <span
+                                                        class="badge bg-light text-dark px-2 py-1 border">{{ $value }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
+
 
                         <div class="pcBtns">
                             <div class="quantity clearfix">
@@ -180,8 +204,8 @@
                 <div class="col-lg-12">
                     <ul class="nav productDetailsTab" id="productDetailsTab" role="tablist">
                         <li role="presentation">
-                            <button class="active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
-                                type="button" role="tab" aria-controls="description"
+                            <button class="active" id="description-tab" data-bs-toggle="tab"
+                                data-bs-target="#description" type="button" role="tab" aria-controls="description"
                                 aria-selected="true">Description</button>
                         </li>
                         <li role="presentation">
@@ -331,17 +355,6 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="productCarousel owl-carousel">
-                                @php
-                                    $colorMap = [
-                                        'do' => '#e74c3c',
-                                        'xanh' => '#3498db',
-                                        'trang' => '#ffffff',
-                                        'den' => '#2c3e50',
-                                        'vang' => '#f1c40f',
-                                        'black' => '#2c3e50',
-                                        'white' => '#ffffff',
-                                    ];
-                                @endphp
 
                                 @foreach ($relatedProducts as $product)
                                     <div class="productItem01">
@@ -365,168 +378,170 @@
 
                                         <div class="pi01Details">
                                             <h3>
-                                                <a href="{{ route('client.shop.show', $product->slug) }}">
-                                                    {{ $product->name }}
-                                                </a>
+                                                <a
+                                                    href="{{ route('client.shop.show', $product->slug) }}">{{ $product->name }}</a>
                                             </h3>
                                             <div class="pi01Price">
-                                                <ins id="product-price">{{ number_format($product->price ?? ($product->variants->first()->price ?? 0)) }}
+                                                <ins>{{ number_format($product->price ?? ($product->variants->first()->price ?? 0)) }}
                                                     VNĐ</ins>
                                             </div>
 
-                                            <div class="pi01Variations">
-                                                {{-- Màu sắc --}}
+                                            <div
+                                                class="pi01Variations d-flex justify-content-between align-items-start flex-wrap">
+                                                {{-- Màu sắc bên trái --}}
                                                 <div class="pi01VColor d-flex gap-1">
-                                                    @foreach ($product->colors ?? [] as $index => $colorKey)
+                                                    @foreach ($product->colors ?? [] as $index => $color)
                                                         @php
-                                                            $hex = $colorMap[strtolower($colorKey)] ?? '#ccc';
+                                                            $name = is_array($color) ? $color['name'] ?? '' : $color;
+                                                            $hex = is_array($color) ? $color['hex'] ?? '#ccc' : '#ccc';
                                                             $border = $hex === '#ffffff' ? '#999' : '#ccc';
                                                             $boxShadow =
                                                                 $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
                                                         @endphp
                                                         <div class="pi01VCItem"
                                                             style="background-color: {{ $hex }};
-                            width: 18px; height: 18px;
-                            border-radius: 50%;
-                            border: 1px solid {{ $border }};
-                            {{ $boxShadow }};
-                            display: inline-block;">
+                width: 18px; height: 18px;
+                border-radius: 50%;
+                border: 1px solid {{ $border }};
+                {{ $boxShadow }}; display: inline-block;">
                                                         </div>
                                                     @endforeach
                                                 </div>
 
-                                                {{-- Kích thước --}}
-                                                <div class="pi01VSize">
-                                                    @foreach ($product->sizes ?? [] as $index => $sizeValue)
-                                                        <div class="pi01VSItem">
-                                                            <input type="radio" name="size_{{ $product->id }}"
-                                                                id="size_{{ $product->id }}_{{ $index }}">
-                                                            <label
-                                                                for="size_{{ $product->id }}_{{ $index }}">{{ $sizeValue }}</label>
-                                                        </div>
+                                                {{-- Các biến thể còn lại bên phải --}}
+                                                <div class="pi01VOther d-flex gap-2 flex-wrap ms-auto">
+                                                    @foreach ($product->otherAttributes ?? [] as $attrName => $attrValues)
+                                                        @foreach ($attrValues as $value)
+                                                            <span
+                                                                class="badge bg-light text-dark border px-2 py-1">{{ $value }}</span>
+                                                        @endforeach
                                                     @endforeach
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 @endforeach
+
 
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 @endsection
 @section('script')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const variantsMap = @json($variantsMap);
+            const variantsMap = @json($variantsMap); // Từ controller
+            const attributeNames = @json($attributeNames); // ['Màu sắc', 'Kích cỡ'] v.v.
             const selectedAttributes = {};
 
-            // Lấy các phần tử cần cập nhật
+            // Khởi tạo selectedAttributes rỗng
+            attributeNames.forEach(attr => selectedAttributes[attr] = '');
+
+            // Các phần tử DOM
             const mainProductImage = document.getElementById('mainProductImage');
             const productNameEl = document.getElementById('product-name');
             const productPriceEl = document.getElementById('product-price');
             const productSkuEl = document.querySelector('.sku-field');
             const productStockEl = document.getElementById('product-stock');
-            const productGalleryThumb = document.querySelector(
-                '.productGalleryThumb'); // Container của gallery thumbnail
-
-            // Lưu trữ URL của ảnh sản phẩm chính ban đầu
+            const productGalleryThumb = document.querySelector('.productGalleryThumb');
             const originalProductImageSrc = mainProductImage.src;
 
-            // Lấy tất cả các thumbnail hiện có ban đầu và lưu trữ URL DUY NHẤT của chúng
-            // Sử dụng Set để đảm bảo initialThumbnailUrls không chứa URL trùng lặp từ đầu
-            const initialThumbnailUrls = Array.from(new Set(Array.from(productGalleryThumb.querySelectorAll(
-                '.pgtImage img')).map(img => img.src)));
+            // Ảnh thumbnail gốc ban đầu
+            const initialThumbnailUrls = Array.from(new Set(
+                Array.from(productGalleryThumb.querySelectorAll('.pgtImage img')).map(img => img.src)
+            ));
 
-            // Hàm để cập nhật gallery thumbnails
             function updateGalleryThumbnails(variantImageSrc, isVariantSelected = false) {
-                // Xóa thumbnails cũ
                 while (productGalleryThumb.firstChild) {
                     productGalleryThumb.removeChild(productGalleryThumb.firstChild);
                 }
 
-                const finalOrderedUrls = [];
+                const finalUrls = [];
 
                 if (isVariantSelected && variantImageSrc) {
-                    // Nếu chọn biến thể: chỉ hiển thị ảnh biến thể
-                    finalOrderedUrls.push(variantImageSrc);
+                    finalUrls.push(variantImageSrc);
                 } else {
-                    // Ngược lại: hiển thị toàn bộ ảnh gốc ban đầu
-                    initialThumbnailUrls.forEach(url => finalOrderedUrls.push(url));
+                    initialThumbnailUrls.forEach(url => finalUrls.push(url));
                 }
 
-                finalOrderedUrls.forEach(url => {
+                finalUrls.forEach(url => {
                     const div = document.createElement('div');
                     div.classList.add('pgtImage');
                     if (url === variantImageSrc && isVariantSelected) div.classList.add('active');
+
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = "Product Thumbnail";
                     div.appendChild(img);
                     productGalleryThumb.appendChild(div);
                 });
-
             }
 
+            // ✅ Hàm dùng chung để xử lý chọn biến thể
+            function handleVariantChange() {
+                const key = attributeNames.map(attr => selectedAttributes[attr] || '').join('-');
+                const variant = variantsMap[key];
 
+                if (variant) {
+                    productNameEl.innerText = variant.name;
+                    productPriceEl.innerText = Number(variant.price).toLocaleString() + ' VNĐ';
+                    productSkuEl.innerText = variant.sku || 'N/A';
+                    productStockEl.innerText = variant.quantity;
+                    mainProductImage.src = variant.variant_image;
+                    updateGalleryThumbnails(variant.variant_image, true);
+                } else {
+                    console.warn('❌ Không tìm thấy biến thể:', key);
+                    mainProductImage.src = originalProductImageSrc;
+                    updateGalleryThumbnails(originalProductImageSrc, false);
+                }
+            }
 
-            // Lắng nghe sự kiện thay đổi của các biến thể
+            // ✅ Sự kiện cho radio buttons
             document.querySelectorAll('.variant-picker').forEach(picker => {
                 picker.addEventListener('change', function() {
-                    const attr = this.name;
-                    const value = this.value;
-                    selectedAttributes[attr] = value;
-
-                    const keys = @json($attributeNames);
-                    // Sắp xếp lại keys để tạo key khớp với variantsMap
-                    const sortedKeys = keys.sort((a, b) => {
-                        // Đảm bảo thứ tự thuộc tính khớp với cách bạn tạo key trong controller
-                        // Nếu bạn có một thứ tự cụ thể cho các thuộc tính (ví dụ: Màu sắc trước Size),
-                        // bạn có thể định nghĩa logic sắp xếp ở đây.
-                        return 0;
-                    });
-
-                    const key = sortedKeys.map(k => selectedAttributes[k] || '').join('-');
-                    const variant = variantsMap[key];
-
-                    if (variant) {
-                        // Cập nhật thông tin sản phẩm
-                        productNameEl.innerText = variant.name;
-                        productPriceEl.innerText = Number(variant.price).toLocaleString() + ' VNĐ';
-                        productSkuEl.innerText = variant.sku || 'N/A';
-                        productStockEl.innerText = variant.quantity;
-
-                        // Cập nhật ảnh chính
-                        mainProductImage.src = variant.variant_image;
-
-                        // ✅ Gọi với cờ "true" để chỉ hiển thị ảnh biến thể
-                        updateGalleryThumbnails(variant.variant_image, true);
-                    } else {
-                        console.log('Không tìm thấy biến thể cho sự kết hợp thuộc tính này.');
-                        mainProductImage.src = originalProductImageSrc;
-
-                        // ✅ Gọi lại gallery ảnh gốc
-                        updateGalleryThumbnails(originalProductImageSrc, false);
-                    }
+                    selectedAttributes[this.name] = this.value;
+                    handleVariantChange();
                 });
             });
+
+            // ✅ Sự kiện click cho .color-picker
+            document.querySelectorAll('.color-picker').forEach(picker => {
+                picker.addEventListener('click', function() {
+                    const attrName = 'Màu sắc'; // Nếu cần có thể lấy từ `data-attribute`
+                    const value = this.dataset.value;
+
+                    // Gán giá trị được chọn
+                    selectedAttributes[attrName] = value;
+
+                    // Toggle active class
+                    document.querySelectorAll('.color-picker').forEach(p => p.classList.remove(
+                        'active'));
+                    this.classList.add('active');
+
+                    handleVariantChange();
+                });
+            });
+
+            // ✅ Click vào thumbnail đổi ảnh
             productGalleryThumb.addEventListener('click', function(event) {
-                const clickedPgtImage = event.target.closest('.pgtImage');
-                if (clickedPgtImage && clickedPgtImage.querySelector('img')) {
-                    mainProductImage.src = clickedPgtImage.querySelector('img').src;
-                    // Xóa class 'active' khỏi tất cả và thêm vào thumbnail được click
+                const clicked = event.target.closest('.pgtImage');
+                if (clicked && clicked.querySelector('img')) {
+                    mainProductImage.src = clicked.querySelector('img').src;
                     productGalleryThumb.querySelectorAll('.pgtImage').forEach(div => div.classList.remove(
                         'active'));
-                    clickedPgtImage.classList.add('active');
+                    clicked.classList.add('active');
                 }
             });
 
+            // ✅ Gọi cập nhật ảnh ban đầu
             updateGalleryThumbnails(mainProductImage.src);
         });
     </script>
+
+
 @endsection

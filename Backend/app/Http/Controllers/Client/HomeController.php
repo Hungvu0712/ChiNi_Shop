@@ -10,55 +10,76 @@ use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\Attribute; // ✅ 1. Thêm model Attribute
 
 class HomeController extends Controller
 {
 
     public function index()
     {
-
         $banner = Banner::where('active', 1)->first();
         $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
 
+        // ✅ SỬA LỖI: Eager load đầy đủ các relationship cần thiết
         $products = Product::with([
-            'variants.variantAttributeValues.attributeValue'
+            'variants.variantAttributeValues.attributeValue.attribute'
         ])
-            ->where('active', 1) // ✅ Chỉ lấy sản phẩm đã kích hoạt
-            ->get();
+        ->where('active', 1)
+        ->get();
+
+        $colorMap = config('custom.color_map', []);
+        $colorAttribute = Attribute::where('name', 'Màu sắc')->first();
 
         foreach ($products as $product) {
-            $colorSet = [];
-            $colorVariants = [];
-            $colorPrices = [];
-            $colorNames = [];
+            $attributesByProduct = [];
+            $colorDataForView = [];
 
-            foreach ($product->variants as $variant) {
-                foreach ($variant->variantAttributeValues as $attr) {
-                    if ($attr->attribute_id == 1 && $attr->attributeValue) {
-                        $colorKey = strtolower(Str::slug($attr->attributeValue->value));
+            // Chỉ xử lý nếu sản phẩm có biến thể
+            if ($product->variants->isNotEmpty()) {
+                foreach ($product->variants as $variant) {
+                    // Chỉ xử lý nếu biến thể có thuộc tính
+                    if ($variant->variantAttributeValues->isNotEmpty()) {
+                        foreach ($variant->variantAttributeValues as $vav) {
+                            if (!$vav->attributeValue || !$vav->attributeValue->attribute) {
+                                continue;
+                            }
 
-                        // ✅ Ghi nhận màu
-                        $colorSet[] = $colorKey;
+                            $attributeName = $vav->attributeValue->attribute->name;
+                            $attributeValue = $vav->attributeValue->value;
 
-                        // ✅ Gán ảnh cho từng màu
-                        if (!isset($colorVariants[$colorKey]) && $variant->variant_image) {
-                            $colorVariants[$colorKey] = $variant->variant_image;
-                        }
+                            // Xử lý riêng cho MÀU SẮC
+                            if ($colorAttribute && $vav->attribute_id == $colorAttribute->id) {
+                                $colorKey = strtolower($attributeValue);
 
-                        // ✅ Gán giá và tên biến thể nếu chưa có
-                        if (!isset($colorPrices[$colorKey])) {
-                            $colorPrices[$colorKey] = $variant->price;
-                            $colorNames[$colorKey] = $variant->variant_name ?? $product->name;
+                                if (!collect($colorDataForView)->contains('name', $attributeValue)) {
+                                    $colorDataForView[] = [
+                                        'name' => $attributeValue,
+                                        'hex' => $colorMap[$colorKey] ?? '#cccccc',
+                                        'image' => $variant->variant_image ?? $product->product_image,
+                                        'price' => $variant->price ?? $product->price,
+                                        'variant_name' => $variant->variant_name ?? $product->name,
+                                    ];
+                                }
+                            }
+
+                            // Gom nhóm các thuộc tính khác
+                            if (!isset($attributesByProduct[$attributeName])) {
+                                $attributesByProduct[$attributeName] = [];
+                            }
+                            if (!in_array($attributeValue, $attributesByProduct[$attributeName])) {
+                                $attributesByProduct[$attributeName][] = $attributeValue;
+                            }
                         }
                     }
                 }
             }
 
-            $product->setAttribute('colorVariants', $colorVariants);
-            $product->setAttribute('colorPrices', $colorPrices);
-            $product->setAttribute('colorNames', $colorNames);
-            $product->setAttribute('colors', array_unique($colorSet));
+            $product->setAttribute('colorData', $colorDataForView);
+            $product->setAttribute('attributesGroup', $attributesByProduct);
         }
+
+        // Nhớ xóa dòng dd() này sau khi đã kiểm tra xong
+        // dd($products->first()->toArray()); 
 
         return view('client.pages.home', compact('products', 'banner', 'menus'));
     }
@@ -80,5 +101,4 @@ class HomeController extends Controller
         ];
         Address::create($address);
     }
-
 }
