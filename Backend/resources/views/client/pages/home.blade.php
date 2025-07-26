@@ -3,6 +3,7 @@
 @section('title', 'Trang chủ')
 @section('css')
     <style>
+        /* Nút hành động sản phẩm */
         .pi01Actions a {
             width: 40px;
             height: 40px;
@@ -22,6 +23,7 @@
             color: #fffeff;
         }
 
+        /* Nút mạng xã hội ở footer */
         .footerSocial a {
             width: 40px;
             height: 40px;
@@ -42,19 +44,76 @@
             color: #fffeff;
         }
 
-        .product-preview {
+        /* Ảnh sản phẩm chính */
+        .product-preview,
+        .main-image {
             transition: opacity 0.3s ease-in-out;
         }
 
-        .main-image {
-            transition: opacity 0.3s ease-in-out;
+        /* Chấm màu */
+        .color-picker {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            border-radius: 50%;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .color-picker:hover {
+            transform: scale(1.2);
+            border-color: #333;
         }
 
         .color-picker.active {
             outline: 2px solid black;
             outline-offset: 1px;
         }
+
+        /* Nút thuộc tính (size, chất liệu,...) */
+        .attribute-item {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 14px;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .attribute-item:hover {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        /* Layout hiển thị màu + thuộc tính cùng dòng */
+        .variant-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            /* để xuống dòng nếu không đủ */
+            gap: 0.5rem;
+        }
+
+        .variant-right {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive fix cho mobile nếu cần */
+        @media (max-width: 576px) {
+            .variant-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
+
 @endsection
 @include('client.partials.banner')
 @section('content')
@@ -106,35 +165,11 @@
     <!-- BEGIN: Latest Arrival Section -->
     <section class="latestArrivalSection">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h2 class="secTitle">Latest Arrival</h2>
-                    <p class="secDesc">Showing our latest arrival on this summer</p>
-                </div>
-            </div>
+            {{-- ... --}}
             <div class="row">
                 <div class="col-lg-12">
                     <div class="productCarousel owl-carousel">
                         @foreach ($products as $product)
-                            @php
-                                $firstVariant = $product->variants->first();
-                                $colors = [];
-                                $sizes = [];
-
-                                if ($firstVariant && $firstVariant->attributeValues) {
-                                    foreach ($firstVariant->attributeValues as $value) {
-                                        $attrName = strtolower($value->attribute->name ?? '');
-
-                                        if ($attrName === 'màu sắc') {
-                                            $colors[] = $value->value;
-                                        }
-
-                                        if ($attrName === 'size') {
-                                            $sizes[] = $value->value;
-                                        }
-                                    }
-                                }
-                            @endphp
                             <div class="productItem01">
                                 <div class="pi01Thumb">
                                     <img class="main-img"
@@ -150,75 +185,47 @@
                                         <a href="#" class="pi01Wishlist"><i class="fa-solid fa-heart"></i></a>
                                     </div>
                                 </div>
-
                                 <div class="pi01Details">
-                                    <h3 class="product-name">
-                                        <a href="{{ route('client.shop.show', $product->slug) }}">
-                                            {{ $product->name }}
-                                        </a>
+                                    <h3 class="product-name"><a
+                                            href="{{ route('client.shop.show', $product->slug) }}">{{ $product->name }}</a>
                                     </h3>
+                                    <div class="pi01Price"><ins
+                                            class="product-price">{{ number_format($product->price ?? 0) }} VNĐ</ins></div>
 
-
-                                    <div class="pi01Price">
-                                        <ins class="product-price">{{ number_format($product->price ?? 0) }} VNĐ</ins>
-                                    </div>
-                                    @php
-                                        $colorMap = [
-                                            'do' => '#e74c3c',
-                                            'xanh' => '#3498db',
-                                            'trang' => '#ffffff',
-                                            'den' => '#2c3e50',
-                                            'vang' => '#f1c40f',
-                                            'black' => '#2c3e50',
-                                            'white' => '#ffffff',
-                                        ];
-                                    @endphp
-
-                                    {{-- Màu sắc và Size song song nhau --}}
-                                    <div class="d-flex justify-content-between align-items-center mt-2">
-                                        {{-- Màu sắc bên trái --}}
-                                        <div class="d-flex gap-1">
-                                            @foreach ($product->colors ?? [] as $colorKey)
-    @php
-        $hex = $colorMap[$colorKey] ?? '#ccc';
-        $border = $hex === '#ffffff' ? '#999' : '#ccc';
-        $boxShadow = $hex === '#ffffff' ? 'box-shadow: 0 0 2px #999;' : '';
-
-        $imageUrl = $product->colorVariants[$colorKey] ?? $product->product_image;
-        $price = number_format($product->colorPrices[$colorKey] ?? $product->price);
-        $name = $product->colorNames[$colorKey] ?? $product->name;
-    @endphp
-    <span class="color-picker"
-        data-image="{{ asset($imageUrl) }}"
-        data-name="{{ $name }}"
-        data-price="{{ $price }} VNĐ"
-        style="background-color: {{ $hex }};
-               width: 16px;
-               height: 16px;
-               display: inline-block;
-               border-radius: 50%;
-               border: 1px solid {{ $border }};
-               {{ $boxShadow }};
-               cursor: pointer;"
-        title="{{ $colorKey }}">
-    </span>
-@endforeach
-                                        </div>
-                                        {{-- Size bên phải --}}
-                                        <div class="d-flex gap-1">
-                                            @foreach ($sizes as $size)
-                                                <div class="pi01VSItem">
-                                                    <input type="radio" disabled>
-                                                    <label>{{ $size }}</label>
+                                    <div class="d-flex flex-column mt-2 gap-2">
+                                        {{-- Hiển thị MÀU SẮC + THUỘC TÍNH trên cùng dòng --}}
+                                        <div class="variant-row">
+                                            {{-- Màu sắc --}}
+                                            @if (!empty($product->colorData))
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @foreach ($product->colorData as $color)
+                                                        <span class="color-picker" data-image="{{ asset($color['image']) }}"
+                                                            data-name="{{ $color['variant_name'] }}"
+                                                            data-price="{{ number_format($color['price']) }} VNĐ"
+                                                            style="background-color: {{ $color['hex'] }};"
+                                                            title="{{ ucfirst($color['name']) }}">
+                                                        </span>
+                                                    @endforeach
                                                 </div>
-                                            @endforeach
+                                            @endif
+
+                                            {{-- Các thuộc tính khác --}}
+                                            <div class="variant-right">
+                                                @foreach ($product->attributesGroup as $name => $values)
+                                                    @if ($name != 'Màu sắc')
+                                                        @foreach ($values as $value)
+                                                            <span class="attribute-item">{{ $value }}</span>
+                                                        @endforeach
+                                                    @endif
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         @endforeach
                     </div>
-
                 </div>
             </div>
         </div>

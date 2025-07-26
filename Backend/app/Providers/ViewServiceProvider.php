@@ -22,25 +22,13 @@ class ViewServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Chia sẻ colorMap từ file config cho tất cả các view
+        // Bất cứ view nào cũng có thể gọi biến $colorMap
+        View::share('colorMap', config('custom.color_map', []));
+
+        // Composer để xử lý dữ liệu cho người dùng đã đăng nhập (giỏ hàng,...)
         View::composer('*', function ($view) {
             if (Auth::check()) {
-                $colorMap = [
-                    'red' => 'red',
-                    'màu đỏ' => 'red',
-                    'blue' => 'blue',
-                    'màu xanh' => 'blue',
-                    'green' => 'green',
-                    'màu xanh lá' => 'green',
-                    'black' => 'black',
-                    'đen' => 'black',
-                    'white' => 'white',
-                    'trắng' => 'white',
-                    'yellow' => 'yellow',
-                    'vàng' => 'yellow',
-                    'xám' => 'gray',
-                    'gray' => 'gray',
-                    // ... thêm tùy ý
-                ];
                 $user_id = Auth::id();
                 $cart = Cart::with([
                     'cartitems',
@@ -49,7 +37,6 @@ class ViewServiceProvider extends ServiceProvider
                 ])->where('user_id', $user_id)->first();
 
                 $sub_total = 0;
-
                 if ($cart && $cart->cartitems) {
                     foreach ($cart->cartitems as $item) {
                         if ($item->productvariant) {
@@ -57,10 +44,14 @@ class ViewServiceProvider extends ServiceProvider
                         }
                     }
                 }
-                $countCart = isset($cart['cartitems']) ?count($cart['cartitems']):0;
-                $view->with(compact('cart', 'sub_total','colorMap','countCart'));
+
+                // ✅ SỬA LỖI TẠI ĐÂY
+                // Kiểm tra xem $cart và $cart->cartitems có tồn tại không trước khi đếm
+                $countCart = ($cart && $cart->cartitems) ? $cart->cartitems->count() : 0;
+
+                $view->with(compact('cart', 'sub_total', 'countCart'));
             } else {
-                $view->with(['cart' => null, 'sub_total' => 0]);
+                $view->with(['cart' => null, 'sub_total' => 0, 'countCart' => 0]);
             }
         });
     }
