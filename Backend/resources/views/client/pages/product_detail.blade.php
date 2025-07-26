@@ -8,6 +8,13 @@
             outline-offset: 2px;
         }
 
+        .attribute-item input:checked+span {
+            border: 2px solid #000 !important;
+            font-weight: bold;
+        }
+
+
+
         .pcvContainer label.disabled {
             opacity: 0.5;
             pointer-events: none;
@@ -155,7 +162,9 @@
                                             @foreach ($values as $index => $value)
                                                 <label class="attribute-item" style="cursor: pointer;">
                                                     <input type="radio" name="{{ $name }}"
-                                                        value="{{ $value }}" class="variant-picker d-none">
+                                                        value="{{ $value }}"
+                                                        data-variant-id="{{ $value_id ?? '' }}" {{-- hoặc ID tương ứng --}}
+                                                        class="variant-picker d-none">
                                                     <span
                                                         class="badge bg-light text-dark px-2 py-1 border">{{ $value }}</span>
                                                 </label>
@@ -165,15 +174,15 @@
                                 @endif
                             @endforeach
                         </div>
-
-
                         <div class="pcBtns">
                             <div class="quantity clearfix">
                                 <button type="button" class="qtyBtn btnMinus">-</button>
                                 <input type="number" class="carqty input-text qty text" name="quantity" value="1">
                                 <button type="button" class="qtyBtn btnPlus">+</button>
                             </div>
-                            <button type="submit" class="ulinaBTN"><span>Add to Cart</span></button>
+                            <button type="button" class="ulinaBTN add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                <span>Add to Cart</span>
+                            </button>
                             <a href="#" class="pcWishlist"><i class="fa-solid fa-heart"></i></a>
                             <a href="#" class="pcCompare"><i class="fa-solid fa-right-left"></i></a>
                         </div>
@@ -422,8 +431,6 @@
                                         </div>
                                     </div>
                                 @endforeach
-
-
                             </div>
                         </div>
                     </div>
@@ -443,6 +450,7 @@
             attributeNames.forEach(attr => selectedAttributes[attr] = '');
 
             // Các phần tử DOM
+
             const mainProductImage = document.getElementById('mainProductImage');
             const productNameEl = document.getElementById('product-name');
             const productPriceEl = document.getElementById('product-price');
@@ -488,12 +496,19 @@
                 const variant = variantsMap[key];
 
                 if (variant) {
+
                     productNameEl.innerText = variant.name;
                     productPriceEl.innerText = Number(variant.price).toLocaleString() + ' VNĐ';
                     productSkuEl.innerText = variant.sku || 'N/A';
                     productStockEl.innerText = variant.quantity;
                     mainProductImage.src = variant.variant_image;
                     updateGalleryThumbnails(variant.variant_image, true);
+
+                    // Lưu variant_id vào button để gửi khi Add to Cart
+                    const addToCartBtn = document.querySelector('.add-to-cart-btn');
+                    if (addToCartBtn) {
+                        addToCartBtn.dataset.variantId = variant.id;
+                    }
                 } else {
                     console.warn('❌ Không tìm thấy biến thể:', key);
                     mainProductImage.src = originalProductImageSrc;
@@ -537,6 +552,47 @@
                     clicked.classList.add('active');
                 }
             });
+
+            // ✅ Xử lý số lượng +/-
+            const btnMinus = document.querySelector('.btnMinus');
+            const btnPlus = document.querySelector('.btnPlus');
+            const qtyInput = document.querySelector('input[name="quantity"]');
+
+            if (btnMinus && btnPlus && qtyInput) {
+                btnMinus.addEventListener('click', () => {
+                    let current = parseInt(qtyInput.value) || 1;
+                    if (current > 1) qtyInput.value = current - 1;
+                });
+
+                btnPlus.addEventListener('click', () => {
+                    let current = parseInt(qtyInput.value) || 1;
+                    qtyInput.value = current + 1;
+                });
+            }
+
+            // ✅ Xử lý Add to Cart
+            const addToCartBtn = document.querySelector('.add-to-cart-btn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const variantId = this.dataset.variantId;
+                    const quantity = parseInt(qtyInput.value) || 1;
+
+                    if (!variantId) {
+                        alert("Vui lòng chọn đầy đủ biến thể sản phẩm.");
+                        return;
+                    }
+
+                    // ✅ In 3 tham số:
+                    console.log("🛒 Add to Cart");
+                    console.log("product_id:", productId);
+                    console.log("product_variant_id:", variantId);
+                    console.log("quantity:", quantity);
+
+                    // ✅ Gửi về server nếu cần (AJAX hoặc form)
+                    // fetch('/cart/add', { ... })
+                });
+            }
 
             // ✅ Gọi cập nhật ảnh ban đầu
             updateGalleryThumbnails(mainProductImage.src);
