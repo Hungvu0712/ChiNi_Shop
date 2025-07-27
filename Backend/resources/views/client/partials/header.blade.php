@@ -80,7 +80,7 @@
                             </div>
                             <div class="anCart">
                                 <a href="{{ route('cart.index')}}"><i
-                                        class="fa-solid fa-shopping-cart"></i><span>{{isset($countCart)? $countCart:0}}</span></a>
+                                        class="fa-solid fa-shopping-cart"></i><span id='cart-count'>{{isset($countCart)? $countCart:0}}</span></a>
                                
                                     @if (isset($cart['cartitems'])) <div class="cartWidgetArea">
                                         @foreach ($cart['cartitems'] as $item)
@@ -88,7 +88,8 @@
                                             <img src="{{ $item['productvariant']['variant_image'] }}" alt="Marine Design">
                                             <a href="shop_details1.html">{{ $item['product']['name'] }}</a>
                                             <div class="cartProductPrice clearfix">
-                                                <span class="price"><span>{{number_format($item['productvariant']['price'])}}<span>VND</span></span></span>
+                                                <span class="price"> <strong>Price: </strong><span>{{number_format($item['productvariant']['price'])}}<span>VND</span></span></span>
+                                                <span><strong>Quantity: </strong>{{$item['quantity']}}</span>
                                             </div>
                                             @foreach ($item['productvariant']['attributes'] as $attribute)
                                             <div class="attribute-group">
