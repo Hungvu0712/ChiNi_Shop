@@ -11,6 +11,7 @@
             border: 1px solid #ccc;
             cursor: pointer;
         }
+
         .color-picker:hover {
             transform: scale(1.2);
             border-color: #333;
@@ -169,71 +170,9 @@
                                 <li><a href="javascript:void(0);">Uniliver</a></li>
                             </ul>
                         </aside>
-                        <aside class="widget">
-                            <h3 class="widgetTitle">Featured Items</h3>
-                            <div class="productWidgets">
-                                <div class="pwItems">
-                                    <img src="images/widgets/1.jpg" alt="Ulina Product" />
-                                    <h3><a href="shop_details1.html">Luxurius trendy dress for women</a></h3>
-                                    <div class="pi01Price">
-                                        <ins>$99</ins>
-                                    </div>
-                                </div>
-                                <div class="pwItems">
-                                    <img src="images/widgets/2.jpg" alt="Ulina Product" />
-                                    <h3><a href="shop_details2.html">Ladies complete blazer suit</a></h3>
-                                    <div class="pi01Price">
-                                        <ins>$920</ins>
-                                    </div>
-                                </div>
-                                <div class="pwItems">
-                                    <img src="images/widgets/3.jpg" alt="Ulina Product" />
-                                    <h3><a href="shop_details1.html">Full sleeve cotton <br />t-shirt</a></h3>
-                                    <div class="pi01Price">
-                                        <ins>$49</ins>
-                                        <del>$58</del>
-                                    </div>
-                                </div>
-                            </div>
-                        </aside>
                     </div>
                 </div>
                 <div class="col-lg-8 col-xl-9">
-                    <div class="row shopAccessRow">
-                        <div class="col-sm-6">
-                            <div class="productCount">Showing <strong>1 - 16</strong> of <strong>220</strong> items</div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="shopAccessBar">
-                                <div class="sortNav">
-                                    <form method="post" action="#">
-                                        <label>Sort By</label>
-                                        <select name="productFilter">
-                                            <option value="">Default</option>
-                                            <option value="1">High to low</option>
-                                            <option value="2">Low to high</option>
-                                            <option value="3">Top rated</option>
-                                            <option value="4">Recently viewed</option>
-                                        </select>
-                                    </form>
-                                </div>
-                                <ul class="nav productViewTabnav" id="productViewTab" role="tablist">
-                                    <li role="presentation">
-                                        <button id="list-tab" data-bs-toggle="tab" data-bs-target="#list-tab-pane"
-                                            type="button" role="tab" data-aria-controls="list-tab-pane"
-                                            data-aria-selected="false" aria-selected="false" tabindex="-1"><i
-                                                class="fa-solid fa-list"></i></button>
-                                    </li>
-                                    <li role="presentation">
-                                        <button class="active" id="grid-tab" data-bs-toggle="tab"
-                                            data-bs-target="#grid-tab-pane" type="button" role="tab"
-                                            data-aria-controls="grid-tab-pane" data-aria-selected="true"
-                                            aria-selected="true"><i class="fa-solid fa-table-cells"></i></button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                     <div class="row shopProductRow">
                         <div class="col-lg-12">
                             <div class="tab-content productViewTabContent" id="productViewTabContent">
@@ -243,148 +182,76 @@
                                         @foreach ($products as $product)
                                             <div class="col-sm-6 col-xl-4">
                                                 <div class="productItem01" data-product-id="{{ $product->id }}">
-                                                    <div class="pi01Thumb">
-                                                        <img class="main-img"
+                                                    <div
+                                                        class="pi01Thumb ratio ratio-1x1 position-relative overflow-hidden">
+                                                        <img class="main-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
-                                                        <img class="hover-img"
+                                                        <img class="hover-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
                                                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
                                                             alt="{{ $product->name }}">
-                                                        <div class="pi01Actions">
-                                                            <a href="#" class="pi01Cart"><i
-                                                                    class="fa-solid fa-shopping-cart"></i></a>
-                                                            <a href="#" class="pi01QuickView"><i
-                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                                            <a href="#" class="pi01Wishlist"><i
-                                                                    class="fa-solid fa-heart"></i></a>
-                                                        </div>
                                                     </div>
 
+
                                                     <div class="pi01Details">
-                                                        <h3 class="product-name">
-                                                            <a href="{{ route('client.shop.show', $product->slug) }}">
-                                                                {{ $product->name }}
-                                                            </a>
+                                                        <h3 class="product-name h5 mb-2"><a
+                                                                href="{{ route('client.shop.show', $product->slug) }}">{{ $product->name }}</a>
                                                         </h3>
 
-                                                        <div class="pi01Price">
-                                                            <ins class="product-price">
-                                                                {{ number_format($product->price ?? 0) }} VNĐ
-                                                            </ins>
-                                                        </div>
+
 
                                                         <div class="d-flex flex-column mt-2 gap-2">
                                                             <div
-                                                                class="variant-row d-flex justify-content-between align-items-center flex-wrap">
+                                                                class="variant-row d-flex flex-wrap justify-content-between align-items-center mb-3">
                                                                 {{-- Màu sắc --}}
-                                                                @if (!empty($product->colorData) && is_array($product->colorData))
-                                                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                                        @foreach ($product->colorData as $color)
-                                                                            <span class="color-picker"
-                                                                                data-image="{{ asset($color['image']) }}"
-                                                                                data-name="{{ $color['variant_name'] }}"
-                                                                                data-price="{{ number_format($color['price']) }} VNĐ"
-                                                                                style="background-color: {{ $color['hex'] }};"
-                                                                                title="{{ ucfirst($color['name']) }}">
-                                                                            </span>
-                                                                        @endforeach
-                                                                    </div>
-                                                                @endif
-
-                                                                {{-- Các thuộc tính khác --}}
-                                                                @if (!empty($product->attributesGroup) && is_array($product->attributesGroup))
+                                                                @if (!empty($product->colorData))
                                                                     <div
-                                                                        class="variant-right d-flex align-items-center gap-2 flex-wrap">
-                                                                        @foreach ($product->attributesGroup as $name => $values)
-                                                                            @if ($name != 'Màu sắc')
-                                                                                @foreach ($values as $value)
-                                                                                    <span
-                                                                                        class="attribute-item">{{ $value }}</span>
-                                                                                @endforeach
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-
-                                        <div class="mt-4">
-                                            {{ $products->links() }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane" id="list-tab-pane" role="tabpanel" aria-labelledby="list-tab"
-                                    tabindex="0">
-                                    <div class="row">
-                                        @foreach ($products as $product)
-                                            <div class="col-sm-6 col-xl-4">
-                                                <div class="productItem01" data-product-id="{{ $product->id }}">
-                                                    <div class="pi01Thumb">
-                                                        <img class="main-img"
-                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                                            alt="{{ $product->name }}">
-                                                        <img class="hover-img"
-                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                                            alt="{{ $product->name }}">
-                                                        <div class="pi01Actions">
-                                                            <a href="#" class="pi01Cart"><i
-                                                                    class="fa-solid fa-shopping-cart"></i></a>
-                                                            <a href="#" class="pi01QuickView"><i
-                                                                    class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                                            <a href="#" class="pi01Wishlist"><i
-                                                                    class="fa-solid fa-heart"></i></a>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="pi01Details">
-                                                        <h3 class="product-name">
-                                                            <a href="{{ route('client.shop.show', $product->slug) }}">
-                                                                {{ $product->name }}
-                                                            </a>
-                                                        </h3>
-
-                                                        <div class="pi01Price">
-                                                            <ins class="product-price">
-                                                                {{ number_format($product->price ?? 0) }} VNĐ
-                                                            </ins>
-                                                        </div>
-
-                                                        <div class="d-flex flex-column mt-2 gap-2">
-                                                            {{-- Hiển thị MÀU SẮC + THUỘC TÍNH trên cùng dòng --}}
-                                                            <div class="variant-row">
-                                                                {{-- Màu sắc --}}
-                                                                @if (!empty($product->colorData) && is_array($product->colorData))
-                                                                    <div class="d-flex align-items-center gap-2">
+                                                                        class="color-options d-flex flex-wrap gap-2 align-items-center mb-2 mb-sm-0">
                                                                         @foreach ($product->colorData as $color)
-                                                                            <span class="color-picker"
+                                                                            <span
+                                                                                class="color-picker rounded-circle border border-light shadow-sm"
+                                                                                style="width: 24px; height: 24px; cursor: pointer; background-color: {{ $color['hex'] }};"
                                                                                 data-image="{{ asset($color['image']) }}"
                                                                                 data-name="{{ $color['variant_name'] }}"
                                                                                 data-price="{{ number_format($color['price']) }} VNĐ"
-                                                                                style="background-color: {{ $color['hex'] }};"
-                                                                                title="{{ ucfirst($color['name']) }}">
+                                                                                title="{{ ucfirst($color['name']) }}"
+                                                                                data-bs-toggle="tooltip">
                                                                             </span>
                                                                         @endforeach
                                                                     </div>
                                                                 @endif
 
                                                                 {{-- Các thuộc tính khác --}}
-                                                                @if (!empty($product->attributesGroup) && is_array($product->attributesGroup))
-                                                                    <div class="variant-right">
-                                                                        @foreach ($product->attributesGroup as $name => $values)
-                                                                            @if ($name != 'Màu sắc')
-                                                                                @foreach ($values as $value)
-                                                                                    <span
-                                                                                        class="attribute-item">{{ $value }}</span>
-                                                                                @endforeach
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </div>
-                                                                @endif
+                                                                <div class="attribute-options d-flex flex-wrap gap-2">
+                                                                    @foreach ($product->attributesGroup as $name => $values)
+                                                                        @if ($name != 'Màu sắc')
+                                                                            @foreach ($values as $value)
+                                                                                <span
+                                                                                    class="attribute-item badge bg-light text-dark border border-1">
+                                                                                    {{ $value }}
+                                                                                </span>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row g-2">
+                                                            <div class="col-sm-6">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-center h-100 p-2 border rounded bg-light">
+                                                                    <span class="fw-bold fs-5 text-danger">
+                                                                        {{ number_format($product->price ?? 0) }} VNĐ
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a href="{{ route('client.shop.show', $product->slug) }}"
+                                                                    class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+                                                                    <i class="fas fa-eye me-2"></i>
+                                                                    Chi tiết
+                                                                </a>
                                                             </div>
                                                         </div>
 
@@ -393,21 +260,12 @@
                                             </div>
                                         @endforeach
 
-                                        <div class="mt-4">
+                                        <div class="mt-4 d-flex justify-content-center">
                                             {{ $products->links() }}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row shopPaginationRow">
-                        <div class="col-lg-12 text-center">
-                            <div class="shopPagination">
-                                <span class="current">1</span>
-                                <a href="javascript:void(0);">2</a>
-                                <a href="javascript:void(0);">3</a>
-                                <a href="javascript:void(0);"><i class="fa-solid fa-angle-right"></i></a>
+
                             </div>
                         </div>
                     </div>
