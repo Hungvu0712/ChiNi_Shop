@@ -12,20 +12,20 @@ return [
     |
     */
     'color_map' => [
-        'red' => '#dc3545',
+        'Red' => '#dc3545',
         'Đỏ' => '#dc3545',
-        'blue' => '#0d6efd',
-        'màu xanh' => '#0d6efd',
-        'green' => '#198754',
-        'màu xanh lá' => '#198754',
-        'black' => '#212529',
+        'Blue' => '#0d6efd',
+        'Màu xanh' => '#0d6efd',
+        'Green' => '#198754',
+        'Màu xanh lá' => '#198754',
+        'Black' => '#212529',
         'Đen' => '#212529',
-        'white' => '#ffffff',
-        'trắng' => '#ffffff',
-        'yellow' => '#ffc107',
-        'vàng' => '#ffc107',
-        'xám' => '#6c757d',
-        'gray' => '#6c757d',
+        'White' => '#ffffff',
+        'Trắng' => '#ffffff',
+        'Yellow' => '#ffc107',
+        'Vàng' => '#ffc107',
+        'Xám' => '#6c757d',
+        'Gray' => '#6c757d',
         // Thêm các màu khác của bạn vào đây
     ],
 ];

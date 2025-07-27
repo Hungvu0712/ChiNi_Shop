@@ -61,6 +61,37 @@
         .pgtImage.active img {
             border-color: #333;
         }
+
+
+
+         input[type="file"] {
+            height: 45px;
+            line-height: 45px;
+            padding-left: 15px;
+        }
+
+        .rating-stars {
+            direction: rtl;
+            /* để đảo thứ tự ngôi sao */
+            display: inline-flex;
+        }
+
+        .rating-stars input[type="radio"] {
+            display: none;
+        }
+
+        .rating-stars label {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ddd;
+            /* Màu sao chưa chọn */
+            margin: 0 2px;
+        }
+
+        .rating-stars input[type="radio"]:checked~label i {
+            color: #ffc107;
+            /* Màu sao đã chọn */
+        }
     </style>
 @endsection
 @section('content')
@@ -140,12 +171,10 @@
                                         @foreach ($product->colorData as $index => $color)
                                             <span class="color-picker"
                                                 style="background-color: {{ $color['hex'] }};
-           width: 24px; height: 24px; border-radius: 50%;
-           border: 1px solid {{ $color['hex'] === '#ffffff' ? '#ccc' : $color['hex'] }};
-           cursor: pointer;"
-                                                title="{{ ucfirst($color['name']) }}"
-                                                data-attribute-name="{{ ucfirst($color['attribute_key']) }}"
-                                                data-attribute-key="{{ $color['attribute_key'] }}"
+                                 width: 24px; height: 24px; border-radius: 50%;
+                                 border: 1px solid {{ $color['hex'] === '#ffffff' ? '#ccc' : $color['hex'] }};
+                                 cursor: pointer;"
+                                                title="{{ ucfirst($color['name']) }}" data-attribute-name="Màu sắc"
                                                 data-value="{{ $color['name'] }}" data-image="{{ $color['image'] }}"
                                                 data-name="{{ $color['variant_name'] }}"
                                                 data-price="{{ number_format($color['price']) }} VNĐ">
@@ -163,7 +192,7 @@
                                         <div class="pcvContainer d-flex flex-wrap gap-2">
                                             @foreach ($values as $index => $value)
                                                 <label class="attribute-item" style="cursor: pointer;">
-                                                    <input type="radio" name="{{ ucfirst($name) }}"
+                                                    <input type="radio" name="{{ $name }}"
                                                         value="{{ $value }}"
                                                         data-variant-id="{{ $value_id ?? '' }}" {{-- hoặc ID tương ứng --}}
                                                         class="variant-picker d-none">
@@ -211,7 +240,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row productTabRow">
                 <div class="col-lg-12">
                     <ul class="nav productDetailsTab" id="productDetailsTab" role="tablist">
@@ -260,98 +288,116 @@
                             <div class="productReviewArea">
                                 <div class="row">
                                     <div class="col-lg-6">
-                                        <h3>10 Reviews</h3>
+                                        <h3>{{ $reviewCount }} đánh giá</h3>
+
                                         <div class="reviewList">
                                             <ol>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/7.jpg" alt="Post Review">
-                                                        <h2>Greaet product. Packaging was also good!</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
+                                                @forelse ($reviews as $review)
+                                                    <li>
+                                                        <div class="postReview d-flex gap-3 mb-4">
+                                                            {{-- Avatar --}}
+                                                            <div>
+                                                                <img src="{{ $review->user->avatar ?? asset('images/author/default.jpg') }}"
+                                                                    alt="{{ $review->user->name ?? 'Ẩn danh' }}"
+                                                                    class="rounded-circle" width="60" height="60"
+                                                                    style="object-fit: cover;">
+                                                            </div>
+
+                                                            {{-- Nội dung --}}
+                                                            <div class="flex-grow-1">
+                                                                <div class="mb-1">
+                                                                    <h5 class="mb-1">
+                                                                        {{ $review->user->name ?? 'Ẩn danh' }}</h5>
+
+                                                                </div>
+
+
+                                                                {{-- Số sao --}}
+
+                                                                <div class="productRatingWrap mb-2">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        <i
+                                                                            class="{{ $i <= $review->rating ? 'fas' : 'far' }} fa-star text-warning"></i>
+                                                                    @endfor
+                                                                </div>
+
+                                                                {{-- Nội dung đánh giá --}}
+
+                                                                <div class="mb-1">
+                                                                    <h5 class="mb-1">{{ $review->review }}</h5>
+                                                                    <small
+                                                                        class="text-muted d-block">{{ $review->created_at->format('d/m/Y H:i') }}</small>
+                                                                </div>
+
+
+                                                                {{-- Hình ảnh đính kèm --}}
+
+                                                                @if ($review->images && $review->images->count())
+                                                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                                                        @foreach ($review->images as $image)
+                                                                            <a href="{{ $image->image_url }}"
+                                                                                target="_blank">
+                                                                                <img src="{{ $image->image_url }}"
+                                                                                    alt="Review image"
+                                                                                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;">
+                                                                            </a>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+
+
+                                                            </div>
                                                         </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>John Manna</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/8.jpg" alt="Post Review">
-                                                        <h2>The item is very comfortable and soft!</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
-                                                        </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>Robert Thomas</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="postReview">
-                                                        <img src="images/author/9.jpg" alt="Post Review">
-                                                        <h2>I liked the product, it is awesome.</h2>
-                                                        <div class="postReviewContent">
-                                                            Desectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                                                            labore et dolore ma na alihote pare ei gansh es gan quim veniam,
-                                                            quis nostr udg exercitation ullamco laboris nisi ut aliquip
-                                                        </div>
-                                                        <div class="productRatingWrap">
-                                                            <div class="star-rating"><span></span></div>
-                                                        </div>
-                                                        <div class="reviewMeta">
-                                                            <h4>Ken Williams</h4>
-                                                            <span>on June 10, 2022</span>
-                                                        </div>
-                                                    </div>
-                                                </li>
+                                                    </li>
+                                                @empty
+                                                    <li>
+                                                        <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+                                                    </li>
+                                                @endforelse
                                             </ol>
                                         </div>
+
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="commentFormArea">
                                             <h3>Add A Review</h3>
                                             <div class="reviewFrom">
-                                                <form method="post" action="#" class="row">
-                                                    <div class="col-lg-12">
-                                                        <div class="reviewStar">
-                                                            <label>Your Rating</label>
-                                                            <div class="rsStars"><i class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i><i
-                                                                    class="fa-regular fa-star"></i></div>
-                                                        </div>
+                                                <form method="POST" action="{{ route('client.shop.review') }}"
+                                                    enctype="multipart/form-data">
+                                                    @csrf
+
+                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                                    <div class="mb-3 rating-stars">
+                                                        <label class="form-label">Rating</label><br>
+                                                        @for ($i = 5; $i >= 1; $i--)
+                                                            <input type="radio" name="rating"
+                                                                id="star{{ $i }}"
+                                                                value="{{ $i }}" />
+                                                            <label for="star{{ $i }}"><i
+                                                                    class="fa fa-star"></i></label>
+                                                        @endfor
                                                     </div>
-                                                    <div class="col-lg-12">
-                                                        <input type="text" name="comTitle" placeholder="Review title">
+
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Your Review</label>
+                                                        <textarea name="review" class="form-control" rows="4" required></textarea>
+
                                                     </div>
-                                                    <div class="col-lg-12">
-                                                        <textarea name="comComment" placeholder="Write your review here"></textarea>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Upload Images</label>
+                                                        <input type="file" name="comAttachments[]"
+                                                            class="form-control" multiple accept="image/*">
                                                     </div>
-                                                    <div class="col-lg-6">
-                                                        <input type="text" name="comName" placeholder="Your name">
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <input type="email" name="comEmail" placeholder="Your email">
-                                                    </div>
-                                                    <div class="col-lg-12">
-                                                        <button type="submit" name="reviewtSubmit"
-                                                            class="ulinaBTN"><span>Submit Now</span></button>
+
+                                                    <div class="text-center">
+                                                        <button class="btn btn-primary rounded-pill px-4">Submit
+                                                            Review</button>
                                                     </div>
                                                 </form>
+
                                             </div>
                                         </div>
                                     </div>
@@ -439,186 +485,12 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 @endsection
 @section('script')
 {{-- load toastr --}}
     <script>
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const variantsMap = @json($variantsMap);
-            const attributeNames = @json($attributeNamesReadable);
-
-            const normalize = str => str.trim().toLowerCase();
-
-            const selectedAttributes = {};
-            const normalizedToOriginal = {};
-
-            // Khởi tạo selectedAttributes với key đã normalize
-            attributeNames.forEach(attr => {
-                const norm = normalize(attr);
-                normalizedToOriginal[norm] = attr;
-                selectedAttributes[norm] = '';
-            });
-
-            const mainProductImage = document.getElementById('mainProductImage');
-            const productNameEl = document.getElementById('product-name');
-            const productPriceEl = document.getElementById('product-price');
-            const productSkuEl = document.querySelector('.sku-field');
-            const productStockEl = document.getElementById('product-stock');
-            const productGalleryThumb = document.querySelector('.productGalleryThumb');
-            const originalProductImageSrc = mainProductImage.src;
-
-            const initialThumbnailUrls = Array.from(new Set(
-                Array.from(productGalleryThumb.querySelectorAll('.pgtImage img')).map(img => img.src)
-            ));
-
-            function updateGalleryThumbnails(variantImageSrc, isVariantSelected = false) {
-                while (productGalleryThumb.firstChild) {
-                    productGalleryThumb.removeChild(productGalleryThumb.firstChild);
-                }
-
-                const finalUrls = [];
-
-                if (isVariantSelected && variantImageSrc) {
-                    finalUrls.push(variantImageSrc);
-                } else {
-                    initialThumbnailUrls.forEach(url => finalUrls.push(url));
-                }
-
-                finalUrls.forEach(url => {
-                    const div = document.createElement('div');
-                    div.classList.add('pgtImage');
-                    if (url === variantImageSrc && isVariantSelected) div.classList.add('active');
-
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = "Product Thumbnail";
-                    div.appendChild(img);
-                    productGalleryThumb.appendChild(div);
-                });
-            }
-
-            function handleVariantChange() {
-                if (Object.values(selectedAttributes).some(val => !val)) {
-                    console.warn('⚠️ Cần chọn đầy đủ các thuộc tính:', selectedAttributes);
-                    return;
-                }
-
-                // Tạo key không phụ thuộc thứ tự thuộc tính
-                const sortedKey = Object.keys(selectedAttributes)
-                    .sort()
-                    .map(k => selectedAttributes[k])
-                    .join('-');
-
-                const variant = variantsMap[sortedKey];
-
-                console.log("selectedAttributes", selectedAttributes);
-                console.log("builtKey", sortedKey);
-                console.log("variantsMap keys:", Object.keys(variantsMap));
-
-                if (variant) {
-                    productNameEl.innerText = variant.name;
-                    productPriceEl.innerText = Number(variant.price).toLocaleString() + ' VNĐ';
-                    productSkuEl.innerText = variant.sku || 'N/A';
-                    productStockEl.innerText = variant.quantity;
-                    mainProductImage.src = variant.variant_image;
-                    updateGalleryThumbnails(variant.variant_image, true);
-
-                    const addToCartBtn = document.querySelector('.add-to-cart-btn');
-                    if (addToCartBtn) {
-                        addToCartBtn.dataset.variantId = variant.id;
-                    }
-                } else {
-                    console.warn('❌ Không tìm thấy biến thể:', sortedKey);
-                    mainProductImage.src = originalProductImageSrc;
-                    updateGalleryThumbnails(originalProductImageSrc, false);
-                }
-            }
-
-            // Radio buttons
-            document.querySelectorAll('.variant-picker').forEach(picker => {
-                picker.addEventListener('change', function() {
-                    const normKey = normalize(this.name);
-                    selectedAttributes[normKey] = this.value;
-                    handleVariantChange();
-                });
-            });
-
-            // Color picker buttons
-            document.querySelectorAll('.color-picker').forEach(picker => {
-                picker.addEventListener('click', function() {
-                    const attrName = this.dataset.attributeName;
-                    const normKey = normalize(attrName);
-                    const value = this.dataset.value;
-
-                    selectedAttributes[normKey] = value;
-
-                    document.querySelectorAll('.color-picker').forEach(p => p.classList.remove(
-                        'active'));
-                    this.classList.add('active');
-
-                    handleVariantChange();
-                });
-            });
-
-            // Click vào ảnh thumbnail
-            productGalleryThumb.addEventListener('click', function(event) {
-                const clicked = event.target.closest('.pgtImage');
-                if (clicked && clicked.querySelector('img')) {
-                    mainProductImage.src = clicked.querySelector('img').src;
-                    productGalleryThumb.querySelectorAll('.pgtImage').forEach(div => div.classList.remove(
-                        'active'));
-                    clicked.classList.add('active');
-                }
-            });
-
-            // Tăng giảm số lượng
-            const btnMinus = document.querySelector('.btnMinus');
-            const btnPlus = document.querySelector('.btnPlus');
-            const qtyInput = document.querySelector('input[name="quantity"]');
-
-            if (btnMinus && btnPlus && qtyInput) {
-                btnMinus.addEventListener('click', () => {
-                    let current = parseInt(qtyInput.value) || 1;
-                    if (current > 1) qtyInput.value = current - 1;
-                });
-
-                btnPlus.addEventListener('click', () => {
-                    let current = parseInt(qtyInput.value) || 1;
-                    qtyInput.value = current + 1;
-                });
-            }
-
-            // Add to Cart
-            const addToCartBtn = document.querySelector('.add-to-cart-btn');
-            if (addToCartBtn) {
-                addToCartBtn.addEventListener('click', function() {
-                    const productId = this.dataset.productId;
-                    const variantId = this.dataset.variantId;
-                    const quantity = parseInt(qtyInput.value) || 1;
-
-                    if (!variantId) {
-                        alert("Vui lòng chọn đầy đủ biến thể sản phẩm.");
-                        return;
-                    }
-
-                    console.log("🛒 Add to Cart");
-                    console.log("product_id:", productId);
-                    console.log("product_variant_id:", variantId);
-                    console.log("quantity:", quantity);
-
-                    // fetch('/cart/add', { ... })
-                });
-            }
-
-            // Gọi cập nhật ảnh ban đầu
-            updateGalleryThumbnails(mainProductImage.src);
-        });
-    </script>
-
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
@@ -794,7 +666,7 @@
 
                                     // Thành công
                                     updateCartCount(data.cart_count);
-                                    
+
                                     toastr.success(data.message || 'Thêm sản phẩm vào giỏ hàng!');
                                 })
                                 .catch(error => {

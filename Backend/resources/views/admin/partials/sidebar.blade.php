@@ -194,25 +194,6 @@
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#vouchers">
-                        <i class="far fa-chart-bar"></i>
-                        <p>Quản lý mã giảm giá</p>
-                        <span class="caret"></span>
-                    </a>
-                    <div class="collapse" id="vouchers">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="{{ route('vouchers.index') }}">
-                                    <span class="sub-item">Danh sách mã giảm giá</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('vouchers.create') }}">
-                                    <span class="sub-item">Thêm mới mã giảm giá</span>
-                                </a>
-
-
                 <!-- Quản lý Attribute Values -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attribute_values"
@@ -228,12 +209,10 @@
                             </li>
                             <li class="{{ request()->routeIs('attribute_values.create') ? 'active' : '' }}">
                                 <a href="{{ route('attribute_values.create') }}"><span class="sub-item">Thêm</span></a>
-
                             </li>
                         </ul>
                     </div>
                 </li>
-
 
                 <!-- Quản lý Banners -->
                 <li class="nav-item">
@@ -255,6 +234,34 @@
                     </div>
                 </li>
 
+
+                <!-- Quản lý Mã giảm giá -->
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#vouchers"
+                       aria-expanded="{{ request()->routeIs('vouchers.*') ? 'true' : 'false' }}">
+                        <i class="fas fa-sliders-h"></i>
+                        <p>vouchers</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('vouchers.*') ? 'show' : '' }}" id="vouchers">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('vouchers.index') ? 'active' : '' }}">
+                                <a href="{{ route('vouchers.index') }}"><span class="sub-item">Danh sách</span></a>
+                            </li>
+                            <li class="{{ request()->routeIs('vouchers.create') ? 'active' : '' }}">
+                                <a href="{{ route('vouchers.create') }}"><span class="sub-item">Thêm</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+                {{-- QL Bình luận --}}
+                <li class="nav-item">
+                    <a class="nav-link text-primary fw-semibold" href="{{ route('admin.reviews.index') }}">
+                        <i class="fas fa-comments me-2"></i> Quản lý bình luận
+                    </a>
+                </li>
 
             </ul>
         </div>

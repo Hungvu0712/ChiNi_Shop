@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Menu;
 use Illuminate\Support\Str;
+use App\Models\ProductReview;
 use App\Models\Attribute; // ✅ 1. Thêm model Attribute
 
 class ShopController extends Controller
@@ -96,101 +97,76 @@ class ShopController extends Controller
         );
 
         $colorMap = config('custom.color_map', []);
-        $colorAttribute = Attribute::whereRaw('LOWER(name) = ?', ['màu sắc'])->first();
+        $colorAttribute = Attribute::where('name', 'Màu sắc')->first();
 
         $attributesByProduct = [];
         $colorDataForView = [];
         $variantsMap = [];
-        $attributeKeysLowerToOriginal = [];
-        $normalize = fn($str) => strtolower(trim($str));
+        $attributeNames = [];
 
-        // Gom tên attribute (dạng chuẩn hóa → tên gốc để hiển thị đúng)
-        foreach ($product->variants as $variant) {
-            foreach ($variant->variantAttributeValues as $vav) {
-                if ($vav->attributeValue && $vav->attributeValue->attribute) {
-                    $attrName = $vav->attributeValue->attribute->name;
-                    $attrKey = $normalize($attrName);
-                    $attributeKeysLowerToOriginal[$attrKey] = $attrName;
-                }
-            }
-        }
+        if ($product->variants->isNotEmpty()) {
+            foreach ($product->variants as $variant) {
+                $variantKeyParts = [];
 
-        // Lấy danh sách tên attribute (theo thứ tự)
-        $attributeNames = array_unique(array_map(
-            fn($variant) => array_map(
-                fn($vav) => $normalize($vav->attributeValue->attribute->name ?? ''),
-                $variant->variantAttributeValues->all()
-            ),
-            $product->variants->all()
-        ), SORT_REGULAR);
-        $attributeNames = array_values(array_unique(array_merge(...$attributeNames)));
+                foreach ($variant->variantAttributeValues as $vav) {
+                    if (!$vav->attributeValue || !$vav->attributeValue->attribute) {
+                        continue;
+                    }
 
-        // Duyệt tất cả các biến thể để tạo variantsMap
-        foreach ($product->variants as $variant) {
-            $variantKeyParts = [];
+                    $attributeName = $vav->attributeValue->attribute->name;
+                    $value = $vav->attributeValue->value;
+                    $attributeValue = is_array($value) ? implode(' ', $value) : (string) $value;
+                    $colorKey = strtolower(trim($attributeValue));
 
-            foreach ($variant->variantAttributeValues as $vav) {
-                if (!$vav->attributeValue || !$vav->attributeValue->attribute) {
-                    continue;
-                }
+                    // ✅ Gộp các giá trị theo attribute
+                    $variantKeyParts[$attributeName] = $attributeValue;
 
-                $originalAttributeName = $vav->attributeValue->attribute->name;
-                $attributeNameKey = $normalize($originalAttributeName);
-                $attributeValue = (string) $vav->attributeValue->value;
-                $colorKey = $normalize($attributeValue);
+                    // ✅ Màu sắc
+                    if ($colorAttribute && $vav->attribute_id == $colorAttribute->id) {
+                        if (!collect($colorDataForView)->contains('name', $attributeValue)) {
+                            $colorDataForView[] = [
+                                'name' => $attributeValue,
+                                'hex' => $colorMap[$colorKey] ?? '#cccccc',
+                                'image' => $variant->variant_image ?? $product->product_image,
+                                'price' => $variant->price ?? $product->price,
+                                'variant_name' => $variant->variant_name ?? $product->name,
+                            ];
+                        }
+                    }
 
-                // ✅ giữ nguyên giá trị gốc (viết hoa)
-                $variantKeyParts[$attributeNameKey] = $attributeValue;
-
-                // Gom thuộc tính cho view
-                if (!isset($attributesByProduct[$attributeNameKey])) {
-                    $attributesByProduct[$attributeNameKey] = [];
-                }
-                if (!in_array($attributeValue, $attributesByProduct[$attributeNameKey])) {
-                    $attributesByProduct[$attributeNameKey][] = $attributeValue;
-                }
-
-                // Dữ liệu màu sắc riêng
-                if ($colorAttribute && $vav->attribute_id == $colorAttribute->id) {
-                    if (!collect($colorDataForView)->contains('name', $attributeValue)) {
-                        $colorDataForView[] = [
-                            'name' => $attributeValue,
-                            'attribute_key' => $attributeNameKey,
-                            'hex' => $colorMap[$colorKey] ?? '#cccccc',
-                            'image' => $variant->variant_image ?? $product->product_image,
-                            'price' => $variant->price ?? $product->price,
-                            'variant_name' => $variant->variant_name ?? $product->name,
-                        ];
+                    // ✅ Gom nhóm thuộc tính khác
+                    if (!isset($attributesByProduct[$attributeName])) {
+                        $attributesByProduct[$attributeName] = [];
+                    }
+                    if (!in_array($attributeValue, $attributesByProduct[$attributeName])) {
+                        $attributesByProduct[$attributeName][] = $attributeValue;
                     }
                 }
+
+                // ✅ Xây variantsMap để truyền qua JS
+                if (!empty($variantKeyParts)) {
+                    $variantKey = implode('-', array_map(function ($attrName) use ($variantKeyParts) {
+                        return $variantKeyParts[$attrName] ?? '';
+                    }, array_keys($attributesByProduct)));
+
+
+                    $variantsMap[$variantKey] = [
+                        'id' => $variant->id, // Đúng chuẩn để JS đọc được variant.id
+                        'name' => $variant->variant_name ?? $product->name,
+                        'price' => $variant->price ?? $product->price,
+                        'sku' => $variant->sku ?? $product->sku,
+                        'quantity' => $variant->quantity ?? $product->quantity,
+                        'variant_image' => $variant->variant_image ?? $product->product_image,
+                    ];
+                }
             }
 
-            // ✅ Tạo key không phụ thuộc thứ tự thuộc tính
-            $variantKey = implode(
-                '-',
-                collect($variantKeyParts)
-                    ->sortKeys() // sort theo tên thuộc tính
-                    ->values()   // lấy value theo thứ tự
-                    ->all()
-            );
-
-            $variantsMap[$variantKey] = [
-                'id' => $variant->id,
-                'name' => $variant->variant_name ?? $product->name,
-                'price' => $variant->price ?? $product->price,
-                'sku' => $variant->sku ?? $product->sku,
-                'quantity' => $variant->quantity ?? $product->quantity,
-                'variant_image' => $variant->variant_image ?? $product->product_image,
-            ];
+            $attributeNames = array_keys($attributesByProduct);
         }
-
-        // Dùng để hiển thị đúng tên attribute
-        $attributeNamesReadable = array_map(fn($key) => $attributeKeysLowerToOriginal[$key] ?? $key, $attributeNames);
 
         $product->setAttribute('colorData', $colorDataForView);
         $product->setAttribute('attributesGroup', $attributesByProduct);
 
-        // Sản phẩm liên quan (same brand)
         $relatedProducts = Product::with([
             'variants.variantAttributeValues.attributeValue.attribute',
             'brand'
@@ -206,8 +182,10 @@ class ShopController extends Controller
             foreach ($related->variants as $variant) {
                 foreach ($variant->variantAttributeValues as $vav) {
                     if ($vav->attributeValue && $vav->attributeValue->attribute) {
-                        $attrName = $normalize($vav->attributeValue->attribute->name);
-                        $attrValue = (string) $vav->attributeValue->value;
+                        $attrName = $vav->attributeValue->attribute->name;
+                        $attrValue = is_array($vav->attributeValue->value)
+                            ? implode(' ', $vav->attributeValue->value)
+                            : (string) $vav->attributeValue->value;
 
                         if (!isset($attributesGrouped[$attrName])) {
                             $attributesGrouped[$attrName] = [];
@@ -220,24 +198,33 @@ class ShopController extends Controller
                 }
             }
 
-            $related->colors = collect($attributesGrouped['màu sắc'] ?? [])
-                ->map(function ($color) use ($colorMap, $normalize) {
-                    $colorKey = $normalize($color);
+            // Lưu vào các thuộc tính riêng
+            $related->colors = collect($attributesGrouped['Màu sắc'] ?? [])
+                ->map(function ($color) use ($colorMap) {
+                    $colorKey = strtolower(trim($color));
                     return [
                         'name' => $color,
                         'hex' => $colorMap[$colorKey] ?? '#ccc'
                     ];
                 })->unique('name')->values()->all();
 
-            $related->sizes = $attributesGrouped['kích cỡ'] ?? [];
-            $related->materials = array_merge(
-                $attributesGrouped['vải'] ?? [],
-                $attributesGrouped['chất liệu'] ?? []
-            );
-
-            $related->otherAttributes = collect($attributesGrouped)
-                ->except(['màu sắc', 'kích cỡ', 'vải', 'chất liệu']);
+            $related->sizes = $attributesGrouped['Kích cỡ'] ?? []; // hoặc 'Size'
+            $related->materials = $attributesGrouped['Vải'] ?? []; // nếu có thuộc tính vải
+            $related->materials = $attributesGrouped['Chất liệu'] ?? [];
+            $related->otherAttributes = collect($attributesGrouped)->except(['Màu sắc', 'Kích cỡ', 'Vải']);
         }
+
+
+        //bình luận
+        $reviews = ProductReview::with('user', 'images')
+            ->where('product_id', $product->id)
+            ->latest()
+            ->get();
+
+        $reviewCount = $reviews->count();
+
+
+        // dd($variantsMap);
 
         return view('client.pages.product_detail', compact(
             'product',
@@ -245,7 +232,9 @@ class ShopController extends Controller
             'relatedProducts',
             'menus',
             'variantsMap',
-            'attributeNamesReadable'
+            'attributeNames',
+            'reviews',
+            'reviewCount',
         ));
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductAttachmentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BrandController;
@@ -26,6 +27,7 @@ use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Client\ProductReviewController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -88,7 +90,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::resource('banners', BannerController::class);
 
      Route::resource('vouchers', VoucherController::class);
-    
+
 });
 
 //Trang 404
@@ -127,6 +129,12 @@ Route::prefix('client')->group(function () {
     Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
     Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
+    Route::post('/review', [ProductReviewController::class, 'store'])->name('client.shop.review');
+});
+Route::prefix('client')->group(function () {
+    Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
+    Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
+    Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
 });
 Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
@@ -137,6 +145,12 @@ Route::controller(AddressController::class)->group(function () {
 Route::controller(PostHomeController::class)->group(function () {
     Route::get('blog' , 'index')->name('blog');
     Route::get('blog-detail/{slug}' , 'show')->name('blog_detail');
+});
+
+
+Route::controller(ReviewController::class)->group(function () {
+    Route::get('review', 'index')->name('admin.reviews.index');
+    Route::delete('/reviews/{id}',  'destroy')->name('admin.reviews.destroy');
 });
 
 Route::resource('cart', CartController::class);
