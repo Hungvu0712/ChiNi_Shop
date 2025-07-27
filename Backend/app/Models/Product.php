@@ -24,9 +24,23 @@ class Product extends Model
         'tags',
         'sku',
         'active',
+        'variants_json'
     ];
     public function attachments()
     {
         return $this->hasMany(ProductAttachment::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(Variant::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Menu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,16 +16,18 @@ class ProfileController extends Controller
 {
     public function show(Request $request): View
     {
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
         return view('profile.show', [
             'user' => $request->user()->load('profile'),
-        ]);
+        ], compact('menus'));
     }
 
     public function edit(Request $request): View
     {
+        $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
         return view('profile.edit', [
             'user' => $request->user()->load('profile'),
-        ]);
+        ], compact('menus'));
     }
 
     public function update(ProfileUpdateRequest $request): RedirectResponse

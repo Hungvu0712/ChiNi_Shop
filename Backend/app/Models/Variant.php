@@ -19,4 +19,25 @@ class Variant extends Model
         'public_variant_image_id',
         'active',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+
+    public function attributeValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values', 'variant_id', 'attribute_value_id')
+            ->withPivot('attribute_id');
+    }
+    public function variantAttributeValues()
+    {
+        return $this->hasMany(VariantAttributeValue::class);
+    }
+    
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, "variant_attribute_values")->withPivot("attribute_value_id", 'value');
+    }
 }

@@ -11,100 +11,53 @@
                     </div>
                     <div class="mainMenu">
                         <ul>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Home</a>
-                                <ul>
-                                    <li><a href="index.html">Home One</a></li>
-                                    <li><a href="index2.html">Home Two</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="about.html">About</a></li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Shop</a>
-                                <div class="megaMenu">
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <h3>List Pages</h3>
-                                            <ul>
-                                                <li><a href="shop_left_sidebar.html">Shop Left Sidebar</a></li>
-                                                <li><a href="shop_full_width.html">Shop Full Width</a></li>
-                                                <li><a href="shop_right_sidebar.html">Shop Right Sidebar</a></li>
-                                                <li><a href="collections.html">Collections</a></li>
-                                                <li><a href="collection_list.html">Collection List</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <h3>Details & Utility</h3>
-                                            <ul>
-                                                <li><a href="shop_details1.html">Shop Details 01</a></li>
-                                                <li><a href="shop_details2.html">Shop Details 02</a></li>
-                                                <li><a href="cart.html">Shopping Cart</a></li>
-                                                <li><a href="checkout.html">Checkout</a></li>
-                                                <li><a href="wishlist.html">Wishlist</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-lg-4 hideOnMobile">
-                                            <div class="lookBook01 lb01M2">
-                                                <div class="lbContent">
-                                                    <h3>Be Stylish</h3>
-                                                    <h2>Girl’s Latest Fashion</h2>
-                                                    <a href="shop_left_sidebar.html" class="ulinaLink"><i
-                                                            class="fa-solid fa-angle-right"></i>Shop Now</a>
-                                                </div>
-                                                <img src="{{ asset('client/images/home1/3.png') }}"
-                                                    alt="Mans Latest Collection">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Pages</a>
-                                <ul>
-                                    <li><a href="team.html">Team</a></li>
-                                    <li><a href="faq.html">FAQ's</a></li>
-                                    <li><a href="testimonial.html">Testimonial</a></li>
-                                    <li><a href="404.html">Error 404</a></li>
-                                </ul>
-                            </li>
-                            <li class="menu-item-has-children">
-                                <a href="javascript:void(0);">Blog</a>
-                                <ul>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Standard</a>
-                                        <ul>
-                                            <li><a href="blog_standard_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_standard_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_standard_rsb.html">Right Sidebar</a></li>
+                            @foreach ($menus as $menu)
+                                <li class="{{ $menu->children->count() > 0 ? 'dropdown' : '' }}">
+                                    <a href="{{ $menu->url }}">
+                                        <span>{{ $menu->name }}</span>
+                                        @if ($menu->children->count() > 0)
+                                            <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                        @endif
+                                    </a>
+
+                                    @if ($menu->children->count() > 0)
+                                        <ul class="dropdown-menu">
+                                            @foreach ($menu->children as $child)
+                                                <li class="{{ $child->children->count() > 0 ? 'dropdown' : '' }}">
+                                                    <a href="{{ $child->url }}">
+                                                        <span>{{ $child->name }}</span>
+                                                        @if ($child->children->count() > 0)
+                                                            <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                                        @endif
+                                                    </a>
+
+                                                    @if ($child->children->count() > 0)
+                                                        <ul class="dropdown-menu">
+                                                            @foreach ($child->children as $grandchild)
+                                                                <li>
+                                                                    <a href="{{ $grandchild->url }}">
+                                                                        {{ $grandchild->name }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
+                                            @endforeach
                                         </ul>
-                                    </li>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Grid</a>
-                                        <ul>
-                                            <li><a href="blog_grid_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_grid_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_grid_rsb.html">Right Sidebar</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="menu-item-has-children">
-                                        <a href="javascript:void(0);">Blog Details</a>
-                                        <ul>
-                                            <li><a href="blog_details_lsb.html">Left Sidebar</a></li>
-                                            <li><a href="blog_details_nsb.html">No Sidebar</a></li>
-                                            <li><a href="blog_details_rsb.html">Right Sidebar</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="contact.html">Contacts</a></li>
+                                    @endif
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
+
                     <div class="accessNav">
                         <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
                             <span>Menu</span></a>
                         <div class="anSocial">
                             <div class="ansWrap">
-                                <a class="fac" href="https://www.youtube.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a class="fac" href="https://www.youtube.com/"><i
+                                        class="fa-brands fa-facebook-f"></i></a>
                                 <a class="twi" href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
                                 <a class="lin" href="javascript:void(0);"><i
                                         class="fa-brands fa-linkedin-in"></i></a>
@@ -126,43 +79,47 @@
                             <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
                             </div>
                             <div class="anCart">
-                                <a href="javascript:void(0);"><i
-                                        class="fa-solid fa-shopping-cart"></i><span>3</span></a>
-                                <div class="cartWidgetArea">
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/1.jpg') }}" alt="Marine Design">
-                                        <a href="shop_details1.html">Ulina luxurious bag for men women</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>19.00</span></span>
+                                <a href="{{ route('cart.index')}}"><i
+                                        class="fa-solid fa-shopping-cart"></i><span id='cart-count'>{{isset($countCart)? $countCart:0}}</span></a>
+                               
+                                    @if (isset($cart['cartitems'])) <div class="cartWidgetArea">
+                                        @foreach ($cart['cartitems'] as $item)
+                                        <div class="cartWidgetProduct">
+                                            <img src="{{ $item['productvariant']['variant_image'] }}" alt="Marine Design">
+                                            <a href="shop_details1.html">{{ $item['product']['name'] }}</a>
+                                            <div class="cartProductPrice clearfix">
+                                                <span class="price"> <strong>Price: </strong><span>{{number_format($item['productvariant']['price'])}}<span>VND</span></span></span>
+                                                <span><strong>Quantity: </strong>{{$item['quantity']}}</span>
+                                            </div>
+                                            @foreach ($item['productvariant']['attributes'] as $attribute)
+                                            <div class="attribute-group">
+                                                <strong>{{ $attribute['name'] }}:</strong>
+                                                @php
+                                                $value = mb_strtolower($attribute['pivot']['value']);
+                                                @endphp
+                                    
+                                                @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
+                                                <span class="color-dot"
+                                                    style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
+                                                </span>
+                                                <span>{{ $attribute['pivot']['value'] }}</span>
+                                                @else
+                                                <span>{{ $attribute['pivot']['value'] }}</span>
+                                                @endif
+                                            </div>
+                                            @endforeach
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/2.jpg') }}" alt="Draped Neck">
-                                        <a href="shop_details2.html">Nasio stainless steel watch</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>41.00</span></span>
+                                        @endforeach
+                                        <div class="totalPrice">Subtotal: <span class="price"><span>{{ number_format($sub_total) ??
+                                                    ""}}<span>VND</span></span></span></div>
+                                        <div class="cartWidgetBTN clearfix">
+                                            <a class="cart" href="{{ route('cart.index')}}">View Cart</a>
+                                            <a class="checkout" href="checkout.html">Checkout</a>
                                         </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
                                     </div>
-                                    <div class="cartWidgetProduct">
-                                        <img src="{{ asset('client/images/cart/3.jpg') }}" alt="Long Pleated">
-                                        <a href="shop_details1.html">Winner men’s comfortable t-shirt</a>
-                                        <div class="cartProductPrice clearfix">
-                                            <span class="price"><span><span>$</span>52.00</span></span>
-                                        </div>
-                                        <a href="javascript:void(0);" class="cartRemoveProducts"><i
-                                                class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                    <div class="totalPrice">Subtotal: <span
-                                            class="price"><span><span>$</span>112.00</span></span></div>
-                                    <div class="cartWidgetBTN clearfix">
-                                        <a class="cart" href="cart.html">View Cart</a>
-                                        <a class="checkout" href="checkout.html">Checkout</a>
-                                    </div>
-                                </div>
+                                    @endif
+                                    
+                                
                             </div>
                         </div>
                         <div class="anSupport">
@@ -175,17 +132,21 @@
                                         </p>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownUser">
                                             @role('admin')
-                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản trị</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Trang quản
+                                                        trị</a></li>
                                             @endrole
 
                                             @role('staff')
-                                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác viên</a></li>
+                                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Cộng tác
+                                                        viên</a>
+                                                </li>
                                             @endrole
 
 
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
-                                            <li><a class="dropdown-item" href="{{ route('password.change') }}">Đổi mật khẩu</a></li>
+                                            <li><a class="dropdown-item" href="{{ route('address') }}">Địa chỉ
+                                                </a></li>
 
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf
