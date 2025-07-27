@@ -147,10 +147,7 @@
 
                         <div class="productRadingsStock clearfix">
                             <div class="productRatings float-start">
-                                <div class="productRatingWrap">
-                                    <div class="star-rating"><span></span></div>
-                                </div>
-                                <div class="ratingCounts">52 Reviews</div>
+                                
                             </div>
                             <div class="productStock float-end">
                                 <span>Available :</span> <span

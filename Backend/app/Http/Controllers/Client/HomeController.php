@@ -11,6 +11,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Attribute; // ✅ 1. Thêm model Attribute
+use App\Models\Brand;
+use App\Models\Post;
 
 class HomeController extends Controller
 {
@@ -19,6 +21,8 @@ class HomeController extends Controller
     {
         $banner = Banner::where('active', 1)->first();
         $menus = Menu::where('parent_id', null)->orderBy('order_index', 'asc')->get();
+        $blogs = Post::with('postCategory')->latest('id')->limit(4)->get();
+        $brands = Brand::all();
 
         // ✅ SỬA LỖI: Eager load đầy đủ các relationship cần thiết
         $products = Product::with([
@@ -79,9 +83,9 @@ class HomeController extends Controller
         }
 
         // Nhớ xóa dòng dd() này sau khi đã kiểm tra xong
-        // dd($products->first()->toArray()); 
+        // dd($products->first()->toArray());
 
-        return view('client.pages.home', compact('products', 'banner', 'menus'));
+        return view('client.pages.home', compact('products', 'banner', 'menus', 'blogs', 'brands'));
     }
 
     public function danhsachdiachi()

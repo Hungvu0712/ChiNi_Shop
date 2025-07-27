@@ -5,35 +5,30 @@
             <div class="col-lg-4 col-md-6">
                 <aside class="widget aboutWidget">
                     <div class="footerLogo">
-                        <a href="index.html"><img src="{{ asset('client/images/logo2.png') }}" alt="Ulina"/></a>
+                       <a href="/">
+                            <img src="{{ asset('client/images/logoshop.png') }}" alt="ChiniShop" style="width: 50%; height: auto;">
+                        </a>
                     </div>
                     <div class="aboutWidContent">
                         Quis nostrud exercitatin ullamc boris nisi ut aliquip ex ea commodo conse.
-                    </div>
-                    <div class="subscribForm">
-                        <form method="post" action="#">
-                            <input type="email" name="subsEmail" placeholder="Your email here"/>
-                            <button type="submit"><i class="fa-solid fa-envelope"></i></button>
-                        </form>
                     </div>
                 </aside>
             </div>
             <div class="col-lg-3 col-md-6">
                 <aside class="widget">
-                    <h3 class="widgetTitle">Address</h3>
+                    <h3 class="widgetTitle">Địa chỉ</h3>
                     <div class="addressContent">
                         <div class="singleAddress">
                             <i class="fa-solid fa-location-dot"></i>
-                            20, Awesome Road,
-                            New York, Usa 4D BS3
+                            Trịnh Văn Bô, Nam Từ Liêm, Hà Nội
                         </div>
                         <div class="singleAddress">
                             <i class="fa-solid fa-phone"></i>
-                            +123 456 7890
+                            +868 xxx xxx
                         </div>
                         <div class="singleAddress">
                             <i class="fa-solid fa-envelope"></i>
-                            <a href="mailto:hello@ulina.com">hello@ulina.com</a>
+                            <a href="mailto:chinishop@gmail.com">chinishop@gmail.com</a>
                         </div>
                     </div>
                 </aside>
@@ -42,25 +37,23 @@
                 <aside class="widget">
                     <h3 class="widgetTitle">Useful Links</h3>
                     <ul>
-                        <li><a href="javascript:void(0);">Shop Coupon</a></li>
-                        <li><a href="about.html">About us</a></li>
-                        <li><a href="javascript:void(0);">Carrer</a></li>
-                        <li><a href="javascript:void(0);">Supports</a></li>
+                        <li><a href="javascript:void(0);">Trang chủ</a></li>
+                        <li><a href="#">Tin tức</a></li>
                     </ul>
                 </aside>
             </div>
             <div class="col-lg-3 col-md-6">
                 <aside class="widget twoColMenu">
-                    <h3 class="widgetTitle">Categories</h3>
+                    <h3 class="widgetTitle">Danh mục</h3>
                     <ul>
-                        <li><a href="shop_full_width.html">Men</a></li>
-                        <li><a href="shop_left_sidebar.html">Bags</a></li>
-                        <li><a href="shop_right_sidebar.html">Women</a></li>
-                        <li><a href="shop_full_width.html">Jewellery</a></li>
-                        <li><a href="shop_left_sidebar.html">Kids</a></li>
-                        <li><a href="shop_left_sidebar.html">Cloths</a></li>
-                        <li><a href="shop_right_sidebar.html">Accesories</a></li>
-                        <li><a href="shop_full_width.html">Beauty Items</a></li>
+                        <li><a href="#">Men</a></li>
+                        <li><a href="#">Bags</a></li>
+                        <li><a href="#">Women</a></li>
+                        <li><a href="#">Jewellery</a></li>
+                        <li><a href="#">Kids</a></li>
+                        <li><a href="#">Cloths</a></li>
+                        <li><a href="#">Accesories</a></li>
+                        <li><a href="#">Beauty Items</a></li>
                     </ul>
                 </aside>
             </div>
@@ -68,20 +61,10 @@
         <div class="row footerAccessRow">
             <div class="col-md-6">
                 <div class="footerSocial">
-                    <a href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="footerPayments">
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-paypal"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-stripe"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-mastercard"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-visa"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-apple-pay"></i></a>
-                    <a href="javascript:void(0);"><i class="fa-brands fa-cc-amazon-pay"></i></a>
+                    <a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
                 </div>
             </div>
         </div>
@@ -97,19 +80,10 @@
 <!-- BEGIN: Site Info Section -->
 <section class="siteInfoSection">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row justify-center text-center">
+            <div class="col-md-12">
                 <div class="siteInfo">
-                    All rights reserved &nbsp;<a href="index.html">Ulina</a>&nbsp;&nbsp;&copy;&nbsp;&nbsp;2022
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="footerNav">
-                    <ul>
-                        <li><a href="javascript:void(0);">Terms & Condition</a></li>
-                        <li><a href="javascript:void(0);">Privacy Policy</a></li>
-                        <li><a href="javascript:void(0);">Legal</a></li>
-                    </ul>
+                 &nbsp;<a href="index.html">CHINISHOP</a>&nbsp;&nbsp;&copy;&nbsp;&nbsp;2025
                 </div>
             </div>
         </div>

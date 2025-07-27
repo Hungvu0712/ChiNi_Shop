@@ -54,17 +54,6 @@
                     <div class="accessNav">
                         <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
                             <span>Menu</span></a>
-                        <div class="anSocial">
-                            <div class="ansWrap">
-                                <a class="fac" href="https://www.youtube.com/"><i
-                                        class="fa-brands fa-facebook-f"></i></a>
-                                <a class="twi" href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
-                                <a class="lin" href="javascript:void(0);"><i
-                                        class="fa-brands fa-linkedin-in"></i></a>
-                                <a class="ins" href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>
-                            </div>
-                            <a class="tog" href="javascript:void(0);"><i class="fa-solid fa-share-alt"></i></a>
-                        </div>
                         <div class="anSelects">
                             <div class="anSelect">
                                 <select name="languages">
@@ -76,12 +65,10 @@
                             </div>
                         </div>
                         <div class="anItems">
-                            <div class="anSearch"><a href="javascript:void(0);"><i class="fa-solid fa-search"></i></a>
-                            </div>
                             <div class="anCart">
                                 <a href="{{ route('cart.index')}}"><i
                                         class="fa-solid fa-shopping-cart"></i><span id='cart-count'>{{isset($countCart)? $countCart:0}}</span></a>
-                               
+
                                     @if (isset($cart['cartitems'])) <div class="cartWidgetArea">
                                         @foreach ($cart['cartitems'] as $item)
                                         <div class="cartWidgetProduct">
@@ -97,7 +84,7 @@
                                                 @php
                                                 $value = mb_strtolower($attribute['pivot']['value']);
                                                 @endphp
-                                    
+
                                                 @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
                                                 <span class="color-dot"
                                                     style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
@@ -118,8 +105,8 @@
                                         </div>
                                     </div>
                                     @endif
-                                    
-                                
+
+
                             </div>
                         </div>
                         <div class="anSupport">

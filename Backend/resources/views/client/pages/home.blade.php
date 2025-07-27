@@ -242,7 +242,9 @@
                 <div class="col-lg-6">
                     <div class="dealProductContent">
                         <h2>Enjoy Your Youth!</h2>
-                        <p>Không chỉ là thời trang, CHINISHOP còn là “phòng thí nghiệm” của tuổi trẻ - nơi nghiên cứu và cho ra đời nguồn năng lượng mang tên “Youth”. Chúng mình luôn muốn tạo nên những trải nghiệm vui vẻ, năng động và trẻ trung. </p>
+                        <p>Không chỉ là thời trang, CHINISHOP còn là “phòng thí nghiệm” của tuổi trẻ - nơi nghiên cứu và cho
+                            ra đời nguồn năng lượng mang tên “Youth”. Chúng mình luôn muốn tạo nên những trải nghiệm vui vẻ,
+                            năng động và trẻ trung. </p>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -264,76 +266,32 @@
                     <h2 class="secTitle">Tin Tức</h2>
                 </div>
                 <div class="col-md-6 text-end pdt34">
-                    <a href="blog_grid_nsb.html" class="ulinaBTN2"><span>Xem tất cả</span></a>
+                    <a href="{{ route('blog') }}" class="ulinaBTN2"><span>Xem tất cả</span></a>
                 </div>
             </div>
             <div class="row masonryGrid mt-3" id="masonryGrid2">
-                <div class="col-lg-8 col-xl-6 shafItem">
-                    <div class="blogItem01">
-                        <img src="{{ asset('client/images/news/1.jpg') }}" alt="Ulina News" />
-                        <div class="bi01Content">
-                            <div class="bi01Meta clearfix">
-                                <span><i class="fa-solid fa-folder-open"></i><a
-                                        href="blog_details_lsb.html">Shopping</a></span>
-                                <span><i class="fa-solid fa-clock"></i><a href="blog_grid_lsb.html">May 31,
-                                        2022</a></span>
-                                <span><i class="fa-solid fa-user"></i><a href="blog_standard_nsb.html">Jewel
-                                        Khan</a></span>
+
+
+                @foreach ($blogs as $blog)
+                    @if ($blog->status == 'published')
+                        <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
+                            <div class="blogItem02">
+                                <div class="bi01Meta clearfix">
+                                    <span><i class="fa-solid fa-folder-open"></i>{{ $blog->postCategory->name }}</span>
+                                    <span><i class="fa-solid fa-clock"></i>{{ $blog->created_at->format('d/m/Y') }}</span>
+                                </div>
+                                <h3><a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}">{{ $blog->title }}</a>
+                                </h3>
+                                <img src="{{ $blog->featured_image }}" alt=""
+                                    style="width: 200px; height: 130px; object-fit: cover; border-radius: 8px;">
+                                <a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}" class="ulinaLink"><i
+                                        class="fa-solid fa-angle-right"></i>Chi tiết</a>
                             </div>
-                            <h3><a href="blog_details_rsb.html">When the musics over turn off the light</a></h3>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
-                    <div class="blogItem02">
-                        <div class="bi01Meta clearfix">
-                            <span><i class="fa-solid fa-folder-open"></i><a
-                                    href="blog_details_nsb.html">Shopping</a></span>
-                            <span><i class="fa-solid fa-clock"></i><a href="blog_details_nsb.html">May 31,
-                                    2022</a></span>
-                        </div>
-                        <h3><a href="blog_details_rsb.html">When the musics over turn off the light</a></h3>
-                        <a href="blog_details_nsb.html" class="ulinaLink"><i class="fa-solid fa-angle-right"></i>Read
-                            More</a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
-                    <div class="blogItem02">
-                        <div class="bi01Meta clearfix">
-                            <span><i class="fa-solid fa-folder-open"></i><a
-                                    href="blog_details_rsb.html">Shopping</a></span>
-                            <span><i class="fa-solid fa-clock"></i><a href="blog_details_rsb.html">May 31,
-                                    2022</a></span>
-                        </div>
-                        <h3><a href="blog_details_rsb.html">When the musics over turn off the light</a></h3>
-                        <a href="blog_details_rsb.html" class="ulinaLink"><i class="fa-solid fa-angle-right"></i>Read
-                            More</a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
-                    <div class="blogItem02">
-                        <div class="bi01Meta clearfix">
-                            <span><i class="fa-solid fa-folder-open"></i><a
-                                    href="blog_details_nsb.html">Shopping</a></span>
-                            <span><i class="fa-solid fa-clock"></i><a href="blog_grid_lsb.html">May 31, 2022</a></span>
-                        </div>
-                        <h3><a href="blog_details_rsb.html">When the musics over turn off the light</a></h3>
-                        <a href="blog_details_nsb.html" class="ulinaLink"><i class="fa-solid fa-angle-right"></i>Read
-                            More</a>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
-                    <div class="blogItem02">
-                        <div class="bi01Meta clearfix">
-                            <span><i class="fa-solid fa-folder-open"></i><a
-                                    href="blog_details_rsb.html">Shopping</a></span>
-                            <span><i class="fa-solid fa-clock"></i><a href="blog_grid_rsb.html">May 31, 2022</a></span>
-                        </div>
-                        <h3><a href="blog_details_rsb.html">When the musics over turn off the light</a></h3>
-                        <a href="blog_details_lsb.html" class="ulinaLink"><i class="fa-solid fa-angle-right"></i>Read
-                            More</a>
-                    </div>
-                </div>
+                    @endif
+                @endforeach
+
+
                 <div class="col-lg-1 col-sm-1 shafSizer"></div>
             </div>
         </div>
@@ -350,61 +308,22 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="instagramSlider owl-carousel">
-                        <a href="#" class="instagramPhoto imgPopup">
-                            <img src="{{ asset('client/images/instagram/1.jpg') }}" alt="Ulina Instagram" />
-                        </a>
-                        <a href="#" class="instagramPhoto imgPopup">
-                            <img src="{{ asset('client/images/instagram/2.jpg') }}" alt="Ulina Instagram" />
-                        </a>
-                        <a href="#" class="instagramPhoto imgPopup">
-                            <img src="{{ asset('client/images/instagram/3.jpg') }}" alt="Ulina Instagram" />
-                        </a>
-                        <a href="#" class="instagramPhoto imgPopup">
-                            <img src="{{ asset('client/images/instagram/4.jpg') }}" alt="Ulina Instagram" />
-                        </a>
-                        <a href="#" class="instagramPhoto imgPopup">
-                            <img src="{{ asset('client/images/instagram/5.jpg') }}" alt="Ulina Instagram" />
-                        </a>
-                    </div>
+
+                        <div class="instagramSlider owl-carousel">
+                            @foreach ($brands as $brand)
+                            <a href="#" class="instagramPhoto">
+                                <img src="{{ $brand->brand_image }}" alt="Ulina Instagram" / style="width: 200px; height: 200px;">
+                            </a>
+                            @endforeach
+                        </div>
+
+
                 </div>
             </div>
         </div>
     </section>
     <!-- END: Instagram Section -->
 
-    <!-- BEGIN: Brand Section -->
-    <section class="brandSection">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="clientLogoSlider owl-carousel">
-                        <a class="clientLogo" href="javascript:void(0);">
-                            <img src="{{ asset('client/images/clients/1h.png') }}" alt="Ulina Brand">
-                            <img src="{{ asset('client/images/clients/1.png') }}" alt="Ulina Brand">
-                        </a>
-                        <a class="clientLogo" href="javascript:void(0);">
-                            <img src="{{ asset('client/images/clients/2h.png') }}" alt="Ulina Brand">
-                            <img src="{{ asset('client/images/clients/2.png') }}" alt="Ulina Brand">
-                        </a>
-                        <a class="clientLogo" href="javascript:void(0);">
-                            <img src="{{ asset('client/images/clients/3h.png') }}" alt="Ulina Brand">
-                            <img src="{{ asset('client/images/clients/3.png') }}" alt="Ulina Brand">
-                        </a>
-                        <a class="clientLogo" href="javascript:void(0);">
-                            <img src="{{ asset('client/images/clients/4h.png') }}" alt="Ulina Brand">
-                            <img src="{{ asset('client/images/clients/4.png') }}" alt="Ulina Brand">
-                        </a>
-                        <a class="clientLogo" href="javascript:void(0);">
-                            <img src="{{ asset('client/images/clients/5h.png') }}" alt="Ulina Brand">
-                            <img src="{{ asset('client/images/clients/5.png') }}" alt="Ulina Brand">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- END: Brand Section -->
 
 
     <!-- BEGIN: Back To Top -->
@@ -557,8 +476,8 @@
                                     </p>
                                     <p class="pcmTags">
                                         <span>Tags:</span>
-                                        <a href="javascript:void(0);">Fashion</a>, <a
-                                            href="javascript:void(0);">Bags</a>, <a href="javascript:void(0);">Girls</a>
+                                        <a href="javascript:void(0);">Fashion</a>, <a href="javascript:void(0);">Bags</a>,
+                                        <a href="javascript:void(0);">Girls</a>
                                     </p>
                                     <p class="pcmSocial">
                                         <span>Share</span>
