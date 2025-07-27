@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="{{ asset('client/css/theme.css') }}">
     <link rel="stylesheet" href="{{ asset('client/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 
     @yield('css')
@@ -61,6 +63,10 @@
     @include('client.partials.footer')
 
     <!-- BEGIN: JS -->
+    <!-- jQuery (toastr cần) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('client/js/jquery.js') }}"></script>
     <script src="{{ asset('client/js/jquery-ui.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -91,6 +97,14 @@
     <script src="{{ asset('client/js/extensions/revolution.extension.video.min.js') }}"></script>
 
     <script src="{{ asset('client/js/theme.js') }}"></script>
+    <script>
+        function updateCartCount(count) {
+                const countElement = document.getElementById('cart-count');
+                if (countElement) {
+                    countElement.textContent = count;
+                }
+            }
+    </script>
     @yield('script')
     <!-- END: JS -->
 </body>

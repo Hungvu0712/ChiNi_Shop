@@ -8,6 +8,7 @@ use App\Http\Requests\Cart\StoreCart;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -67,15 +68,69 @@ class CartController extends Controller
      */
     public function store(StoreCart $request)
     {
-        try {
+       try {
             $data = $request->validated();
-           
-        } catch (\Exception $e) {
-            Log::error('Đã có lỗi xảy ra', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return back()->withErrors(['error' => 'Đã xảy ra lỗi: ' . $e->getMessage()]);
+
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['message' => 'Bạn cần phải đăng nhập để thực hiện chức năng này'], Response::HTTP_BAD_REQUEST);
+            }
+
+            return DB::transaction(function () use ($data, $user) {
+                $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+                    // Logic thêm sản phẩm vào giỏ hàng
+                    // Lấy thông tin sản phẩm
+                    $product = Product::findOrFail($data['product_id']);
+                    $variant = Variant::findOrFail($data['product_variant_id']);
+                    $cartItemQuery = CartItem::where('cart_id', $cart->id)
+                        ->where('product_id', $product->id);
+
+                    if ($variant) {
+                        $cartItemQuery->where('variant_id', $variant->id);
+                    } else {
+                        $cartItemQuery->whereNull('variant_id');
+                    }
+                    $cartItem = $cartItemQuery->first();
+                    if ($cartItem) {
+                        // Kiểm tra lại số lượng có sẵn trước khi cập nhật
+                       
+                            if (($cartItem->quantity + $data['quantity']) > $variant->quantity) {
+                                return response()->json(
+                                    ['message' => 'Số lượng sản phẩm bạn yêu cầu và số lượng sản phẩm trong giỏ hàng đã vượt quá số lượng có sẵn của biến thể sản phẩm.','status'=>422],
+                                    422
+                                );
+                            }
+                       
+
+                        // Cập nhật số lượng và giá
+                        $cartItem->quantity += $data['quantity'];
+
+                        $cartItem->save();
+                    } else {
+                        // Tạo mới mục giỏ hàng
+                        $cartItem = CartItem::create([
+                            'cart_id' => $cart->id,
+                            'product_id' => $product->id,
+                            'variant_id' => $variant ? $variant->id : null,
+                            'quantity' => $data['quantity'],
+
+                        ]);
+                    }
+
+                return response()->json([
+                    'message' => 'Thêm vào giỏ hàng thành công',
+                    'cart_count' => CartItem::where('cart_id', $cart->id)->count(),
+                    'status' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+               
+            });
+        } catch (\Exception $ex) {
+            return response()->json(
+                [
+                    "message" => $ex->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 
