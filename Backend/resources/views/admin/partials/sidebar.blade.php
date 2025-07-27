@@ -194,6 +194,25 @@
                     </div>
                 </li>
 
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#vouchers">
+                        <i class="far fa-chart-bar"></i>
+                        <p>Quản lý mã giảm giá</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="vouchers">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('vouchers.index') }}">
+                                    <span class="sub-item">Danh sách mã giảm giá</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('vouchers.create') }}">
+                                    <span class="sub-item">Thêm mới mã giảm giá</span>
+                                </a>
+
+
                 <!-- Quản lý Attribute Values -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attribute_values"
@@ -209,10 +228,12 @@
                             </li>
                             <li class="{{ request()->routeIs('attribute_values.create') ? 'active' : '' }}">
                                 <a href="{{ route('attribute_values.create') }}"><span class="sub-item">Thêm</span></a>
+
                             </li>
                         </ul>
                     </div>
                 </li>
+
 
                 <!-- Quản lý Banners -->
                 <li class="nav-item">
@@ -233,6 +254,7 @@
                         </ul>
                     </div>
                 </li>
+
 
             </ul>
         </div>
