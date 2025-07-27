@@ -140,10 +140,12 @@
                                         @foreach ($product->colorData as $index => $color)
                                             <span class="color-picker"
                                                 style="background-color: {{ $color['hex'] }};
-                                 width: 24px; height: 24px; border-radius: 50%;
-                                 border: 1px solid {{ $color['hex'] === '#ffffff' ? '#ccc' : $color['hex'] }};
-                                 cursor: pointer;"
-                                                title="{{ ucfirst($color['name']) }}" data-attribute-name="Màu sắc"
+           width: 24px; height: 24px; border-radius: 50%;
+           border: 1px solid {{ $color['hex'] === '#ffffff' ? '#ccc' : $color['hex'] }};
+           cursor: pointer;"
+                                                title="{{ ucfirst($color['name']) }}"
+                                                data-attribute-name="{{ ucfirst($color['attribute_key']) }}"
+                                                data-attribute-key="{{ $color['attribute_key'] }}"
                                                 data-value="{{ $color['name'] }}" data-image="{{ $color['image'] }}"
                                                 data-name="{{ $color['variant_name'] }}"
                                                 data-price="{{ number_format($color['price']) }} VNĐ">
@@ -161,7 +163,7 @@
                                         <div class="pcvContainer d-flex flex-wrap gap-2">
                                             @foreach ($values as $index => $value)
                                                 <label class="attribute-item" style="cursor: pointer;">
-                                                    <input type="radio" name="{{ $name }}"
+                                                    <input type="radio" name="{{ ucfirst($name) }}"
                                                         value="{{ $value }}"
                                                         data-variant-id="{{ $value_id ?? '' }}" {{-- hoặc ID tương ứng --}}
                                                         class="variant-picker d-none">
@@ -209,6 +211,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row productTabRow">
                 <div class="col-lg-12">
                     <ul class="nav productDetailsTab" id="productDetailsTab" role="tablist">
@@ -436,12 +439,186 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 @endsection
 @section('script')
 {{-- load toastr --}}
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantsMap = @json($variantsMap);
+            const attributeNames = @json($attributeNamesReadable);
+
+            const normalize = str => str.trim().toLowerCase();
+
+            const selectedAttributes = {};
+            const normalizedToOriginal = {};
+
+            // Khởi tạo selectedAttributes với key đã normalize
+            attributeNames.forEach(attr => {
+                const norm = normalize(attr);
+                normalizedToOriginal[norm] = attr;
+                selectedAttributes[norm] = '';
+            });
+
+            const mainProductImage = document.getElementById('mainProductImage');
+            const productNameEl = document.getElementById('product-name');
+            const productPriceEl = document.getElementById('product-price');
+            const productSkuEl = document.querySelector('.sku-field');
+            const productStockEl = document.getElementById('product-stock');
+            const productGalleryThumb = document.querySelector('.productGalleryThumb');
+            const originalProductImageSrc = mainProductImage.src;
+
+            const initialThumbnailUrls = Array.from(new Set(
+                Array.from(productGalleryThumb.querySelectorAll('.pgtImage img')).map(img => img.src)
+            ));
+
+            function updateGalleryThumbnails(variantImageSrc, isVariantSelected = false) {
+                while (productGalleryThumb.firstChild) {
+                    productGalleryThumb.removeChild(productGalleryThumb.firstChild);
+                }
+
+                const finalUrls = [];
+
+                if (isVariantSelected && variantImageSrc) {
+                    finalUrls.push(variantImageSrc);
+                } else {
+                    initialThumbnailUrls.forEach(url => finalUrls.push(url));
+                }
+
+                finalUrls.forEach(url => {
+                    const div = document.createElement('div');
+                    div.classList.add('pgtImage');
+                    if (url === variantImageSrc && isVariantSelected) div.classList.add('active');
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = "Product Thumbnail";
+                    div.appendChild(img);
+                    productGalleryThumb.appendChild(div);
+                });
+            }
+
+            function handleVariantChange() {
+                if (Object.values(selectedAttributes).some(val => !val)) {
+                    console.warn('⚠️ Cần chọn đầy đủ các thuộc tính:', selectedAttributes);
+                    return;
+                }
+
+                // Tạo key không phụ thuộc thứ tự thuộc tính
+                const sortedKey = Object.keys(selectedAttributes)
+                    .sort()
+                    .map(k => selectedAttributes[k])
+                    .join('-');
+
+                const variant = variantsMap[sortedKey];
+
+                console.log("selectedAttributes", selectedAttributes);
+                console.log("builtKey", sortedKey);
+                console.log("variantsMap keys:", Object.keys(variantsMap));
+
+                if (variant) {
+                    productNameEl.innerText = variant.name;
+                    productPriceEl.innerText = Number(variant.price).toLocaleString() + ' VNĐ';
+                    productSkuEl.innerText = variant.sku || 'N/A';
+                    productStockEl.innerText = variant.quantity;
+                    mainProductImage.src = variant.variant_image;
+                    updateGalleryThumbnails(variant.variant_image, true);
+
+                    const addToCartBtn = document.querySelector('.add-to-cart-btn');
+                    if (addToCartBtn) {
+                        addToCartBtn.dataset.variantId = variant.id;
+                    }
+                } else {
+                    console.warn('❌ Không tìm thấy biến thể:', sortedKey);
+                    mainProductImage.src = originalProductImageSrc;
+                    updateGalleryThumbnails(originalProductImageSrc, false);
+                }
+            }
+
+            // Radio buttons
+            document.querySelectorAll('.variant-picker').forEach(picker => {
+                picker.addEventListener('change', function() {
+                    const normKey = normalize(this.name);
+                    selectedAttributes[normKey] = this.value;
+                    handleVariantChange();
+                });
+            });
+
+            // Color picker buttons
+            document.querySelectorAll('.color-picker').forEach(picker => {
+                picker.addEventListener('click', function() {
+                    const attrName = this.dataset.attributeName;
+                    const normKey = normalize(attrName);
+                    const value = this.dataset.value;
+
+                    selectedAttributes[normKey] = value;
+
+                    document.querySelectorAll('.color-picker').forEach(p => p.classList.remove(
+                        'active'));
+                    this.classList.add('active');
+
+                    handleVariantChange();
+                });
+            });
+
+            // Click vào ảnh thumbnail
+            productGalleryThumb.addEventListener('click', function(event) {
+                const clicked = event.target.closest('.pgtImage');
+                if (clicked && clicked.querySelector('img')) {
+                    mainProductImage.src = clicked.querySelector('img').src;
+                    productGalleryThumb.querySelectorAll('.pgtImage').forEach(div => div.classList.remove(
+                        'active'));
+                    clicked.classList.add('active');
+                }
+            });
+
+            // Tăng giảm số lượng
+            const btnMinus = document.querySelector('.btnMinus');
+            const btnPlus = document.querySelector('.btnPlus');
+            const qtyInput = document.querySelector('input[name="quantity"]');
+
+            if (btnMinus && btnPlus && qtyInput) {
+                btnMinus.addEventListener('click', () => {
+                    let current = parseInt(qtyInput.value) || 1;
+                    if (current > 1) qtyInput.value = current - 1;
+                });
+
+                btnPlus.addEventListener('click', () => {
+                    let current = parseInt(qtyInput.value) || 1;
+                    qtyInput.value = current + 1;
+                });
+            }
+
+            // Add to Cart
+            const addToCartBtn = document.querySelector('.add-to-cart-btn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const variantId = this.dataset.variantId;
+                    const quantity = parseInt(qtyInput.value) || 1;
+
+                    if (!variantId) {
+                        alert("Vui lòng chọn đầy đủ biến thể sản phẩm.");
+                        return;
+                    }
+
+                    console.log("🛒 Add to Cart");
+                    console.log("product_id:", productId);
+                    console.log("product_variant_id:", variantId);
+                    console.log("quantity:", quantity);
+
+                    // fetch('/cart/add', { ... })
+                });
+            }
+
+            // Gọi cập nhật ảnh ban đầu
+            updateGalleryThumbnails(mainProductImage.src);
+        });
+    </script>
+
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
