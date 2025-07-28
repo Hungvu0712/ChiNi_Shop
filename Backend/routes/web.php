@@ -154,3 +154,13 @@ Route::controller(ReviewController::class)->group(function () {
 });
 
 Route::resource('cart', CartController::class);
+
+Route::get('checkout',function(){
+    return view("client.pages.checkout");
+});
+Route::get('thank',function(){
+    return view("client.pages.thank");
+});
+Route::get('order-management',function(){
+    return view("client.pages.order-management");
+});

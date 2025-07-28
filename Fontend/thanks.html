@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Cảm ơn bạn đã mua hàng</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #fff;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .thank-you-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .check-icon {
+      font-size: 64px;
+      color: #28a745;
+      border: 3px solid #28a745;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .thank-you-title {
+      color: #28a745;
+      font-weight: bold;
+      font-size: 28px;
+    }
+    .thank-you-text {
+      color: #555;
+      font-size: 16px;
+      max-width: 800px;
+      margin: 10px auto;
+    }
+    .btn-order {
+      background-color: #5b32f3;
+      color: #fff;
+      margin-top: 25px;
+    }
+    .btn-order:hover {
+      background-color: #4728c9;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="thank-you-container">
+  <div class="check-icon">
+    <i class="bi bi-check-lg"></i>
+  </div>
+  <h2 class="thank-you-title">Cảm ơn bạn đã mua hàng!</h2>
+  <p class="thank-you-text">
+    Chúng tôi rất vui mừng khi bạn đã chọn chúng tôi. Đơn hàng của bạn đang được xử lý và sẽ được giao trong thời gian sớm nhất.<br>
+    Hãy kiểm tra email để biết thêm thông tin về đơn hàng. Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi!<br>
+    Đừng quên theo dõi chúng tôi trên các mạng xã hội để cập nhật những ưu đãi và sản phẩm mới nhất!
+  </p>
+  <a href="/don-hang" class="btn btn-order">
+    ← Xem đơn hàng
+  </a>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
