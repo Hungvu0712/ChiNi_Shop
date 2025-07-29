@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\GoogleController;
