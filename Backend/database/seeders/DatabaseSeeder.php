@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             AddressesTableSeeder::class,
             OrdersTableSeeder::class,
             OrderItemsTableSeeder::class,
+            PaymentMethod::class
         ]);
     }
 }

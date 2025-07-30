@@ -11,15 +11,60 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'address_id',
-        'voucher_id',
-        'code',
-        'total_price',
-        'shipping_fee',
-        'discount_amount',
-        'payment_method',
-        'payment_status',
+        'payment_method_id',
         'order_status',
-        'note',
+        'payment_status',
+        'order_code',
+        'total_quantity',
+        'total',
+        'user_name',
+        'user_email',
+        'user_phonenumber',
+        'user_address',
+        'user_note',
+        'ship_user_name',
+        'ship_user_phonenumber',
+        'ship_user_address',
+        'voucher_id',
+        'voucher_discount',
+        'return_notes',
+        'shipping_fee'
     ];
+    // Order status constants
+    const STATUS_PENDING = 'Đang chờ xác nhận';
+    const STATUS_CONFIRMED = 'Đã xác nhận';
+    const STATUS_CANCELED = 'Đã hủy';
+    const STATUS_SHIPPING = 'Đang vận chuyển';
+    const STATUS_SUCCESS = 'Giao hàng thành công';
+    const STATUS_RETURNED = 'Hoàn trả hàng';
+    const STATUS_COMPLETED = 'Hoàn thành';
+    const STATUS_RETURN_REQUESTED = 'Yêu cầu hoàn trả hàng';
+
+  
+    // Payment status constants
+    const PAYMENT_PENDING = 'Chưa Thanh Toán';
+    const PAYMENT_PAID = 'Đã thanh toán';
+    // Get all order statuses
+    public static function getOrderStatuses()
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_CONFIRMED,
+            self::STATUS_CANCELED,
+            self::STATUS_SHIPPING,
+            self::STATUS_SUCCESS,
+            self::STATUS_RETURNED,
+            self::STATUS_COMPLETED,
+            self::STATUS_RETURN_REQUESTED
+        ];
+    }
+
+    // Get all payment statuses
+    public static function getPaymentStatuses()
+    {
+        return [
+            self::PAYMENT_PENDING,
+            self::PAYMENT_PAID,
+        ];
+    }
 }
