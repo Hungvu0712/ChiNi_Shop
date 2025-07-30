@@ -17,4 +17,17 @@ class OrderItem extends Model
         'price',
         'total',
     ];
+
+    // 🔹 Thêm quan hệ đến đơn hàng
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    // 🔹 Thêm quan hệ đến sản phẩm
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
 }
