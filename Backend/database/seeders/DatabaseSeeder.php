@@ -29,7 +29,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             BrandSeeder::class,
             ProductWithVariantsSeeder::class,
-            CartSeeder::class
+            CartSeeder::class,
+            PaymentMethod::class
         ]);
     }
 }

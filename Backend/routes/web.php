@@ -22,6 +22,7 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
@@ -154,13 +155,13 @@ Route::controller(ReviewController::class)->group(function () {
 });
 
 Route::resource('cart', CartController::class);
-
-Route::get('checkout',function(){
-    return view("client.pages.checkout");
-});
-Route::get('thank',function(){
-    return view("client.pages.thank");
-});
-Route::get('order-management',function(){
-    return view("client.pages.order-management");
-});
+Route::resource('checkout', CheckoutController::class);
+// Route::get('checkout',function(){
+//     return view("client.pages.checkout");
+// });
+// Route::get('thank',function(){
+//     return view("client.pages.thank");
+// });
+// Route::get('order-management',function(){
+//     return view("client.pages.order-management");
+// });
