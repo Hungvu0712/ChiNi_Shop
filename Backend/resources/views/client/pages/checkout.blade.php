@@ -68,31 +68,31 @@
 
                             <div class="mb-3">
                                 <label for="user_name" class="form-label">Tên người dùng</label>
-                                <input type="text" class="form-control" name="user_name" id="user_name"
+                                <input type="text" class="form-control" readonly name="user_name" id="user_name"
                                     value="{{ $user['addresses'][0]['fullname'] }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="user_email" class="form-label">Email</label>
-                                <input type="email" class="form-control" name="user_email" id="user_email"
+                                <input type="email" class="form-control" readonly name="user_email" id="user_email"
                                     value="{{ $user['email'] }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="user_phonenumber" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" name="user_phonenumber" id="user_phonenumber"
+                                <input type="text" class="form-control" readonly name="user_phonenumber" id="user_phonenumber"
                                     value="{{ $user['addresses'][0]['phone'] }}" required>
                             </div>
 
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="user_address" class="form-label">Địa chỉ</label>
-                                <textarea class="form-control" name="user_address" id="user_address" rows="2" required>{{ $user['addresses'][0]['specific_address'] }}</textarea>
-                            </div>
+                                <textarea class="form-control" readonly name="user_address" id="user_address" rows="2" required>{{ $user['addresses'][0]['specific_address'] }}</textarea>
+                            </div> --}}
 
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="user_note" class="form-label">Ghi chú</label>
                                 <textarea class="form-control" name="user_note" id="user_note" rows="2" placeholder="Ghi chú">{{ $user['addresses'][0]['note'] }}</textarea>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="checkout-box">
@@ -110,6 +110,10 @@
                             <div class="mb-3">
                                 <label for="ship_user_address" class="form-label">Địa chỉ người nhận</label>
                                 <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2">{{ $user['addresses'][0]['specific_address'] }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_note" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" name="user_note" id="user_note" rows="2" placeholder="Ghi chú">{{ $user['addresses'][0]['note'] }}</textarea>
                             </div>
 
                             <div class="section-title">Phương thức thanh toán</div>
@@ -163,9 +167,7 @@
                                 <label for="voucher_id" class="form-label">Mã giảm giá</label>
                                 <div class="input-group">
                                     <select class="form-control" name="voucher" id="voucher_id">
-                                       @foreach ($vouchers as $voucher)
-                                        {{-- <input type="text"  class="form-control" name="voucher_id" id="voucher_id"
-                                        placeholder="Voucher"> --}}
+                                    @foreach ($vouchers as $voucher)
                                          <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
                                     @endforeach
                                     </select>

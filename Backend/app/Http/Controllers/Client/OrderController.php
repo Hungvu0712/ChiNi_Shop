@@ -16,6 +16,7 @@ use App\Models\VoucherLog;
 use App\Models\OrderDetail;
 use App\Models\VoucherMeta;
 use App\Models\VoucherUser;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\ProductVariant;
@@ -28,6 +29,8 @@ use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Notifications\OrderConfirmationNotification;
 use App\Http\Controllers\API\V1\Service\PaymentController;
 use App\Models\OrderItem;
+use App\Models\Variant;
+use Cloudinary\Transformation\Argument\Range\Range;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -80,7 +83,8 @@ class OrderController extends Controller
             //     return response()->json(['message' => 'Phải chọn mua ngay hoặc mua từ giỏ hàng.'], Response::HTTP_BAD_REQUEST);
             // }
             $user = $this->getUser($data);
-            $response = DB::transaction(function () use ($data, $user, $isCartPurchase) {
+            // dd($user->toArray());
+            DB::transaction(function () use ($data, $user, $isCartPurchase) {
                 // Tạo đơn hàng
                 $order = $this->createOrder($data, $user);
                 // broadcast(new OrderStatusUpdated($order))->toOthers();
@@ -206,9 +210,9 @@ class OrderController extends Controller
                 //     // Chuyển hướng người dùng đến trang thanh toán
                 //     return response()->json(['payment_url' => $response['payment_url']], Response::HTTP_OK);
                 // }
-                return response()->json($order->load('orderDetails')->toArray(), Response::HTTP_CREATED);
+                return redirect('thank')->with('success',"Mua hàng thành công");
             });
-            return $response;
+           
         } catch (\Exception $ex) {
             DB::rollBack();
             return response()->json(['message' => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -219,7 +223,7 @@ class OrderController extends Controller
     {
         if (Auth::check()) {
             $user_id = Auth::id();
-            $user = User::findOrFail($user_id)->only(['id', 'name', 'email', 'address', 'phone_number']);
+            $user = User::findOrFail($user_id)->load('addresses');
         } else {
             $user = [
                 'id' => null,
@@ -235,20 +239,21 @@ class OrderController extends Controller
     // Hàm tạo đơn hàng
     protected function createOrder($data, $user)
     {
+        // dd($user->toArray());
         return Order::create([
+            'order_code' => "CHINI_SHOP". Str::upper(Str::random(6)),
             'user_id' => $user['id'],
             'payment_method_id' => $data['payment_method_id'],
             'total_quantity' => 0,
             'total' => 0.00,
             'user_name' => $user['name'],
             'user_email' => $user['email'],
-            'user_phonenumber' => $user['phone_number'],
-            'user_address' => $user['address'],
+            'user_phonenumber' => $user['addresses'][0]['phone'],
+            'user_address' => $user['addresses'][0]['address'],
             'user_note' => $data['user_note'] ?? '',
             'ship_user_name' => $data['ship_user_name'],
             'ship_user_phonenumber' => $data['ship_user_phonenumber'],
             'ship_user_address' => $data['ship_user_address'],
-            'shipping_method' => $data['shipping_method'],
             'shipping_fee' => $data['shipping_fee'],
             'voucher_id' => null,
             'voucher_discount' => 0,
@@ -316,7 +321,8 @@ class OrderController extends Controller
                 }
                 // Tạo chi tiết đơn hàng
                 $attributes = $variant ? $variant->attributes->pluck('pivot.value', 'name')->toArray() : null;
-                $this->createOrderDetail($order, $product, $variant->id ?? null, $productPrice, $quantity, $attributes);
+                // dd($variant->toArray());
+                $this->createOrderDetail($order, $product, $variant, $productPrice, $quantity, $attributes);
 
                 $totalQuantity += $quantity;
                 $totalPrice += $productPrice * $quantity;
@@ -339,14 +345,15 @@ class OrderController extends Controller
     }
 
     // Hàm tạo chi tiết đơn hàng
-    protected function createOrderDetail($order, $product, $variantId, $price, $quantity, $attributes)
+    protected function createOrderDetail($order, $product, $variant, $price, $quantity, $attributes)
     {
+        // dd($variant->toArray());
         OrderItem::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
-            'product_variant_id' => $variantId,
+            'variant_id' => $variant->id,
             'product_name' => $product->name,
-            'product_img' => $product->img_thumbnail,
+            'product_img' => $variant->variant_image ?? '',
             'attributes' => $attributes,
             'quantity' => $quantity,
             'price' => $price,
@@ -356,125 +363,173 @@ class OrderController extends Controller
     }
 
     // Hàm áp dụng voucher
-    protected function applyVoucher($voucher_code, $order_items, $order_id)
+    public function apply(Request $request)
     {
-        $user_id = auth('sanctum')->id();
-        $voucher = Voucher::where('code', $voucher_code)
-            ->where('is_active', true)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->first();
-        $voucher->increment('used_count');
-        $voucher_metas = VoucherMeta::where('voucher_id', $voucher->id)->pluck('meta_value', 'meta_key')->toArray();
-        $eligible_products = [];
-        $ineligible_products = [];
-        $sub_total = 0;
-
-        foreach ($order_items as $item) {
-            $product_id = $item['product']->id;
-            $category_id = $item['product']->category_id;
-            $is_eligible = true;
-            $reasons = [];
-
-            // 1. Kiểm tra sản phẩm có bị loại trừ không (luôn ưu tiên)
-            if (isset($voucher_metas['_voucher_exclude_product_ids'])) {
-                $excluded_product_ids = json_decode($voucher_metas['_voucher_exclude_product_ids'], true);
-                if (in_array($product_id, $excluded_product_ids)) {
-                    $is_eligible = false;
-                    $reason[] = 'Sản phẩm ' . $item['product']->name . ' nằm trong danh sách bị loại trừ khỏi voucher.';
-                }
-            }
-            // 2. Kiểm tra sản phẩm có được áp dụng không (ưu tiên thứ 2)
-            if ($is_eligible && isset($voucher_metas['_voucher_product_ids']) && !isset($voucher_metas['_voucher_category_ids'])) {
-                $allowed_product_ids = json_decode($voucher_metas['_voucher_product_ids'], true);
-                if (in_array($product_id, $allowed_product_ids)) {
-                    $reason[] = 'Sản phẩm ' . $item['product']->name . ' đã được áp mã giảm giá';
-                    $item['reason'] = implode(' ', $reason);
-                    $eligible_products[] = $item;
-                    $sub_total += $item['total_price'];
-                    continue;
-                } else {
-                    $is_eligible = false;
-                    $reason[] = 'Sản phẩm ' . $item['product']->name . 'không nằm trong danh sách áp dụng voucher.';
-                }
-            }
-            if ($is_eligible && isset($voucher_metas['_voucher_product_ids']) && isset($voucher_metas['_voucher_category_ids'])) {
-                $allowed_product_ids = json_decode($voucher_metas['_voucher_product_ids'], true);
-                if (in_array($product_id, $allowed_product_ids)) {
-                    $reason[] = 'Sản phẩm ' . $item['product']->name . ' đã được áp mã giảm giá';
-                    $item['reason'] = implode(' ', $reason);
-                    $eligible_products[] = $item;
-                    $sub_total += $item['total_price'];
-                    continue;
-                }
-            }
-            // 3. Nếu sản phẩm không được áp dụng rõ ràng, kiểm tra theo danh mục
-            if ($is_eligible && isset($voucher_metas['_voucher_exclude_category_ids'])) {
-                $excluded_category_ids = json_decode($voucher_metas['_voucher_exclude_category_ids'], true);
-                if (in_array($category_id, $excluded_category_ids)) {
-                    $is_eligible = false;
-                    $reason[] = 'Danh mục của sản phẩm ' . $item['product']->name . ' bị loại trừ khỏi voucher.';
-                }
-            }
-
-            if ($is_eligible && isset($voucher_metas['_voucher_category_ids'])) {
-                $allowed_category_ids = json_decode($voucher_metas['_voucher_category_ids'], true);
-                if (!in_array($category_id, $allowed_category_ids)) {
-                    $is_eligible = false;
-                    $reason[] = 'Danh mục của sản phẩm ' . $item['product']->name . ' không nằm trong danh mục được áp dụng voucher.';
-                }
-            }
-            // Phân loại sản phẩm dựa trên tính hợp lệ
-            if ($is_eligible) {
-                $eligible_products[] = $item;
-                $sub_total += $item['total_price'];
-            } else {
-                $item['reason'] = implode(' ', $reasons);
-                $ineligible_products[] = $item;
-            }
-        }
-        // Kiểm tra giá trị tối thiểu của đơn hàng
-        if ($voucher->min_order_value && $sub_total < $voucher->min_order_value) {
-            return [
-                'error' => "Tổng giá trị đơn hàng phải lớn hơn " . $voucher->min_order_value . " để áp dụng voucher này.",
-                'ineligible_products' => $ineligible_products,
-            ];
-        }
-
-        $voucher_discount = $this->calculateDiscount($voucher, $sub_total, $voucher_metas, $eligible_products);
-
-        // Lưu thông tin vào `voucher_log`
-        VoucherLog::create([
-            'voucher_id' => $voucher->id,
-            'user_id' => $user_id,
-            'order_id' => $order_id,
-            'action' => 'used'
+        $request->validate([
+            'code' => 'required|string',
+            'order_total' => 'required|numeric|min:0',
         ]);
 
-        // Lưu vào `voucher_user` hoặc cập nhật số lần sử dụng
-        $voucherUser = VoucherUser::where('user_id', $user_id)
-            ->where('voucher_id', $voucher->id)
-            ->first();
+        $voucher = Voucher::where([
+            ['code', '=', $request->code],
+            ['is_active', '=', 1],
+            ['limit', '>', 0],
+            ['start_date', '<=', Carbon::now()],
+            ['end_date', '>=', Carbon::now()],
+        ])->first();
 
-        if ($voucherUser) {
-            $voucherUser->increment('usage_count');
-        } else {
-            VoucherUser::create([
-                'user_id' => $user_id,
-                'voucher_id' => $voucher->id,
-                'usage_count' => 1,
-            ]);
+        if (!$voucher) {
+            return response()->json(['message' => 'Voucher không hợp lệ hoặc đã hết hạn'], 400);
         }
-        return [
-            'voucher' => $voucher,
-            'voucher_discount' => $voucher_discount['total_discount'],
-            'voucher_description' => $voucher_discount['voucher_description'],
-            'eligible_products' => $eligible_products,
-            'ineligible_products' => $ineligible_products,
-            'total_discount' => $voucher_discount['total_discount'],
-            'sub_total_after_discount' => $sub_total - $voucher_discount['total_discount'],
-        ];
+
+        // Kiểm tra giá trị tối thiểu đơn hàng
+        if ($request->order_total < $voucher->min_order_value) {
+            return response()->json(['message' => 'Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã này'], 400);
+        }
+
+        // Tính giảm giá
+        $discountAmount = 0;
+        if ($voucher->discount_type === 'percent') {
+            $discountAmount = $request->order_total * ($voucher->value / 100);
+            if ($voucher->max_discount_value && $discountAmount > $voucher->max_discount_value) {
+                $discountAmount = $voucher->max_discount_value;
+            }
+        } elseif ($voucher->discount_type === 'amount') {
+            $discountAmount = $voucher->value;
+        }
+
+        // Trả về thông tin voucher đã áp dụng
+        return response()->json([
+            'message' => 'Áp dụng mã thành công',
+            'discount_amount' => $discountAmount,
+            'voucher' => [
+                'code' => $voucher->code,
+                'title' => $voucher->title,
+                'discount_type' => $voucher->discount_type,
+                'value' => $voucher->value,
+                'max_discount_value' => $voucher->max_discount_value,
+            ]
+        ]);
     }
+    // protected function applyVoucher($voucher_code, $order_items, $order_id)
+    // {
+    //     $user_id = auth('sanctum')->id();
+    //     $voucher = Voucher::where('code', $voucher_code)
+    //         ->where('is_active', true)
+    //         ->whereDate('start_date', '<=', now())
+    //         ->whereDate('end_date', '>=', now())
+    //         ->first();
+    //     $voucher->increment('used_count');
+    //     $voucher_metas = VoucherMeta::where('voucher_id', $voucher->id)->pluck('meta_value', 'meta_key')->toArray();
+    //     $eligible_products = [];
+    //     $ineligible_products = [];
+    //     $sub_total = 0;
+
+    //     foreach ($order_items as $item) {
+    //         $product_id = $item['product']->id;
+    //         $category_id = $item['product']->category_id;
+    //         $is_eligible = true;
+    //         $reasons = [];
+
+    //         // 1. Kiểm tra sản phẩm có bị loại trừ không (luôn ưu tiên)
+    //         if (isset($voucher_metas['_voucher_exclude_product_ids'])) {
+    //             $excluded_product_ids = json_decode($voucher_metas['_voucher_exclude_product_ids'], true);
+    //             if (in_array($product_id, $excluded_product_ids)) {
+    //                 $is_eligible = false;
+    //                 $reason[] = 'Sản phẩm ' . $item['product']->name . ' nằm trong danh sách bị loại trừ khỏi voucher.';
+    //             }
+    //         }
+    //         // 2. Kiểm tra sản phẩm có được áp dụng không (ưu tiên thứ 2)
+    //         if ($is_eligible && isset($voucher_metas['_voucher_product_ids']) && !isset($voucher_metas['_voucher_category_ids'])) {
+    //             $allowed_product_ids = json_decode($voucher_metas['_voucher_product_ids'], true);
+    //             if (in_array($product_id, $allowed_product_ids)) {
+    //                 $reason[] = 'Sản phẩm ' . $item['product']->name . ' đã được áp mã giảm giá';
+    //                 $item['reason'] = implode(' ', $reason);
+    //                 $eligible_products[] = $item;
+    //                 $sub_total += $item['total_price'];
+    //                 continue;
+    //             } else {
+    //                 $is_eligible = false;
+    //                 $reason[] = 'Sản phẩm ' . $item['product']->name . 'không nằm trong danh sách áp dụng voucher.';
+    //             }
+    //         }
+    //         if ($is_eligible && isset($voucher_metas['_voucher_product_ids']) && isset($voucher_metas['_voucher_category_ids'])) {
+    //             $allowed_product_ids = json_decode($voucher_metas['_voucher_product_ids'], true);
+    //             if (in_array($product_id, $allowed_product_ids)) {
+    //                 $reason[] = 'Sản phẩm ' . $item['product']->name . ' đã được áp mã giảm giá';
+    //                 $item['reason'] = implode(' ', $reason);
+    //                 $eligible_products[] = $item;
+    //                 $sub_total += $item['total_price'];
+    //                 continue;
+    //             }
+    //         }
+    //         // 3. Nếu sản phẩm không được áp dụng rõ ràng, kiểm tra theo danh mục
+    //         if ($is_eligible && isset($voucher_metas['_voucher_exclude_category_ids'])) {
+    //             $excluded_category_ids = json_decode($voucher_metas['_voucher_exclude_category_ids'], true);
+    //             if (in_array($category_id, $excluded_category_ids)) {
+    //                 $is_eligible = false;
+    //                 $reason[] = 'Danh mục của sản phẩm ' . $item['product']->name . ' bị loại trừ khỏi voucher.';
+    //             }
+    //         }
+
+    //         if ($is_eligible && isset($voucher_metas['_voucher_category_ids'])) {
+    //             $allowed_category_ids = json_decode($voucher_metas['_voucher_category_ids'], true);
+    //             if (!in_array($category_id, $allowed_category_ids)) {
+    //                 $is_eligible = false;
+    //                 $reason[] = 'Danh mục của sản phẩm ' . $item['product']->name . ' không nằm trong danh mục được áp dụng voucher.';
+    //             }
+    //         }
+    //         // Phân loại sản phẩm dựa trên tính hợp lệ
+    //         if ($is_eligible) {
+    //             $eligible_products[] = $item;
+    //             $sub_total += $item['total_price'];
+    //         } else {
+    //             $item['reason'] = implode(' ', $reasons);
+    //             $ineligible_products[] = $item;
+    //         }
+    //     }
+    //     // Kiểm tra giá trị tối thiểu của đơn hàng
+    //     if ($voucher->min_order_value && $sub_total < $voucher->min_order_value) {
+    //         return [
+    //             'error' => "Tổng giá trị đơn hàng phải lớn hơn " . $voucher->min_order_value . " để áp dụng voucher này.",
+    //             'ineligible_products' => $ineligible_products,
+    //         ];
+    //     }
+
+    //     $voucher_discount = $this->calculateDiscount($voucher, $sub_total, $voucher_metas, $eligible_products);
+
+    //     // Lưu thông tin vào `voucher_log`
+    //     VoucherLog::create([
+    //         'voucher_id' => $voucher->id,
+    //         'user_id' => $user_id,
+    //         'order_id' => $order_id,
+    //         'action' => 'used'
+    //     ]);
+
+    //     // Lưu vào `voucher_user` hoặc cập nhật số lần sử dụng
+    //     $voucherUser = VoucherUser::where('user_id', $user_id)
+    //         ->where('voucher_id', $voucher->id)
+    //         ->first();
+
+    //     if ($voucherUser) {
+    //         $voucherUser->increment('usage_count');
+    //     } else {
+    //         VoucherUser::create([
+    //             'user_id' => $user_id,
+    //             'voucher_id' => $voucher->id,
+    //             'usage_count' => 1,
+    //         ]);
+    //     }
+    //     return [
+    //         'voucher' => $voucher,
+    //         'voucher_discount' => $voucher_discount['total_discount'],
+    //         'voucher_description' => $voucher_discount['voucher_description'],
+    //         'eligible_products' => $eligible_products,
+    //         'ineligible_products' => $ineligible_products,
+    //         'total_discount' => $voucher_discount['total_discount'],
+    //         'sub_total_after_discount' => $sub_total - $voucher_discount['total_discount'],
+    //     ];
+    // }
     // Hàm kiểm tra điều kiện sản phẩm để áp dụng voucher
     // protected function checkEligibility($item, $voucher_metas)
     // {

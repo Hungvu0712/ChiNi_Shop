@@ -159,14 +159,16 @@ Route::controller(ReviewController::class)->group(function () {
 Route::resource('cart', CartController::class);
 Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut');
 Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show');
- Route::resource('order', OrderController::class);
+Route::resource('order', OrderController::class);
+Route::post('apply-voucher', [OrderController::class, 'apply']);
+
 
 // Route::get('checkout',function(){
 //     return view("client.pages.checkout");
 // });
-// Route::get('thank',function(){
-//     return view("client.pages.thank");
-// });
+Route::get('thank',function(){
+    return view("client.pages.thank");
+});
 // Route::get('order-management',function(){
 //     return view("client.pages.order-management");
 // });

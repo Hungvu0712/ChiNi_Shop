@@ -67,4 +67,21 @@ class Order extends Model
             self::PAYMENT_PAID,
         ];
     }
+    // Quan hệ với model User (người dùng)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Quan hệ với model PaymentMethod (phương thức thanh toán)
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
+    // Quan hệ với model OrderDetail (chi tiết đơn hàng)
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
