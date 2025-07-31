@@ -53,8 +53,13 @@
     <!-- BEGIN: Checkout Page Section -->
     <section class="checkoutPage">
         <div class="container">
-            <form action="" method="POST">
+            <form action="{{ route('order.store') }}" method="POST">
                 @csrf
+                @if (is_array($data))
+                    @foreach ($data as $id)
+                        <input type="hidden" name="cart_item_ids[]" value="{{ $id }}">
+                    @endforeach
+                @endIf
                 <div class="row">
                     <!-- Thông tin người dùng & địa chỉ -->
                     <div class="col-md-7">
@@ -100,11 +105,11 @@
                             <div class="mb-3">
                                 <label for="ship_user_phonenumber" class="form-label">Số điện thoại người nhận</label>
                                 <input type="text" class="form-control" name="ship_user_phonenumber"
-                                    id="ship_user_phonenumber"  value="{{ $user['addresses'][0]['phone'] }}">
+                                    id="ship_user_phonenumber" value="{{ $user['addresses'][0]['phone'] }}">
                             </div>
                             <div class="mb-3">
                                 <label for="ship_user_address" class="form-label">Địa chỉ người nhận</label>
-                                <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2" >{{ $user['addresses'][0]['specific_address'] }}</textarea>
+                                <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2">{{ $user['addresses'][0]['specific_address'] }}</textarea>
                             </div>
 
                             <div class="section-title">Phương thức thanh toán</div>
@@ -171,7 +176,8 @@
                                 </li>
                                 <li class="d-flex justify-content-between">
                                     <span>Phí ship:</span>
-                                    <span>0 đ</span>
+                                    <input type="text" value="100" name="shipping_fee" id='shipping_fee'>
+                                    {{-- <span>0 đ</span> --}}
                                 </li>
                                 <li class="d-flex justify-content-between fw-bold fs-5">
                                     <span>Tổng tiền:</span>

@@ -25,6 +25,7 @@ use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
@@ -158,6 +159,7 @@ Route::controller(ReviewController::class)->group(function () {
 Route::resource('cart', CartController::class);
 Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut');
 Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show');
+ Route::resource('order', OrderController::class);
 
 // Route::get('checkout',function(){
 //     return view("client.pages.checkout");

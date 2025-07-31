@@ -8,26 +8,46 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'order_id',
         'product_id',
-        'variant_id',
+        'product_variant_id',
+        'order_id',
+        'product_name',
+        'product_img',
+        'attributes',
         'quantity',
         'price',
-        'total',
+        'total_price',
+        'discount'
     ];
 
-    // 🔹 Thêm quan hệ đến đơn hàng
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
-
-    // 🔹 Thêm quan hệ đến sản phẩm
+    // Quan hệ với model Product (sản phẩm)
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
 
+    // Quan hệ với model ProductVariant (biến thể sản phẩm)
+    public function productVariant()
+    {
+        return $this->belongsTo(Variant::class);
+    }
+
+    // Quan hệ với model Order (đơn hàng)
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    // Lấy các thuộc tính (attributes) của sản phẩm từ dạng JSON
+    public function getAttributesAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    // Gán các thuộc tính (attributes) của sản phẩm ở dạng JSON
+    public function setAttributesAttribute($value)
+    {
+        $this->attributes['attributes'] = empty($value) ? null : json_encode($value);
+    }
 }

@@ -244,6 +244,7 @@ class CheckoutController extends Controller
                         "sub_total",
                         "total_items",
                         "order_items",
+                        'data'
                     ));
             }
         }  
