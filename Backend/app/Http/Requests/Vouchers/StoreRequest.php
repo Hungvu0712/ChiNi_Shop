@@ -19,7 +19,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'code' => 'required|unique:vouchers,code',
+            'code' => 'required|unique:vouchers,code,' . $this->id,
             'title' => 'required|string|max:255',
             'voucher_type' => 'required|in:discount,freeship',
             'start_date' => 'required|date',
@@ -29,23 +29,25 @@ class StoreRequest extends FormRequest
         ];
 
         if ($this->voucher_type === 'discount') {
-            $rules['discount_type'] = 'required|in:amount,percent';
+            $rules['discount_type'] = 'required|in:amount,percent,other'; // Cho phép "other" nếu bạn có
+            $rules['value'] = 'required|numeric|min:1';
 
             if ($this->discount_type === 'percent') {
-                $rules['value'] = 'required|numeric|min:1|max:100';
-                $rules['max_discount_value'] = 'required|numeric|min:0';
+                $rules['value'] .= '|max:100';
+                $rules['max_discount_value'] = 'nullable|numeric|min:0'; // không required
+            } elseif ($this->discount_type === 'amount') {
+                $rules['max_discount_value'] = 'nullable|numeric|min:0'; // cũng không required
             } else {
-                $rules['value'] = 'required|numeric|min:1';
-                $rules['max_discount_value'] = 'required|numeric|min:0|gte:value'; // ✅ Chặn nhỏ hơn value
+                // Chỉ bắt buộc nếu là loại discount_type khác (ví dụ: "custom")
+                $rules['max_discount_value'] = 'required|numeric|min:0|gte:value';
             }
 
             $rules['min_order_value'] = 'nullable|numeric|min:0';
         }
 
-
-
         return $rules;
     }
+
 
     // Tùy chỉnh thông báo lỗi bằng tiếng Việt
     public function messages()

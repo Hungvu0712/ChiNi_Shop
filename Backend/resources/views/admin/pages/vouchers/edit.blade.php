@@ -66,13 +66,15 @@
 
                     <div class="mb-3">
                         <label class="form-label">Kiểu giảm:</label>
-                        <select name="discount_type" class="form-select">
+                        <select name="discount_type" id="discount_type" class="form-select">
                             <option value="amount"
                                 {{ old('discount_type', $voucher->discount_type) == 'amount' ? 'selected' : '' }}>Số tiền
                             </option>
                             <option value="percent"
                                 {{ old('discount_type', $voucher->discount_type) == 'percent' ? 'selected' : '' }}>Phần
-                                trăm
+                                trăm</option>
+                            <option value="other"
+                                {{ old('discount_type', $voucher->discount_type) == 'other' ? 'selected' : '' }}>Loại khác
                             </option>
                         </select>
                         @error('discount_type')
@@ -89,14 +91,15 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="max-discount-group">
                         <label class="form-label">Mức giảm tối đa:</label>
-                        <input type="number" step="0.01" name="max_discount_value" class="form-control"
-                            value="{{ old('max_discount_value', $voucher->max_discount_value) }}">
+                        <input type="number" step="0.01" name="max_discount_value" id="max_discount_value"
+                            class="form-control" value="{{ old('max_discount_value', $voucher->max_discount_value) }}">
                         @error('max_discount_value')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
                     </div>
+
                 </div>
                 {{-- 🔥 END BỌC KHỐI --}}
 
@@ -164,12 +167,27 @@
                 }
             }
 
-            // Gọi khi load:
-            toggleVoucherFields();
+            function toggleMaxDiscount() {
+                var discountType = $('#discount_type').val();
+                var $maxDiscountGroup = $('#max-discount-group');
+                var $maxDiscountInput = $('#max_discount_value');
 
-            $('#voucher_type').change(function() {
-                toggleVoucherFields();
-            });
+                if (discountType === 'amount' || discountType === 'percent') {
+                    $maxDiscountGroup.hide();
+                    $maxDiscountInput.val(0);
+                } else {
+                    $maxDiscountGroup.show();
+                }
+            }
+
+            // Gọi khi load trang
+            toggleVoucherFields();
+            toggleMaxDiscount();
+
+            // Gọi khi thay đổi
+            $('#voucher_type').change(toggleVoucherFields);
+            $('#discount_type').change(toggleMaxDiscount);
         });
     </script>
+
 @endsection
