@@ -10,13 +10,13 @@ class AddressesTableSeeder extends Seeder
 {
     public function run(): void
     {
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 11; $i++) {
             DB::table('addresses')->insert([
-                'user_id' => 1,
-                'fullname' => 'Người nhận 1',
-                'phone' => '0900000001',
-                'address' => 'Hồ Chí Minh, Quận 1, Phường Bến Nghé',
-                'specific_address' => 'Số nhà 1, đường ABC',
+                'user_id' => $i,
+                'fullname' => "Người nhận $i",
+                'phone' => "090000000$i",
+                'address' => "Hồ Chí Minh, Quận $i, Phường Bến Nghé",
+                'specific_address' => "Số nhà $i, đường ABC",
                 'note' => 'Giao giờ hành chính',
                 'is_default' => true,
                 'created_at' => now(),

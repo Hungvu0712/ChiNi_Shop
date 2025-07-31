@@ -156,7 +156,9 @@ Route::controller(ReviewController::class)->group(function () {
 });
 
 Route::resource('cart', CartController::class);
-Route::resource('checkout', CheckoutController::class);
+Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut');
+Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show');
+
 // Route::get('checkout',function(){
 //     return view("client.pages.checkout");
 // });
