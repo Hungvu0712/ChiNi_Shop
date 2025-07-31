@@ -162,8 +162,15 @@
                             <div class="mb-3">
                                 <label for="voucher_id" class="form-label">Mã giảm giá</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="voucher_id" id="voucher_id"
-                                        placeholder="Voucher">
+                                    <select class="form-control" name="voucher" id="voucher_id">
+                                       @foreach ($vouchers as $voucher)
+                                        {{-- <input type="text"  class="form-control" name="voucher_id" id="voucher_id"
+                                        placeholder="Voucher"> --}}
+                                         <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
+                                    @endforeach
+                                    </select>
+                                    
+                                    
                                     <button class="btn btn-outline-primary">Áp dụng</button>
                                     <button class="btn btn-outline-secondary" type="button">Hủy</button>
                                 </div>

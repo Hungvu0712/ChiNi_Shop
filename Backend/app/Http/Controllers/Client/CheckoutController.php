@@ -4,17 +4,14 @@ namespace App\Http\Controllers\Client;
 
 use App\Models\Cart;
 use App\Models\User;
-use App\Models\Product;
 use App\Models\Voucher;
-use App\Models\CartItem;
-use App\Models\VoucherMeta;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Helper\Product\GetUniqueAttribute;
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
-use App\Models\VoucherUser;
 
 class CheckoutController extends Controller
 {
@@ -145,7 +142,7 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         try {
-            $idString = $request->all(); 
+            $idString = $request->all();
             $data = explode(',', $idString['cart_item_ids']);
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
             // Khởi tạo biến cho tổng tiền và danh sách sản phẩm
@@ -158,6 +155,12 @@ class CheckoutController extends Controller
             // Kiểm tra thông tin người dùng nếu đã đăng nhập
             if (Auth::check()) {
                 $user_id = Auth::id();
+                $vouchers = Voucher::where([
+                    ['is_active', '=', 1],
+                    ['limit', '>', 0],
+                    ['start_date', '<=', Carbon::now()],
+                    ['end_date', '>=', Carbon::now()],
+                ])->get();
                 $user = User::with('addresses')->findOrFail($user_id)->makeHidden(['email_verified_at', 'password', 'remember_toke']);
                 if ($isCartPurchase) {
                     $errors = [
@@ -174,17 +177,17 @@ class CheckoutController extends Controller
                             "cartitems.productvariant.attributes"
                         ])
                         ->first();
-            
+
                     if (!$cart || $cart->cartitems->isEmpty()) {
-                        return redirect()->route('cart.index')->with('error','Sản phẩm không tồn tại trong giỏ hàng');
+                        return redirect()->route('cart.index')->with('error', 'Sản phẩm không tồn tại trong giỏ hàng');
                     }
-                  
+
                     // Kiểm tra nếu có sản phẩm nào không tồn tại trong giỏ hàng
                     $invalid_items = array_diff($data, $cart->cartitems->pluck('id')->toArray());
 
                     if (!empty($invalid_items)) {
-                        $invalid_items = implode(',',$invalid_items);
-                        return redirect()->route('cart.index')->with('error',"Sản phẩm có id=$invalid_items không tồn tại trong giỏ hàng");
+                        $invalid_items = implode(',', $invalid_items);
+                        return redirect()->route('cart.index')->with('error', "Sản phẩm có id=$invalid_items không tồn tại trong giỏ hàng");
                     }
                     foreach ($cart->cartitems as $cart_item) {
                         $quantity = $cart_item->quantity;
@@ -194,7 +197,7 @@ class CheckoutController extends Controller
                         // Kiểm tra tồn kho và giá theo loại sản phẩm (variant hoặc đơn giản)
 
                         $available_quantity = $variant ? $variant->quantity : $product->quantity;
-                       
+
                         // Xử lý trường hợp hết hàng
                         if ($available_quantity == 0) {
                             $errors['out_of_stock'][] = [
@@ -224,7 +227,7 @@ class CheckoutController extends Controller
                             ];
                             $cart_item->update(['quantity' => $available_quantity]);
                         }
-                        
+
                         // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
                         $total_price = $variant->price * $quantity;
                         $sub_total += $total_price;
@@ -244,10 +247,11 @@ class CheckoutController extends Controller
                         "sub_total",
                         "total_items",
                         "order_items",
-                        'data'
+                        'data',
+                        'vouchers'
                     ));
+                }
             }
-        }  
         } catch (\Exception $ex) {
             return response()->json(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
