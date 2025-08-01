@@ -53,6 +53,18 @@
     <!-- BEGIN: Checkout Page Section -->
     <section class="checkoutPage">
         <div class="container">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            {{-- @dd($error) --}}
+                            @if (is_array($error))
+                                <li>{{ $error['message'] }}</li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form action="{{ route('order.store') }}" method="POST">
                 @csrf
                 @if (is_array($data))
@@ -80,8 +92,8 @@
 
                             <div class="mb-3">
                                 <label for="user_phonenumber" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" readonly name="user_phonenumber" id="user_phonenumber"
-                                    value="{{ $user['addresses'][0]['phone'] }}" required>
+                                <input type="text" class="form-control" readonly name="user_phonenumber"
+                                    id="user_phonenumber" value="{{ $user['addresses'][0]['phone'] }}" required>
                             </div>
 
                             {{-- <div class="mb-3">
@@ -101,19 +113,31 @@
                                 <label for="ship_user_name" class="form-label">Tên người nhận</label>
                                 <input type="text" class="form-control" name="ship_user_name" id="ship_user_name"
                                     value="{{ $user['addresses'][0]['fullname'] }}">
+                                @error('ship_user_name')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="ship_user_phonenumber" class="form-label">Số điện thoại người nhận</label>
                                 <input type="text" class="form-control" name="ship_user_phonenumber"
                                     id="ship_user_phonenumber" value="{{ $user['addresses'][0]['phone'] }}">
+                                @error('ship_user_phonenumber')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="ship_user_address" class="form-label">Địa chỉ người nhận</label>
                                 <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2">{{ $user['addresses'][0]['specific_address'] }}</textarea>
+                                @error('ship_user_address')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="user_note" class="form-label">Ghi chú</label>
                                 <textarea class="form-control" name="user_note" id="user_note" rows="2" placeholder="Ghi chú">{{ $user['addresses'][0]['note'] }}</textarea>
+                                @error('user_note')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="section-title">Phương thức thanh toán</div>
@@ -167,12 +191,12 @@
                                 <label for="voucher_id" class="form-label">Mã giảm giá</label>
                                 <div class="input-group">
                                     <select class="form-control" name="voucher" id="voucher_id">
-                                    @foreach ($vouchers as $voucher)
-                                         <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
-                                    @endforeach
+                                        @foreach ($vouchers as $voucher)
+                                            <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
+                                        @endforeach
                                     </select>
-                                    
-                                    
+
+
                                     <button class="btn btn-outline-primary">Áp dụng</button>
                                     <button class="btn btn-outline-secondary" type="button">Hủy</button>
                                 </div>

@@ -142,6 +142,11 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         try {
+            // dd($errors->all());
+            // if (!empty($errors['out_of_stock']) || !empty($errors['insufficient_stock'])) {
+            //     dd(12333);
+
+            // }
             $idString = $request->all();
             $data = explode(',', $idString['cart_item_ids']);
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
@@ -241,7 +246,8 @@ class CheckoutController extends Controller
                         $total_items += 1;
                     }
                 }
-                if (empty($errors['out_of_stock']) && empty($errors['insufficient_stock'])) {
+                // dd($errors);
+                // if (empty($errors['out_of_stock']) && empty($errors['insufficient_stock'])) {
                     return view('client.pages.checkout', compact(
                         "user",
                         "sub_total",
@@ -250,7 +256,7 @@ class CheckoutController extends Controller
                         'data',
                         'vouchers'
                     ));
-                }
+                // }
             }
         } catch (\Exception $ex) {
             return response()->json(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

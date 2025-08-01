@@ -156,10 +156,10 @@ Route::controller(ReviewController::class)->group(function () {
     Route::delete('/reviews/{id}',  'destroy')->name('admin.reviews.destroy');
 });
 
-Route::resource('cart', CartController::class);
-Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut');
-Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show');
-Route::resource('order', OrderController::class);
+Route::resource('cart', CartController::class)->middleware('auth');
+Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut')->middleware('auth');
+Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show')->middleware('auth');
+Route::resource('order', OrderController::class)->middleware('auth');
 Route::post('apply-voucher', [OrderController::class, 'apply']);
 
 

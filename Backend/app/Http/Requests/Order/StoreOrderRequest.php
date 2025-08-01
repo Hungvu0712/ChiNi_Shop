@@ -97,13 +97,13 @@ class StoreOrderRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            // $this->validateProduct($validator);
-            $this->validateVoucher($validator);
-        });
-    }
+    // public function withValidator($validator)
+    // {
+    //     $validator->after(function ($validator) {
+    //         // $this->validateProduct($validator);
+    //         $this->validateVoucher($validator);
+    //     });
+    // }
 
     // protected function validateProduct($validator)
     // {
@@ -136,53 +136,53 @@ class StoreOrderRequest extends FormRequest
     //     }
     // }
 
-    protected function validateVoucher($validator)
-    {
-        if ($this->filled('voucher_code')) {
-            $voucher = Voucher::where('code', $this->voucher_code)->where('is_active', true)->first();
+    // protected function validateVoucher($validator)
+    // {
+    //     if ($this->filled('voucher_code')) {
+    //         $voucher = Voucher::where('code', $this->voucher_code)->where('is_active', true)->first();
 
-            if (!$voucher) {
-                $validator->errors()->add('voucher_code', 'Voucher không hợp lệ.');
-                return;
-            }
-            $this->checkVoucherDates($validator, $voucher);
-            $this->checkVoucherUsage($validator, $voucher);
-            $this->verifyUserForVoucher($validator, $voucher);
-        }
-    }
+    //         if (!$voucher) {
+    //             $validator->errors()->add('voucher_code', 'Voucher không hợp lệ.');
+    //             return;
+    //         }
+    //         $this->checkVoucherDates($validator, $voucher);
+    //         $this->checkVoucherUsage($validator, $voucher);
+    //         $this->verifyUserForVoucher($validator, $voucher);
+    //     }
+    // }
 
-    protected function checkVoucherDates($validator, $voucher)
-    {
-        if ($voucher->start_date && $voucher->start_date > now()) {
-            $validator->errors()->add('voucher_code', 'Voucher chưa bắt đầu.');
-        }
+    // protected function checkVoucherDates($validator, $voucher)
+    // {
+    //     if ($voucher->start_date && $voucher->start_date > now()) {
+    //         $validator->errors()->add('voucher_code', 'Voucher chưa bắt đầu.');
+    //     }
 
-        if ($voucher->end_date && $voucher->end_date < now()) {
-            $validator->errors()->add('voucher_code', 'Voucher đã hết hạn.');
-        }
-    }
+    //     if ($voucher->end_date && $voucher->end_date < now()) {
+    //         $validator->errors()->add('voucher_code', 'Voucher đã hết hạn.');
+    //     }
+    // }
 
-    protected function checkVoucherUsage($validator, $voucher)
-    {
-        if ($voucher->usage_limit && $voucher->used_count >= $voucher->usage_limit) {
-            $validator->errors()->add('voucher_code', 'Voucher đã hết lượt sử dụng.');
-        }
-    }
-    protected function verifyUserForVoucher($validator, $voucher)
-    {
-        if (!auth('sanctum')->check()) {
-            $validator->errors()->add(
-                'voucher_code',
-                'Vui lòng đăng nhập để sử dụng voucher.'
-            );
-        }
-    }
+    // protected function checkVoucherUsage($validator, $voucher)
+    // {
+    //     if ($voucher->usage_limit && $voucher->used_count >= $voucher->usage_limit) {
+    //         $validator->errors()->add('voucher_code', 'Voucher đã hết lượt sử dụng.');
+    //     }
+    // }
+    // protected function verifyUserForVoucher($validator, $voucher)
+    // {
+    //     if (!auth('sanctum')->check()) {
+    //         $validator->errors()->add(
+    //             'voucher_code',
+    //             'Vui lòng đăng nhập để sử dụng voucher.'
+    //         );
+    //     }
+    // }
 
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(response()->json([
-            'message' => 'Đặt Hàng Không Thành Công!',
-            'errors' => $validator->errors(),
-        ], 422));
-    }
+    // protected function failedValidation(Validator $validator)
+    // {
+    //     throw new HttpResponseException(response()->json([
+    //         'message' => 'Đặt Hàng Không Thành Công!',
+    //         'errors' => $validator->errors(),
+    //     ], 422));
+    // }
 }
