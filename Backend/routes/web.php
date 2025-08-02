@@ -32,6 +32,7 @@ use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\ProductReviewController;
+use App\Http\Controllers\Service\PaymentController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -99,6 +100,8 @@ Route::resource('orders', OrderAdminController::class);
 
 
 });
+//  Route::post('payment/vnpay', [PaymentController::class, 'createPayment']);
+Route::get('payment/vnpay-return', [PaymentController::class, 'vnpayReturn']);
 
 //Trang 404
 Route::get('/404', function () {

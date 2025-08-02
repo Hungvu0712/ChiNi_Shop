@@ -153,7 +153,14 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                         </div>
                         <div class="modal-body">
-                            <p class="mb-3 text-muted">Thời gian đặt hàng: {{ $order->created_at->format('d-m-Y H:i') }}</p>
+                           <div class="row">
+                            <div class="col-md-6">
+                                 <p class="mb-3 text-muted">Thời gian đặt hàng: {{ $order->created_at->format('d-m-Y H:i') }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                 <p class="mb-3 text-danger fw-bold">Trạng thái đơn hàng: {{ $order->payment_status }}</p>
+                            </div>
+                           </div>
 
                             @foreach ($order->orderDetails as $item)
                                 <div class="product-item bg-light rounded mb-2">

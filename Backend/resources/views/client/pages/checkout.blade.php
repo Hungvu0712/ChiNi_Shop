@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check d-flex align-items-center gap-2">
-                                        <input class="form-check-input" type="radio" name="payment_method_id"
+                                        <input class="form-check-input" type="radio"  name="payment_method_id"
                                             id="online" value="2">
                                         <label class="form-check-label d-flex align-items-center" for="online">
                                             <i class="bi bi-credit-card me-2"></i> Thanh toán online

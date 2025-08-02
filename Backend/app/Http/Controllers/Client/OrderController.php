@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Notifications\OrderConfirmationNotification;
-use App\Http\Controllers\API\V1\Service\PaymentController;
+use App\Http\Controllers\Service\PaymentController;
 use App\Models\OrderItem;
 use App\Models\Variant;
 use Cloudinary\Transformation\Argument\Range\Range;
@@ -145,9 +145,19 @@ class OrderController extends Controller
                     'total_quantity' => $totalQuantity,
                     'total' => max($totalPrice, $order->shipping_fee),
                 ]);
+                // Thực hiện thanh toán nếu chọn phương thức online (VNPay)
+                if ($data['payment_method_id'] == 2) {
+                    $payment = new PaymentController();
+                    $response = $payment->createPayment($order);
+
+                    // Chuyển hướng người dùng đến trang thanh toán
+                    $redirectResponse = redirect($response['payment_url']);
+                    return $redirectResponse;
+                }
                 $redirectResponse =  redirect('thank');
+                
             });
-            // dd($redirectResponse);
+            
             if ($redirectResponse) {
                 return $redirectResponse;
             }
@@ -346,39 +356,7 @@ class OrderController extends Controller
             ]
         ]);
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Order $order)
-    {
-        try {
-            if (!auth('sanctum')->check()) {
-                return response()->json(['message' => 'Người dùng chưa được xác thực'], 401);
-            }
-
-            $user_id = auth('sanctum')->id();
-
-            // Kiểm tra xem đơn hàng có thuộc về người dùng đã xác thực không
-            if ($order->user_id !== $user_id) {
-                return response()->json(['message' => 'Không có quyền truy cập'], 403);
-            }
-            // Thông tin chi tiết đơn hàng
-            $order->load(['orderDetails']);
-
-
-
-            // Kiểm tra kết quả
-            // dd($orderArray);
-
-
-            // Trả về dữ liệu đơn hàng cùng với chi tiết dưới dạng JSON
-            return response()->json([
-                'order' => $order,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Đã xảy ra lỗi khi lấy thông tin đơn hàng', 'error' => $e->getMessage()], 500);
-        }
-    }
+    
     public function update(UpdateOrderRequest $request, Order $order)
     {
         try {
