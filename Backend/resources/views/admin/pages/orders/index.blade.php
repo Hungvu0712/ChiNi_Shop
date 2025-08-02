@@ -2,8 +2,7 @@
 @section('title', 'Danh sách đơn hàng')
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
         .order-table th,
         .order-table td {
@@ -39,7 +38,9 @@
                             <td>{{ $order->user_name }}</td>
 
                             <td>{{ $order->order_code }}</td>
-                            <td>{{ $order->payment_status }}</td>
+                            <td class="payment-status-cell" data-order-id="{{ $order->id }}">
+                                {{ $order->payment_status }}
+                            </td>
 
                             <td>
                                 @switch($order->payment_method_id)
@@ -56,15 +57,13 @@
                                 @endswitch
                             </td>
                             <td>
-                                <select class="form-select">
-                                    <option {{ $order->order_status === 'Đang chờ xác nhận' ? 'selected' : '' }}>Đang chờ
-                                        xác nhận</option>
-                                    <option {{ $order->order_status === 'Đã xác nhận' ? 'selected' : '' }}>Đã xác nhận
-                                    </option>
-                                    <option {{ $order->order_status === 'Đang vận chuyển' ? 'selected' : '' }}>Đang vận
-                                        chuyển</option>
-                                    <option {{ $order->order_status === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành
-                                    </option>
+                                <select class="form-select order-status-select" name="order_status"
+                                    data-order-id="{{ $order->id }}">
+                                    @foreach (\App\Models\Order::getOrderStatuses() as $item)
+                                        <option value="{{ $item }}"
+                                            {{ $order->order_status === $item ? 'selected' : '' }}>{{ $item }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </td>
 
@@ -74,7 +73,6 @@
 
                             </td>
                         </tr>
-                        {{-- @endforeach --}}
                     @endforeach
                 </tbody>
             </table>
@@ -85,5 +83,71 @@
 
 @endsection
 @section('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectElements = document.querySelectorAll('.order-status-select');
 
+            selectElements.forEach(selectElement => {
+                let oldValue = selectElement.value;
+
+                selectElement.addEventListener('focus', function() {
+                    oldValue = this.value;
+                });
+
+                selectElement.addEventListener('change', function() {
+                    const orderId = this.dataset.orderId;
+                    const orderStatus = this.value;
+
+                    const apiUrl = `{{ route('orders.update', ['order' => '__ID__']) }}`.replace(
+                        '__ID__', orderId);
+
+                    fetch(apiUrl, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                order_status: orderStatus
+                            })
+                        })
+                        .then(async response => {
+                            const data = await response.json();
+
+                            if (!response.ok) {
+                                toastr.error(`❌ ${data.message || 'Có lỗi xảy ra!'}`);
+                                selectElement.value = oldValue;
+                                throw new Error(data.message || 'Request failed');
+                            }
+
+                            toastr.success(`✅ ${data.message || 'Cập nhật thành công!'}`);
+                            if (data.order && data.order.payment_status) {
+                                const td = document.querySelector(
+                                    `.payment-status-cell[data-order-id="${data.order.id}"]`
+                                    );
+                                if (td) {
+                                    td.textContent = data.order.payment_status;
+                                }
+                            }
+                            oldValue = orderStatus;
+                            return data;
+                        })
+                        .catch(error => {
+                            selectElement.value = oldValue;
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        });
+    </script>
 @endsection

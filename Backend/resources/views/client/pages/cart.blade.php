@@ -406,9 +406,6 @@
                 throw new Error(data.message || 'Xảy ra lỗi trong quá trình thanh toán');
             }
 
-            // Lưu data đơn hàng vào sessionStorage để load ở trang checkout
-            // sessionStorage.setItem('checkout_data', JSON.stringify(data));
-
             // Chuyển trang đến checkout
             window.location.href = "{{ route('checkout.show') }}" + `?cart_item_ids=${data.cart_item_ids}`;
 

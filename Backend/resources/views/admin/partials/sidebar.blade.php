@@ -74,6 +74,25 @@
                     </div>
                 </li>
 
+                 <!-- Quản lý đơn hàng -->
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#orders"
+                       aria-expanded="{{ request()->routeIs('orders.*') ? 'true' : 'false' }}">
+                        <i class="fas fa-box"></i>
+                        <p>Quản lý đơn hàng</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('orders.*') ? 'show' : '' }}" id="orders">
+                        <ul class="nav nav-collapse">
+                            <li class="{{ request()->routeIs('orders.index') ? 'active' : '' }}">
+                                <a href="{{ route('orders.index') }}">
+                                    <span class="sub-item">Danh sách đơn hàng</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
                 <!-- Quản lý danh mục -->
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#categories"

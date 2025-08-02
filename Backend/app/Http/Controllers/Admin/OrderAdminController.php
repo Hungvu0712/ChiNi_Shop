@@ -86,7 +86,7 @@ class OrderAdminController extends Controller
             // dd($test->createOrder($id));
 
             $order = Order::findOrFail($id);
-            broadcast(new OrderStatusUpdated($order))->toOthers();
+            // broadcast(new OrderStatusUpdated($order))->toOthers();
 
             $currentStatus = $order->order_status;
             $newStatus = $request->input('order_status');
@@ -101,7 +101,6 @@ class OrderAdminController extends Controller
                 'Hoàn trả hàng' => 7,
                 'Hoàn thành' => 8,
                 'Đã nhận hàng' => 9,
-
             ];
 
 
@@ -163,15 +162,15 @@ class OrderAdminController extends Controller
                 $order->payment_status = 'Đã thanh toán';
             }
             $order->save();
-            if ($newStatus === 'Đang vận chuyển') {
-                $createOrder = new OrderGHNController();
-                $createResponse = $createOrder->createOrder($id);  // Gọi hàm tạo đơn hàng giao hàng nhanh với ID đơn hàng
-                // return response()->json([
-                //     // 'message' => 'Trạng thái đơn hàng được cập nhật thành công. Đơn hàng GHN đã được tạo.',
-                //     'message' =>  $createResponse  // Trả về kết quả từ GHN
-                // ], Response::HTTP_OK);
-                return $createResponse;
-            }
+            // if ($newStatus === 'Đang vận chuyển') {
+            //     $createOrder = new OrderGHNController();
+            //     $createResponse = $createOrder->createOrder($id);  // Gọi hàm tạo đơn hàng giao hàng nhanh với ID đơn hàng
+            //     // return response()->json([
+            //     //     // 'message' => 'Trạng thái đơn hàng được cập nhật thành công. Đơn hàng GHN đã được tạo.',
+            //     //     'message' =>  $createResponse  // Trả về kết quả từ GHN
+            //     // ], Response::HTTP_OK);
+            //     return $createResponse;
+            // }
 
             return response()->json(['message' => 'Cập nhật trạng thái đơn hàng thành công.', 'order' => $order], Response::HTTP_OK);
         } catch (\Exception $e) {
@@ -195,79 +194,80 @@ class OrderAdminController extends Controller
         foreach ($order->orderDetails as $detail) {
             // Kiểm tra nếu là sản phẩm có biến thể
             if ($detail->product_variant_id) {
-                $variant = ProductVariant::find($detail->product_variant_id);
+                $variant = Variant::find($detail->product_variant_id);
                 if ($variant) {
                     $variant->increment('quantity', $detail->quantity);
                 }
-            } else {
-                // Nếu là sản phẩm đơn
-                $product = Product::find($detail->product_id);
-                if ($product) {
-                    $product->increment('quantity', $detail->quantity);
-                }
-            }
+            } 
+            // else {
+            //     // Nếu là sản phẩm đơn
+            //     $product = Product::find($detail->product_id);
+            //     if ($product) {
+            //         $product->increment('quantity', $detail->quantity);
+            //     }
+            // }
         }
 
         // Lưu lại trạng thái mới của đơn hàng
         $order->save();
     }
 
-    public function searchOrders(Request $request)
-    {
-        // Danh sách trạng thái hợp lệ
-        $validStatuses = [
-            Order::STATUS_PENDING,
-            Order::STATUS_CONFIRMED,
-            Order::STATUS_SHIPPING,
-            Order::STATUS_SUCCESS,
-            Order::STATUS_CANCELED,
-            Order::STATUS_RETURNED,
-            Order::STATUS_COMPLETED,
-        ];
+    // public function searchOrders(Request $request)
+    // {
+    //     // Danh sách trạng thái hợp lệ
+    //     $validStatuses = [
+    //         Order::STATUS_PENDING,
+    //         Order::STATUS_CONFIRMED,
+    //         Order::STATUS_SHIPPING,
+    //         Order::STATUS_SUCCESS,
+    //         Order::STATUS_CANCELED,
+    //         Order::STATUS_RETURNED,
+    //         Order::STATUS_COMPLETED,
+    //     ];
 
-        $request->validate([
-            'search' => 'nullable|string|max:255',
-            'statuses' => 'nullable|array',
-            'statuses.*' => ['string', function ($attribute, $value, $fail) use ($validStatuses) {
-                if (!in_array($value, $validStatuses)) {
-                    $fail("Giá trị $value của $attribute không hợp lệ.");
-                }
-            }],
-            'filter_type' => 'nullable|string|in:day,week,month,year,range',
-            'filter_value' => 'nullable|string',
-            'filter_start_date' => 'required_if:filter_type,range|date',
-            'filter_end_date' => 'required_if:filter_type,range|date|after_or_equal:filter_start_date',
-        ]);
+    //     $request->validate([
+    //         'search' => 'nullable|string|max:255',
+    //         'statuses' => 'nullable|array',
+    //         'statuses.*' => ['string', function ($attribute, $value, $fail) use ($validStatuses) {
+    //             if (!in_array($value, $validStatuses)) {
+    //                 $fail("Giá trị $value của $attribute không hợp lệ.");
+    //             }
+    //         }],
+    //         'filter_type' => 'nullable|string|in:day,week,month,year,range',
+    //         'filter_value' => 'nullable|string',
+    //         'filter_start_date' => 'required_if:filter_type,range|date',
+    //         'filter_end_date' => 'required_if:filter_type,range|date|after_or_equal:filter_start_date',
+    //     ]);
 
-        // Lấy các tham số tìm kiếm
-        $searchTerm = $request->input('search');
-        $statuses = $request->input('statuses');
+    //     // Lấy các tham số tìm kiếm
+    //     $searchTerm = $request->input('search');
+    //     $statuses = $request->input('statuses');
 
-        // Tạo query cơ bản
-        $orders = Order::query();
+    //     // Tạo query cơ bản
+    //     $orders = Order::query();
 
-        // 1. Lọc theo từ khóa tìm kiếm
-        if ($searchTerm) {
-            $orders->where(function ($query) use ($searchTerm) {
-                $query->where('user_name', 'LIKE', "$searchTerm")
-                    ->orWhere('user_email', 'LIKE', "$searchTerm");
-            });
-            // $orders->ddRawSql();
-        }
+    //     // 1. Lọc theo từ khóa tìm kiếm
+    //     if ($searchTerm) {
+    //         $orders->where(function ($query) use ($searchTerm) {
+    //             $query->where('user_name', 'LIKE', "$searchTerm")
+    //                 ->orWhere('user_email', 'LIKE', "$searchTerm");
+    //         });
+    //         // $orders->ddRawSql();
+    //     }
 
-        // 2. Lọc theo trạng thái đơn hàng
-        if ($statuses && is_array($statuses)) {
-            $orders->whereIn('order_status', $statuses);
-        }
+    //     // 2. Lọc theo trạng thái đơn hàng
+    //     if ($statuses && is_array($statuses)) {
+    //         $orders->whereIn('order_status', $statuses);
+    //     }
 
-        // 3. Lọc theo ngày tháng
-        $applyDateFilter = new StatisticsController();
-        $applyDateFilter->applyDateFilter($orders, $request, 'created_at');
+    //     // 3. Lọc theo ngày tháng
+    //     $applyDateFilter = new StatisticsController();
+    //     $applyDateFilter->applyDateFilter($orders, $request, 'created_at');
 
 
-        return response()->json([
-            'success' => true,
-            'data' => $orders->with(["orderDetails"])->get(),
-        ], Response::HTTP_OK);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $orders->with(["orderDetails"])->get(),
+    //     ], Response::HTTP_OK);
+    // }
 }
