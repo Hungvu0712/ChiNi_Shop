@@ -51,11 +51,12 @@
                 <div id="discount_fields">
                     <div class="mb-3">
                         <label class="form-label">Kiểu giảm:</label>
-                        <select name="discount_type" class="form-select">
+                        <select name="discount_type" id="discount_type" class="form-select">
                             <option value="amount" {{ old('discount_type') == 'amount' ? 'selected' : '' }}>Số tiền</option>
                             <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>Phần trăm
                             </option>
                         </select>
+
                         @error('discount_type')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
@@ -79,14 +80,15 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="max-discount-group">
                         <label class="form-label">Mức giảm tối đa:</label>
-                        <input type="number" step="0.01" name="max_discount_value" class="form-control"
-                            value="{{ old('max_discount_value') }}">
+                        <input type="number" step="0.01" name="max_discount_value" id="max_discount_value"
+                            class="form-control" value="{{ old('max_discount_value') }}">
                         @error('max_discount_value')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
                     </div>
+
                 </div>
 
                 <div class="mb-3">
@@ -138,10 +140,12 @@
 @section('script')
     <script>
         $(document).ready(function() {
+            // Summernote khởi tạo
             $('#summernote').summernote({
                 height: 300
             });
 
+            // Toggle nhóm field theo loại voucher
             function toggleVoucherFields() {
                 var type = $('#voucher_type').val();
                 if (type === 'discount') {
@@ -151,11 +155,33 @@
                 }
             }
 
-            toggleVoucherFields();
+            // Toggle mức giảm tối đa theo discount_type
+            function toggleMaxDiscount() {
+                var discountType = $('#discount_type').val();
+                var $maxDiscountGroup = $('#max-discount-group');
+                var $maxDiscountInput = $('#max_discount_value');
 
+                if (discountType === 'amount' || discountType === 'percent') {
+                    $maxDiscountGroup.hide();
+                    $maxDiscountInput.val(0);
+                } else {
+                    $maxDiscountGroup.show();
+                }
+            }
+
+            // Gọi khi load trang
+            toggleVoucherFields();
+            toggleMaxDiscount();
+
+            // Gọi khi thay đổi
             $('#voucher_type').change(function() {
                 toggleVoucherFields();
             });
+
+            $('#discount_type').change(function() {
+                toggleMaxDiscount();
+            });
         });
     </script>
+
 @endsection

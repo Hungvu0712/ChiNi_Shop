@@ -63,9 +63,15 @@ class VoucherController extends Controller
             $voucher->discount_type = $request->discount_type;
             $voucher->value = $request->value;
             $voucher->min_order_value = $request->min_order_value ?? 0;
-            $voucher->max_discount_value = $request->max_discount_value ?? 0;
+
+            // ✅ Nếu là amount hoặc percent thì set về 0
+            if (in_array($request->discount_type, ['amount', 'percent'])) {
+                $voucher->max_discount_value = 0;
+            } else {
+                $voucher->max_discount_value = $request->max_discount_value ?? 0;
+            }
         } else {
-            $voucher->discount_type = 'none'; // ✅ Thêm: đổi từ null sang 'none'
+            $voucher->discount_type = 'none';
             $voucher->value = 0;
             $voucher->min_order_value = 0;
             $voucher->max_discount_value = 0;
@@ -77,9 +83,7 @@ class VoucherController extends Controller
     }
 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(string $id)
     {
         $voucher = Voucher::findOrFail($id);
@@ -105,9 +109,15 @@ class VoucherController extends Controller
             $voucher->discount_type = $request->discount_type;
             $voucher->value = $request->value;
             $voucher->min_order_value = $request->min_order_value ?? 0;
-            $voucher->max_discount_value = $request->max_discount_value ?? 0;
+
+            // ✅ Nếu là amount hoặc percent thì set về 0
+            if (in_array($request->discount_type, ['amount', 'percent'])) {
+                $voucher->max_discount_value = 0;
+            } else {
+                $voucher->max_discount_value = $request->max_discount_value ?? 0;
+            }
         } else {
-            $voucher->discount_type = 'none'; // ✅ RESET về none
+            $voucher->discount_type = 'none';
             $voucher->value = 0;
             $voucher->min_order_value = 0;
             $voucher->max_discount_value = 0;
@@ -119,6 +129,7 @@ class VoucherController extends Controller
             ->route('vouchers.index')
             ->with('success', 'Cập nhật voucher thành công!');
     }
+
 
 
     /**
