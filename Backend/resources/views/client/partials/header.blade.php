@@ -67,7 +67,7 @@
                         <div class="anItems">
                             <div class="anCart">
                                 <a href="{{ route('cart.index')}}"><i
-                                        class="fa-solid fa-shopping-cart"></i><span id='cart-count'>{{isset($countCart)? $countCart:0}}</span></a>
+                                        class="fa-solid fa-shopping-cart"></i><span id='cart-count'>{{isset($countCart) ? $countCart : 0}}</span></a>
 
                                     @if (isset($cart['cartitems'])) <div class="cartWidgetArea">
                                         @foreach ($cart['cartitems'] as $item)
@@ -82,7 +82,7 @@
                                             <div class="attribute-group">
                                                 <strong>{{ $attribute['name'] }}:</strong>
                                                 @php
-                                                $value = mb_strtolower($attribute['pivot']['value']);
+            $value = mb_strtolower($attribute['pivot']['value']);
                                                 @endphp
 
                                                 @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
@@ -98,10 +98,10 @@
                                         </div>
                                         @endforeach
                                         <div class="totalPrice">Subtotal: <span class="price"><span>{{ number_format($sub_total) ??
-                                                    ""}}<span>VND</span></span></span></div>
+        ""}}<span>VND</span></span></span></div>
                                         <div class="cartWidgetBTN clearfix">
                                             <a class="cart" href="{{ route('cart.index')}}">View Cart</a>
-                                            <a class="checkout" href="checkout.html">Checkout</a>
+                                            {{-- <a class="checkout" href="checkout.html">Checkout</a> --}}
                                         </div>
                                     </div>
                                     @endif
@@ -133,6 +133,8 @@
                                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">Thông tin cá
                                                     nhân</a></li>
                                             <li><a class="dropdown-item" href="{{ route('address') }}">Địa chỉ
+                                                </a></li>
+                                            <li><a class="dropdown-item" href="{{ route('order.index') }}">Quản lí đơn hàng
                                                 </a></li>
 
                                             <form method="POST" action="{{ route('logout') }}">

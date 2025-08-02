@@ -16,26 +16,26 @@ class StoreOrderRequest extends FormRequest
     {
         return true;
     }
-    public function prepareForValidation()
-    {
-        // Lấy tất cả dữ liệu từ request
-        $data = $this->all();
+    // public function prepareForValidation()
+    // {
+    //     // Lấy tất cả dữ liệu từ request
+    //     $data = $this->all();
 
-        // Loại bỏ các trường null hoặc rỗng (''), kể cả trong mảng con
-        $filteredData = array_filter($data, function ($value) {
-            if (is_array($value)) {
-                // Nếu là mảng, loại bỏ các giá trị null/rỗng trong mảng
-                return count(array_filter($value, function ($item) {
-                    return $item !== null && $item !== '';
-                })) > 0;
-            }
-            // Nếu không phải mảng, loại bỏ null hoặc chuỗi rỗng
-            return $value !== null && $value !== '';
-        });
+    //     // Loại bỏ các trường null hoặc rỗng (''), kể cả trong mảng con
+    //     $filteredData = array_filter($data, function ($value) {
+    //         if (is_array($value)) {
+    //             // Nếu là mảng, loại bỏ các giá trị null/rỗng trong mảng
+    //             return count(array_filter($value, function ($item) {
+    //                 return $item !== null && $item !== '';
+    //             })) > 0;
+    //         }
+    //         // Nếu không phải mảng, loại bỏ null hoặc chuỗi rỗng
+    //         return $value !== null && $value !== '';
+    //     });
 
-        // Ghi đè lại dữ liệu request
-        $this->replace($filteredData);
-    }
+    //     // Ghi đè lại dữ liệu request
+    //     $this->replace($filteredData);
+    // }
 
     /**
      * Get the validation rules that apply to the request.

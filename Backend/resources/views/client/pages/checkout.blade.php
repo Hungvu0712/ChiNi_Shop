@@ -53,18 +53,23 @@
     <!-- BEGIN: Checkout Page Section -->
     <section class="checkoutPage">
         <div class="container">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            {{-- @dd($error) --}}
-                            @if (is_array($error))
-                                <li>{{ $error['message'] }}</li>
-                            @endif
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        @php
+            $errorStocks = session('errorStocks');
+        @endphp
+        
+        @if (!empty($errorStocks))
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errorStocks['out_of_stock'] ?? [] as $error)
+                        <li>{{ $error['message'] ?? 'Lỗi không xác định' }}</li>
+                    @endforeach
+
+                    @foreach ($errorStocks['insufficient_stock'] ?? [] as $error)
+                        <li>{{ $error['message'] ?? 'Lỗi không xác định' }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
             <form action="{{ route('order.store') }}" method="POST">
                 @csrf
                 @if (is_array($data))
@@ -190,7 +195,8 @@
                             <div class="mb-3">
                                 <label for="voucher_id" class="form-label">Mã giảm giá</label>
                                 <div class="input-group">
-                                    <select class="form-control" name="voucher" id="voucher_id">
+                                    <select class="form-select" name="voucher" id="voucher_id">
+                                       <option disabled selected>Lựa chọn mã giảm giá</option>
                                         @foreach ($vouchers as $voucher)
                                             <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
                                         @endforeach

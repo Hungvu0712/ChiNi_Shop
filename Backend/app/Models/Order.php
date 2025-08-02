@@ -84,4 +84,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    protected $casts = [
+    'attributes' => 'array', // Laravel sẽ tự json_decode thành mảng
+    ];
 }

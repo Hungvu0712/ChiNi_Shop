@@ -142,11 +142,6 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         try {
-            // dd($errors->all());
-            // if (!empty($errors['out_of_stock']) || !empty($errors['insufficient_stock'])) {
-            //     dd(12333);
-
-            // }
             $idString = $request->all();
             $data = explode(',', $idString['cart_item_ids']);
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
@@ -201,37 +196,37 @@ class CheckoutController extends Controller
 
                         // Kiểm tra tồn kho và giá theo loại sản phẩm (variant hoặc đơn giản)
 
-                        $available_quantity = $variant ? $variant->quantity : $product->quantity;
+                        // $available_quantity = $variant ? $variant->quantity : $product->quantity;
 
                         // Xử lý trường hợp hết hàng
-                        if ($available_quantity == 0) {
-                            $errors['out_of_stock'][] = [
-                                'message' => "Sản phẩm {$product->name} hiện đã hết hàng và hệ thống đã tự động loại bỏ khỏi giỏ hàng của bạn. Vui lòng kiểm tra và xác nhận lại đơn hàng.",
-                                'product_id' => $product->id,
-                                'cart_id' => $cart_item->id,
-                            ];
-                            $cart_item->delete();
-                            if ($variant) {
-                                $tongSoLuong = $product->variants->sum('quantity');
-                                if ($tongSoLuong <= 0) {
-                                    $product->update(["status" => false]);
-                                }
-                            } else {
-                                $product->update(["status" => false]);
-                            }
-                            continue;
-                        }
+                        // if ($available_quantity == 0) {
+                        //     $errors['out_of_stock'][] = [
+                        //         'message' => "Sản phẩm {$product->name} hiện đã hết hàng và hệ thống đã tự động loại bỏ khỏi giỏ hàng của bạn. Vui lòng kiểm tra và xác nhận lại đơn hàng.",
+                        //         'product_id' => $product->id,
+                        //         'cart_id' => $cart_item->id,
+                        //     ];
+                        //     $cart_item->delete();
+                        //     if ($variant) {
+                        //         $tongSoLuong = $product->variants->sum('quantity');
+                        //         if ($tongSoLuong <= 0) {
+                        //             $product->update(["status" => false]);
+                        //         }
+                        //     } else {
+                        //         $product->update(["status" => false]);
+                        //     }
+                        //     continue;
+                        // }
                         // Xử lý trường hợp số lượng không đủ
-                        if ($quantity > $available_quantity) {
-                            $quantity = $available_quantity;
-                            $errors['insufficient_stock'][] = [
-                                'message' => "Số lượng sản phẩm {$product->name} trong kho không đủ. Bạn chỉ có thể mua tối đa $available_quantity sản phẩm.",
-                                'product_id' => $product->id,
-                                'cart_id' => $cart_item->id,
-                                'max_quantity' => $available_quantity
-                            ];
-                            $cart_item->update(['quantity' => $available_quantity]);
-                        }
+                        // if ($quantity > $available_quantity) {
+                        //     $quantity = $available_quantity;
+                        //     $errors['insufficient_stock'][] = [
+                        //         'message' => "Số lượng sản phẩm {$product->name} trong kho không đủ. Bạn chỉ có thể mua tối đa $available_quantity sản phẩm.",
+                        //         'product_id' => $product->id,
+                        //         'cart_id' => $cart_item->id,
+                        //         'max_quantity' => $available_quantity
+                        //     ];
+                        //     $cart_item->update(['quantity' => $available_quantity]);
+                        // }
 
                         // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
                         $total_price = $variant->price * $quantity;

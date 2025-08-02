@@ -76,7 +76,7 @@
                 chúng tôi!<br>
                 Đừng quên theo dõi chúng tôi trên các mạng xã hội để cập nhật những ưu đãi và sản phẩm mới nhất!
             </p>
-            <a href="/don-hang" class="btn btn-order">
+            <a href="{{ route('order.index')}}" class="btn btn-order">
                 ← Xem đơn hàng
             </a>
         </div>
