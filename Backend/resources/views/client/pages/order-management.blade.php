@@ -1,5 +1,5 @@
 @extends('client.layouts.master')
-@section('title', 'Cảm ơn')
+@section('title', 'Orders')
 @section('css')
     <style>
         .header01 {
@@ -90,132 +90,140 @@
         .table th {
             vertical-align: middle;
         }
-        .container{
+
+        .container {
             margin-top: 100px;
         }
     </style>
     <!-- Bootstrap 5 -->
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
 @section('content')
     <div class="container py-5">
-         <h4 class="mb-4">📦 Quản lý đơn hàng của bạn</h4>
-        <!-- Order Card -->
-        <div class="order-card shadow-sm">
-            <div class="order-header">
-                <div>
-                    <i class="bi bi-chevron-down"></i>
-                    <strong>MIXMATCH-6885827BE4F35</strong>
-                    <span class="order-status">| ĐÃ HỦY</span>
-                </div>
-                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#orderModal">
-                    Xem chi tiết
-                </button>
-            </div>
+        <h4 class="mb-4">📦 Quản lý đơn hàng của bạn</h4>
 
-            <!-- Product List -->
-            <div class="product-item">
-                <img src="https://via.placeholder.com/70x70" alt="áo len nam">
-                <div class="product-info">
-                    <div><strong>Áo len nam cổ tròn</strong></div>
-                    <small>s | black</small>
-                    <small>x 2</small>
-                </div>
-                <div>300.000₫</div>
-            </div>
-            <div class="product-item">
-                <img src="https://via.placeholder.com/70x70" alt="áo len nữ">
-                <div class="product-info">
-                    <div><strong>Áo len nữ cổ lọ dệt loang</strong></div>
-                    <small>m | orange</small>
-                    <small>x 2</small>
-                </div>
-                <div>400.000₫</div>
-            </div>
-
-            <!-- Footer -->
-            <div class="order-footer">
-                <button class="btn btn-info text-white btn-sm">Mua Lại</button>
-                <div>Thành tiền: <span class="total-price">1.400.000₫</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Chi tiết đơn -->
-    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderModalLabel">
-                        MÃ ĐƠN HÀNG · MIXMATCH-6885827BE4F35
-                        <span class="text-info">| ĐÃ HỦY</span>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-3 text-muted">Thời gian đặt hàng: 2025-07-27 01:53:55</p>
-
-                    <!-- Product list -->
-                    <div class="product-item bg-light rounded">
-                        <img src="https://via.placeholder.com/70x70" alt="">
-                        <div class="product-info">
-                            <div><strong>Áo len nam cổ tròn</strong></div>
-                            <small>s | black</small>
-                            <small>x 2</small>
-                        </div>
-                        <div>300.000₫</div>
+        @foreach ($orders as $order)
+            <div class="order-card shadow-sm mb-4">
+                <div class="order-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-chevron-down"></i>
+                        <strong>{{ $order->order_code }}</strong>
+                        <span class="order-status">| {{ strtoupper($order->order_status) }}</span>
                     </div>
-                    <div class="product-item bg-light rounded mt-2">
-                        <img src="https://via.placeholder.com/70x70" alt="">
-                        <div class="product-info">
-                            <div><strong>Áo len nữ cổ lọ dệt loang</strong></div>
-                            <small>m | orange</small>
-                            <small>x 2</small>
-                        </div>
-                        <div>400.000₫</div>
-                    </div>
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#orderModal{{ $order->id }}">
+                        Xem chi tiết
+                    </button>
+                </div>
 
-                    <!-- Order details -->
-                    <table class="table mt-4">
-                        <tbody>
-                            <tr>
-                                <td class="order-detail-label">Thông tin</td>
-                                <td class="order-detail-value">Mạnh Cường - 0987654321</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Địa chỉ nhận hàng</td>
-                                <td class="order-detail-value">Hà Nội, Xã Nhật Quang, Huyện Phù Cừ, Hưng Yên</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Phí vận chuyển</td>
-                                <td class="order-detail-value">39.000₫</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Khuyến mãi</td>
-                                <td class="order-detail-value">0₫</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Thành tiền</td>
-                                <td class="order-detail-value text-danger fw-bold">1.400.000₫</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Phương thức thanh toán</td>
-                                <td class="order-detail-value">COD - Nhận hàng thanh toán</td>
-                            </tr>
-                            <tr>
-                                <td class="order-detail-label">Trạng thái</td>
-                                <td class="order-detail-value">Chưa thanh toán</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                @foreach ($order->orderDetails as $item)
+                    <div class="product-item">
+                        <img src="{{ $item->product_img }}" alt="{{ $item->product_name }}" width="70" height="70">
+                        <div class="product-info">
+                            <div><strong>{{ $item->product_name }}</strong></div>
+                            @foreach ($item->attributes as $key => $value)
+                                <small><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</small>
+                            @endforeach
+                            <small>x {{ $item->quantity }}</small>
+                        </div>
+                        <div>{{ number_format($item->price, 0, ',', '.') }}₫</div>
+                    </div>
+                @endforeach
+
+                <div class="order-footer d-flex justify-content-between align-items-center mt-2">
+                    <button class="btn btn-info text-white btn-sm">Mua Lại</button>
+                    <div>Thành tiền: <span
+                            class="total-price text-danger">{{ number_format($order->total, 0, ',', '.') }}₫</span></div>
                 </div>
             </div>
-        </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal{{ $order->id }}" tabindex="-1"
+                aria-labelledby="orderModalLabel{{ $order->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content shadow-lg">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="orderModalLabel{{ $order->id }}">
+                                <strong>{{ $order->order_code }}</strong>
+                                <span class="text-info">| {{ strtoupper($order->order_status) }}</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3 text-muted">Thời gian đặt hàng: {{ $order->created_at->format('d-m-Y H:i') }}</p>
+
+                            @foreach ($order->orderDetails as $item)
+                                <div class="product-item bg-light rounded mb-2">
+                                    <img src="{{ $item->product_img }}" alt="{{ $item->product_name }}" width="70" height="70">
+                                    <div class="product-info">
+                                        <div><strong>{{ $item->product_name }}</strong></div>
+                                        @foreach ($item->attributes as $key => $value)
+                                            <small><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</small>
+                                        @endforeach
+                                        <small>x {{ $item->quantity }}</small>
+                                    </div>
+                                    <div>{{ number_format($item->price, 0, ',', '.') }}₫</div>
+                                </div>
+                            @endforeach
+
+                            <table class="table mt-4">
+                                <tbody>
+                                    <tr>
+                                        <td class="order-detail-label">Thông tin khách hàng</td>
+                                        <td class="order-detail-value">{{ $order->user_name }} - {{ $order->user_phonenumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Địa chỉ</td>
+                                        <td class="order-detail-value">{{ $order->user_address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Ghi chú</td>
+                                        <td class="order-detail-value">{{ $order->user_note }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Phí vận chuyển</td>
+                                        <td class="order-detail-value">{{ number_format($order->shipping_fee, 0, ',', '.') }}₫
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Khuyến mãi</td>
+                                        <td class="order-detail-value">0₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Thành tiền</td>
+                                        <td class="order-detail-value text-danger fw-bold">
+                                            {{ number_format($order->total, 0, ',', '.') }}₫
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Phương thức thanh toán</td>
+                                        <td class="order-detail-value">{{ $order->paymentMethod->name ?? 'Không rõ' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Trạng thái</td>
+                                        <td class="order-detail-value">{{ $order->order_status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Thông tin người nhận hàng</td>
+                                        <td class="order-detail-value">{{ $order->ship_user_name }} - {{ $order->ship_user_phonenumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="order-detail-label">Địa chỉ nhận hàng</td>
+                                        <td class="order-detail-value">{{ $order->ship_user_address }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
     </div>
 @endsection
+
 @section('script')
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

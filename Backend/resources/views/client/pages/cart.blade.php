@@ -351,7 +351,7 @@
             cart_item_ids: ids
         };
 
-        fetch('{{ route("checkout.store") }}', {
+        fetch('{{ route("checkout.validateCartToCheckOut") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -407,10 +407,10 @@
             }
 
             // Lưu data đơn hàng vào sessionStorage để load ở trang checkout
-            sessionStorage.setItem('checkout_data', JSON.stringify(data));
+            // sessionStorage.setItem('checkout_data', JSON.stringify(data));
 
             // Chuyển trang đến checkout
-            window.location.href = "{{ route('checkout.create') }}";
+            window.location.href = "{{ route('checkout.show') }}" + `?cart_item_ids=${data.cart_item_ids}`;
 
         })
         .catch(error => {

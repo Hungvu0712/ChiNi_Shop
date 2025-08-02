@@ -4,21 +4,18 @@ namespace App\Http\Controllers\Client;
 
 use App\Models\Cart;
 use App\Models\User;
-use App\Models\Product;
 use App\Models\Voucher;
-use App\Models\CartItem;
-use App\Models\VoucherMeta;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Helper\Product\GetUniqueAttribute;
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
-use App\Models\VoucherUser;
 
 class CheckoutController extends Controller
 {
-    public function store(StoreCheckoutRequest $request)
+    public function validateCartToCheckOut(StoreCheckoutRequest $request)
     {
         try {
             $data = $request->validated(); // Lấy dữ liệu đã xác thực
@@ -101,7 +98,7 @@ class CheckoutController extends Controller
                                 'message' => "Số lượng sản phẩm {$product->name} trong kho không đủ. Bạn chỉ có thể mua tối đa $available_quantity sản phẩm.",
                                 'product_id' => $product->id,
                                 'cart_id' => $cart_item->id,
-                                'max_quantity'=>$available_quantity
+                                'max_quantity' => $available_quantity
                             ];
                             $cart_item->update(['quantity' => $available_quantity]);
                         }
@@ -120,7 +117,7 @@ class CheckoutController extends Controller
 
                         $total_items += 1;
                     }
-                } 
+                }
             }
 
             if (empty($errors['out_of_stock']) && empty($errors['insufficient_stock'])) {
@@ -129,6 +126,7 @@ class CheckoutController extends Controller
                     "sub_total" => $sub_total,
                     "total_items" => $total_items,
                     "order_items" => $order_items,
+                    'cart_item_ids' => $data['cart_item_ids']
                 ], Response::HTTP_OK);
             } else {
                 return response()->json([
@@ -141,8 +139,122 @@ class CheckoutController extends Controller
             return response()->json(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    public function create(){
-        return view('client.pages.checkout');
-    }
+    public function show(Request $request)
+    {
+        try {
+            $idString = $request->all();
+            $data = explode(',', $idString['cart_item_ids']);
+            $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
+            // Khởi tạo biến cho tổng tiền và danh sách sản phẩm
+            $sub_total = 0;
+            $total_items = 0;
+            $order_items = [];
+            $errors = [];
+            // $voucher_discount = 0;
 
+            // Kiểm tra thông tin người dùng nếu đã đăng nhập
+            if (Auth::check()) {
+                $user_id = Auth::id();
+                $vouchers = Voucher::where([
+                    ['is_active', '=', 1],
+                    ['limit', '>', 0],
+                    ['start_date', '<=', Carbon::now()],
+                    ['end_date', '>=', Carbon::now()],
+                ])->get();
+                $user = User::with('addresses')->findOrFail($user_id)->makeHidden(['email_verified_at', 'password', 'remember_toke']);
+                if ($isCartPurchase) {
+                    $errors = [
+                        'out_of_stock' => [], // Lỗi sản phẩm hết hàng
+                        'insufficient_stock' => [], // Lỗi số lượng không đủ
+                    ];
+                    $cart = Cart::query()
+                        ->where('user_id', $user['id'])
+                        ->with([
+                            "cartitems" => function ($query) use ($data) {
+                                $query->whereIn('id', $data);
+                            },
+                            "cartitems.product",
+                            "cartitems.productvariant.attributes"
+                        ])
+                        ->first();
+
+                    if (!$cart || $cart->cartitems->isEmpty()) {
+                        return redirect()->route('cart.index')->with('error', 'Sản phẩm không tồn tại trong giỏ hàng');
+                    }
+
+                    // Kiểm tra nếu có sản phẩm nào không tồn tại trong giỏ hàng
+                    $invalid_items = array_diff($data, $cart->cartitems->pluck('id')->toArray());
+
+                    if (!empty($invalid_items)) {
+                        $invalid_items = implode(',', $invalid_items);
+                        return redirect()->route('cart.index')->with('error', "Sản phẩm có id=$invalid_items không tồn tại trong giỏ hàng");
+                    }
+                    foreach ($cart->cartitems as $cart_item) {
+                        $quantity = $cart_item->quantity;
+                        $variant = $cart_item->productvariant;
+                        $product = $cart_item->product;
+
+                        // Kiểm tra tồn kho và giá theo loại sản phẩm (variant hoặc đơn giản)
+
+                        // $available_quantity = $variant ? $variant->quantity : $product->quantity;
+
+                        // Xử lý trường hợp hết hàng
+                        // if ($available_quantity == 0) {
+                        //     $errors['out_of_stock'][] = [
+                        //         'message' => "Sản phẩm {$product->name} hiện đã hết hàng và hệ thống đã tự động loại bỏ khỏi giỏ hàng của bạn. Vui lòng kiểm tra và xác nhận lại đơn hàng.",
+                        //         'product_id' => $product->id,
+                        //         'cart_id' => $cart_item->id,
+                        //     ];
+                        //     $cart_item->delete();
+                        //     if ($variant) {
+                        //         $tongSoLuong = $product->variants->sum('quantity');
+                        //         if ($tongSoLuong <= 0) {
+                        //             $product->update(["status" => false]);
+                        //         }
+                        //     } else {
+                        //         $product->update(["status" => false]);
+                        //     }
+                        //     continue;
+                        // }
+                        // Xử lý trường hợp số lượng không đủ
+                        // if ($quantity > $available_quantity) {
+                        //     $quantity = $available_quantity;
+                        //     $errors['insufficient_stock'][] = [
+                        //         'message' => "Số lượng sản phẩm {$product->name} trong kho không đủ. Bạn chỉ có thể mua tối đa $available_quantity sản phẩm.",
+                        //         'product_id' => $product->id,
+                        //         'cart_id' => $cart_item->id,
+                        //         'max_quantity' => $available_quantity
+                        //     ];
+                        //     $cart_item->update(['quantity' => $available_quantity]);
+                        // }
+
+                        // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
+                        $total_price = $variant->price * $quantity;
+                        $sub_total += $total_price;
+                        $order_items[] = [
+                            'quantity' => $quantity,
+                            'total_price' => $total_price,
+                            'product' => $product,
+                            'variant' => $variant,
+                        ];
+
+                        $total_items += 1;
+                    }
+                }
+                // dd($errors);
+                // if (empty($errors['out_of_stock']) && empty($errors['insufficient_stock'])) {
+                    return view('client.pages.checkout', compact(
+                        "user",
+                        "sub_total",
+                        "total_items",
+                        "order_items",
+                        'data',
+                        'vouchers'
+                    ));
+                // }
+            }
+        } catch (\Exception $ex) {
+            return response()->json(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

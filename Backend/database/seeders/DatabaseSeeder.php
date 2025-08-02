@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
             ProductWithVariantsSeeder::class,
             CartSeeder::class,
             AddressesTableSeeder::class,
-            OrdersTableSeeder::class,
-            OrderItemsTableSeeder::class,
-            PaymentMethod::class,
-            VoucherSeeder::class, // ✅ Thêm dòng này
+            VoucherSeeder::class,
+            // OrdersTableSeeder::class,
+            // OrderItemsTableSeeder::class,
+            PaymentMethod::class
         ]);
     }
 }

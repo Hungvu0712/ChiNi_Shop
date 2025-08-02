@@ -25,6 +25,7 @@ use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
@@ -155,14 +156,19 @@ Route::controller(ReviewController::class)->group(function () {
     Route::delete('/reviews/{id}',  'destroy')->name('admin.reviews.destroy');
 });
 
-Route::resource('cart', CartController::class);
-Route::resource('checkout', CheckoutController::class);
+Route::resource('cart', CartController::class)->middleware('auth');
+Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut')->middleware('auth');
+Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show')->middleware('auth');
+Route::resource('order', OrderController::class)->middleware('auth');
+Route::post('apply-voucher', [OrderController::class, 'apply']);
+
+
 // Route::get('checkout',function(){
 //     return view("client.pages.checkout");
 // });
-// Route::get('thank',function(){
-//     return view("client.pages.thank");
-// });
+Route::get('thank',function(){
+    return view("client.pages.thank");
+});
 // Route::get('order-management',function(){
 //     return view("client.pages.order-management");
 // });
