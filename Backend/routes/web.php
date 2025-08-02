@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductAttachmentController;
 use App\Http\Controllers\Admin\ProductController;
@@ -93,6 +94,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::resource('banners', BannerController::class);
 
      Route::resource('vouchers', VoucherController::class);
+
+Route::resource('orders', OrderAdminController::class);
+
 
 });
 
