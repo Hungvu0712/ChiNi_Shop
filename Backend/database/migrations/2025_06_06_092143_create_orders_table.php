@@ -34,6 +34,7 @@ return new class extends Migration
             $table->text('ship_user_address')->nullable(); // Địa chỉ người nhận
             $table->decimal('shipping_fee', 15, 2)->default(0);  // Trường phí ship
             $table->decimal('voucher_discount', 15, 2)->default(0);  // Số tiền giảm giá từ voucher (nếu có)
+            $table->text('return_notes')->nullable();
             $table->timestamps(); // Thời gian tạo và cập nhật
 
             // Thêm chỉ mục

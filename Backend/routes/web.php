@@ -167,7 +167,9 @@ Route::resource('cart', CartController::class)->middleware('auth');
 Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut')->middleware('auth');
 Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show')->middleware('auth');
 Route::resource('order', OrderController::class)->middleware('auth');
-Route::post('apply-voucher', [OrderController::class, 'apply']);
+// Route::post('order-cancel/{id}', [OrderController::class,'handleOrderCancellation'])->name('order-cancel')->middleware('auth');
+
+Route::post('apply-voucher', [OrderController::class, 'apply'])->name('apply-voucher');
 
 
 // Route::get('checkout',function(){

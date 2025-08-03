@@ -146,7 +146,7 @@ class CheckoutController extends Controller
             $data = explode(',', $idString['cart_item_ids']);
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
             // Khởi tạo biến cho tổng tiền và danh sách sản phẩm
-            $sub_total = 0;
+            $sub_total1 = 0;
             $total_items = 0;
             $order_items = [];
             $errors = [];
@@ -189,68 +189,39 @@ class CheckoutController extends Controller
                         $invalid_items = implode(',', $invalid_items);
                         return redirect()->route('cart.index')->with('error', "Sản phẩm có id=$invalid_items không tồn tại trong giỏ hàng");
                     }
+                    // dd($data);
                     foreach ($cart->cartitems as $cart_item) {
+                        // dd($cart_item->id);
                         $quantity = $cart_item->quantity;
                         $variant = $cart_item->productvariant;
                         $product = $cart_item->product;
+                        // dd(in_array($cart_item->id, $data));
+                        if (in_array($cart_item->id, $data)) {
+                            // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
+                            $total_price = $variant->price * $quantity;
+                            $sub_total1 += $total_price;
+                            $order_items[] = [
+                                'quantity' => $quantity,
+                                'total_price' => $total_price,
+                                'product' => $product,
+                                'variant' => $variant,
+                            ];
 
-                        // Kiểm tra tồn kho và giá theo loại sản phẩm (variant hoặc đơn giản)
-
-                        // $available_quantity = $variant ? $variant->quantity : $product->quantity;
-
-                        // Xử lý trường hợp hết hàng
-                        // if ($available_quantity == 0) {
-                        //     $errors['out_of_stock'][] = [
-                        //         'message' => "Sản phẩm {$product->name} hiện đã hết hàng và hệ thống đã tự động loại bỏ khỏi giỏ hàng của bạn. Vui lòng kiểm tra và xác nhận lại đơn hàng.",
-                        //         'product_id' => $product->id,
-                        //         'cart_id' => $cart_item->id,
-                        //     ];
-                        //     $cart_item->delete();
-                        //     if ($variant) {
-                        //         $tongSoLuong = $product->variants->sum('quantity');
-                        //         if ($tongSoLuong <= 0) {
-                        //             $product->update(["status" => false]);
-                        //         }
-                        //     } else {
-                        //         $product->update(["status" => false]);
-                        //     }
-                        //     continue;
-                        // }
-                        // Xử lý trường hợp số lượng không đủ
-                        // if ($quantity > $available_quantity) {
-                        //     $quantity = $available_quantity;
-                        //     $errors['insufficient_stock'][] = [
-                        //         'message' => "Số lượng sản phẩm {$product->name} trong kho không đủ. Bạn chỉ có thể mua tối đa $available_quantity sản phẩm.",
-                        //         'product_id' => $product->id,
-                        //         'cart_id' => $cart_item->id,
-                        //         'max_quantity' => $available_quantity
-                        //     ];
-                        //     $cart_item->update(['quantity' => $available_quantity]);
-                        // }
-
-                        // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
-                        $total_price = $variant->price * $quantity;
-                        $sub_total += $total_price;
-                        $order_items[] = [
-                            'quantity' => $quantity,
-                            'total_price' => $total_price,
-                            'product' => $product,
-                            'variant' => $variant,
-                        ];
-
-                        $total_items += 1;
+                            $total_items += 1;
+                        }
                     }
                 }
-                // dd($errors);
-                // if (empty($errors['out_of_stock']) && empty($errors['insufficient_stock'])) {
-                    return view('client.pages.checkout', compact(
-                        "user",
-                        "sub_total",
-                        "total_items",
-                        "order_items",
-                        'data',
-                        'vouchers'
-                    ));
+                //thành tiền cộng thêm 30000k tiền ship
+                $sub_total1 +=30000;
+                // dd($sub_total1);
+                return view('client.pages.checkout', compact(
+                    "user",
+                    "sub_total1",
+                    "total_items",
+                    "order_items",
+                    'data',
+                    'vouchers'
+                ));
                 // }
             }
         } catch (\Exception $ex) {

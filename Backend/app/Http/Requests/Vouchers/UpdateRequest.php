@@ -38,8 +38,8 @@ class UpdateRequest extends FormRequest
                 $rules['value'] = 'required|numeric|min:1';
             }
 
-            $rules['min_order_value'] = 'nullable|numeric|min:0|max:999999.99';
-            $rules['max_discount_value'] = 'nullable|numeric|min:0|max:999999.99';
+            $rules['min_order_value'] = 'nullable|numeric|min:0|max:99999999.99';
+            $rules['max_discount_value'] = 'nullable|numeric|min:0|max:99999999.99';
 
             if ($this->discount_type === 'amount') {
                 $rules['max_discount_value'] .= '|gte:value';

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('title');
             $table->enum('voucher_type', ['discount', 'freeship'])->default('discount');
             $table->enum('discount_type', ['amount', 'percent', 'none'])->default('none');
-            $table->decimal('value', 8, 2)->default(0);
-            $table->decimal('min_order_value', 8, 2)->default(0);
-            $table->decimal('max_discount_value', 8, 2)->default(0);
+            $table->decimal('value', 10, 2)->default(0);
+            $table->decimal('min_order_value', 10, 2)->default(0);
+            $table->decimal('max_discount_value', 10, 2)->default(0);
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('limit')->default(1);

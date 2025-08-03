@@ -665,6 +665,9 @@
                                     updateCartCount(data.cart_count);
 
                                     toastr.success(data.message || 'Thêm sản phẩm vào giỏ hàng!');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 3000);
                                 })
                                 .catch(error => {
                                     console.error('❌ Lỗi khi thêm vào giỏ hàng:', error.message);
