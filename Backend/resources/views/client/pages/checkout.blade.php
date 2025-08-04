@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check d-flex align-items-center gap-2">
-                                        <input class="form-check-input" type="radio" name="payment_method_id"
+                                        <input class="form-check-input" type="radio"  name="payment_method_id"
                                             id="online" value="2">
                                         <label class="form-check-label d-flex align-items-center" for="online">
                                             <i class="bi bi-credit-card me-2"></i> Thanh toán online
@@ -195,35 +195,32 @@
                             <div class="mb-3">
                                 <label for="voucher_id" class="form-label">Mã giảm giá</label>
                                 <div class="input-group">
-                                    <select class="form-select" name="voucher" id="voucher_id">
+                                    <select class="form-select"  name="voucher_code" id="voucher_id">
                                        <option disabled selected>Lựa chọn mã giảm giá</option>
                                         @foreach ($vouchers as $voucher)
-                                            <option value="{{ $voucher['id'] }}">{{ $voucher['title'] }}</option>
+                                            <option data-voucher-code="{{ $voucher['code'] }}" value="{{ $voucher['code'] }}">{{ $voucher['title'] }}</option>
                                         @endforeach
                                     </select>
-
-
                                     <button class="btn btn-outline-primary">Áp dụng</button>
                                     <button class="btn btn-outline-secondary" type="button">Hủy</button>
                                 </div>
                             </div>
 
                             <ul class="list-unstyled">
-                                <li class="d-flex justify-content-between">
+                                {{-- <li class="d-flex justify-content-between">
                                     <span>Voucher:</span>
                                     <span>0 đ</span>
-                                </li>
+                                </li> --}}
                                 <li class="d-flex justify-content-between">
                                     <span>Phí ship:</span>
-                                    <input type="text" value="100" name="shipping_fee" id='shipping_fee'>
-                                    {{-- <span>0 đ</span> --}}
+                                    <span>30.000 đ</span>
+                                    <input type="hidden" value="30000" name="shipping_fee" id='shipping_fee'>
                                 </li>
                                 <li class="d-flex justify-content-between fw-bold fs-5">
                                     <span>Tổng tiền:</span>
-                                    <span>{{ number_format($sub_total) }} đ</span>
+                                    <span id="sub_total">{{ number_format($sub_total1) }} đ</span>
                                 </li>
                             </ul>
-
                             <button type="submit" class="btn btn-info w-100 text-white">Xác nhận đơn hàng</button>
                             <small class="d-block mt-2 text-center">
                                 <a href="#">Tìm hiểu thêm thông tin về thuế và vận chuyển</a>
@@ -240,4 +237,73 @@
 @section('script')
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const applyBtn = document.querySelector('.btn.btn-outline-primary');
+    const cancelBtn = document.querySelector('.btn.btn-outline-secondary');
+    const voucherSelect = document.getElementById('voucher_id');
+    const subTotalEl = document.getElementById('sub_total');
+    const voucherDisplay = document.querySelector('ul li span:last-child');
+
+    let originalSubTotal = parseCurrency(subTotalEl.innerText); // Lưu tổng ban đầu
+
+    applyBtn.addEventListener('click', async function (e) {
+        e.preventDefault();
+
+        const selectedOption = voucherSelect.options[voucherSelect.selectedIndex];
+        const voucherCode = selectedOption.dataset.voucherCode;
+
+        if (!voucherCode) {
+            alert("Vui lòng chọn mã giảm giá.");
+            return;
+        }
+
+        try {
+            const response = await fetch("{{ route('apply-voucher') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    code: voucherCode,
+                    order_total: originalSubTotal
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || 'Đã xảy ra lỗi.');
+                return;
+            }
+
+            // Nếu áp dụng thành công
+            voucherDisplay.innerText = `${formatCurrency(data.discount_amount)} đ`;
+            const newTotal = originalSubTotal - data.discount_amount;
+            subTotalEl.innerText = `${formatCurrency(newTotal)} đ`;
+        } catch (err) {
+            alert("Có lỗi xảy ra khi áp dụng voucher.");
+            console.error(err);
+        }
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        voucherSelect.selectedIndex = 0;
+        voucherDisplay.innerText = `0 đ`;
+        subTotalEl.innerText = `${formatCurrency(originalSubTotal)} đ`;
+    });
+
+    // Helper: parse "100.000 đ" -> 100000
+    function parseCurrency(str) {
+        return parseInt(str.replace(/\D/g, '')) || 0;
+    }
+
+    // Helper: format 100000 -> "100.000"
+    function formatCurrency(num) {
+        return num.toLocaleString('vi-VN');
+    }
+});
+</script>
+
 @endsection

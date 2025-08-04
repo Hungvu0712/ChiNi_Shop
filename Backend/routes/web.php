@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductAttachmentController;
 use App\Http\Controllers\Admin\ProductController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Client\PostHomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\ProductReviewController;
+use App\Http\Controllers\Service\PaymentController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -94,7 +96,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
 
      Route::resource('vouchers', VoucherController::class);
 
+Route::resource('orders', OrderAdminController::class);
+
+
 });
+//  Route::post('payment/vnpay', [PaymentController::class, 'createPayment']);
+Route::get('payment/vnpay-return', [PaymentController::class, 'vnpayReturn']);
 
 //Trang 404
 Route::get('/404', function () {
@@ -160,7 +167,9 @@ Route::resource('cart', CartController::class)->middleware('auth');
 Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut')->middleware('auth');
 Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show')->middleware('auth');
 Route::resource('order', OrderController::class)->middleware('auth');
-Route::post('apply-voucher', [OrderController::class, 'apply']);
+// Route::post('order-cancel/{id}', [OrderController::class,'handleOrderCancellation'])->name('order-cancel')->middleware('auth');
+
+Route::post('apply-voucher', [OrderController::class, 'apply'])->name('apply-voucher');
 
 
 // Route::get('checkout',function(){

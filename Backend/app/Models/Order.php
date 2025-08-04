@@ -36,9 +36,9 @@ class Order extends Model
     const STATUS_CANCELED = 'Đã hủy';
     const STATUS_SHIPPING = 'Đang vận chuyển';
     const STATUS_SUCCESS = 'Giao hàng thành công';
-    const STATUS_RETURNED = 'Hoàn trả hàng';
+    // const STATUS_RETURNED = 'Hoàn trả hàng';
     const STATUS_COMPLETED = 'Hoàn thành';
-    const STATUS_RETURN_REQUESTED = 'Yêu cầu hoàn trả hàng';
+    // const STATUS_RETURN_REQUESTED = 'Yêu cầu hoàn trả hàng';
 
   
     // Payment status constants
@@ -53,9 +53,9 @@ class Order extends Model
             self::STATUS_CANCELED,
             self::STATUS_SHIPPING,
             self::STATUS_SUCCESS,
-            self::STATUS_RETURNED,
+            // self::STATUS_RETURNED,
             self::STATUS_COMPLETED,
-            self::STATUS_RETURN_REQUESTED
+            // self::STATUS_RETURN_REQUESTED
         ];
     }
 

@@ -134,7 +134,13 @@
                 @endforeach
 
                 <div class="order-footer d-flex justify-content-between align-items-center mt-2">
-                    <button class="btn btn-info text-white btn-sm">Mua Lại</button>
+                    @if (in_array($order->order_status, [\App\Models\Order::STATUS_PENDING, \App\Models\Order::STATUS_CONFIRMED]))
+                        <button class="btn btn-info text-white btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#orderCancel{{ $order->id }}">
+                            Xác nhận hủy
+                        </button>
+                    @endif
+
                     <div>Thành tiền: <span
                             class="total-price text-danger">{{ number_format($order->total, 0, ',', '.') }}₫</span></div>
                 </div>
@@ -153,11 +159,21 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                         </div>
                         <div class="modal-body">
-                            <p class="mb-3 text-muted">Thời gian đặt hàng: {{ $order->created_at->format('d-m-Y H:i') }}</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-3 text-muted">Thời gian đặt hàng:
+                                        {{ $order->created_at->format('d-m-Y H:i') }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-3 text-danger fw-bold">Trạng thái đơn hàng: {{ $order->payment_status }}
+                                    </p>
+                                </div>
+                            </div>
 
                             @foreach ($order->orderDetails as $item)
                                 <div class="product-item bg-light rounded mb-2">
-                                    <img src="{{ $item->product_img }}" alt="{{ $item->product_name }}" width="70" height="70">
+                                    <img src="{{ $item->product_img }}" alt="{{ $item->product_name }}" width="70"
+                                        height="70">
                                     <div class="product-info">
                                         <div><strong>{{ $item->product_name }}</strong></div>
                                         @foreach ($item->attributes as $key => $value)
@@ -173,7 +189,8 @@
                                 <tbody>
                                     <tr>
                                         <td class="order-detail-label">Thông tin khách hàng</td>
-                                        <td class="order-detail-value">{{ $order->user_name }} - {{ $order->user_phonenumber }}</td>
+                                        <td class="order-detail-value">{{ $order->user_name }} -
+                                            {{ $order->user_phonenumber }}</td>
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Địa chỉ</td>
@@ -185,12 +202,14 @@
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Phí vận chuyển</td>
-                                        <td class="order-detail-value">{{ number_format($order->shipping_fee, 0, ',', '.') }}₫
+                                        <td class="order-detail-value">
+                                            {{ number_format($order->shipping_fee, 0, ',', '.') }}₫
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Khuyến mãi</td>
-                                        <td class="order-detail-value">0₫</td>
+                                        <td class="order-detail-value">
+                                            {{ number_format($order->voucher_discount, 0, ',', '.') }} ₫</td>
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Thành tiền</td>
@@ -208,7 +227,8 @@
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Thông tin người nhận hàng</td>
-                                        <td class="order-detail-value">{{ $order->ship_user_name }} - {{ $order->ship_user_phonenumber }}</td>
+                                        <td class="order-detail-value">{{ $order->ship_user_name }} -
+                                            {{ $order->ship_user_phonenumber }}</td>
                                     </tr>
                                     <tr>
                                         <td class="order-detail-label">Địa chỉ nhận hàng</td>
@@ -220,7 +240,37 @@
                     </div>
                 </div>
             </div>
+
+            {{-- modal form hủy đơn hàng --}}
+            <!-- Modal Hủy Đơn -->
+            <div class="modal fade" id="orderCancel{{ $order->id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Lý do hủy đơn hàng</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="cancelOrderForm" method="post"
+                                action="{{ route('order.update', ['order' => $order->id]) }}">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="order_status" value="{{ \App\Models\Order::STATUS_CANCELED }}">
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="user_note" id="cancel_reason" placeholder="Nhập lý do hủy..." required></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary me-2"
+                                        data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" class="btn btn-primary">Gửi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endforeach
+        {{ $orders->links() }}
     </div>
 @endsection
 

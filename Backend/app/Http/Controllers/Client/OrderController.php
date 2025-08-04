@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Notifications\OrderConfirmationNotification;
-use App\Http\Controllers\API\V1\Service\PaymentController;
+use App\Http\Controllers\Service\PaymentController;
 use App\Models\OrderItem;
 use App\Models\Variant;
 use Cloudinary\Transformation\Argument\Range\Range;
@@ -51,7 +51,7 @@ class OrderController extends Controller
                         'paymentMethod',
                     ])
                     ->latest('id')
-                    ->get();
+                    ->paginate(5);
                 return view("client.pages.order-management",compact('orders'));
             }
         } catch (\Exception $e) {
@@ -64,7 +64,7 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         try {
-            $data = $request->validated();
+            $data = $request->all();
             // dd($data);
             $isCartPurchase = isset($data['cart_item_ids']) && is_array($data['cart_item_ids']) && count($data['cart_item_ids']) > 0;
             $user = $this->getUser($data);
@@ -83,7 +83,7 @@ class OrderController extends Controller
                     $totalQuantity += $quantity;
                     $totalPrice += $price;
                 }
-                // dd($errorStocks);
+                // dd($totalPrice);
                 if (count($errorStocks)) {
                     $hasOutOfStockError = !empty($errorStocks['out_of_stock']);
                     $hasInsufficientStockError = !empty($errorStocks['insufficient_stock']);
@@ -123,31 +123,53 @@ class OrderController extends Controller
                                 }
                             }
                         }
-                        // dd($errorStocks);
-                        // dd($hasInsufficientStockError);
                         $insufficientStockIds = array_column($errorStocks['insufficient_stock'] ?? [], 'cart_id');
-                        // dd($insufficientStockIds);
-
+                       
                         // Lọc lại chỉ lấy những cart_id có lỗi
                         $filteredCartIds = array_intersect($data['cart_item_ids'], $insufficientStockIds);
-                        // dd($filteredCartIds,$insufficientStockIds );
-                        // dd(implode(',', $filteredCartIds));
-                        // dd($filteredCartIds); // [19]
-                        // $a=implode(',', $filteredCartIds);
-                        // dd($errorStocks);
                         $redirectResponse = redirect()
                             ->route('checkout.show', ['cart_item_ids' => implode(',', $filteredCartIds) ])
                             ->with('errorStocks',$errorStocks);
                         return $redirectResponse;  // Dừng transaction callback
                     }
                 }
+
+                // Áp dụng voucher nếu có
+                if (isset($data['voucher_code']) && Auth::check()) {
+                    // dd(142412);
+                    $voucher_result = $this->applyVoucher($data['voucher_code'], $totalPrice);
+                    // if (isset($voucher_result['error'])) {
+                    //     return response()->json(['message' => $voucher_result['error']], Response::HTTP_BAD_REQUEST);
+                    // }
+                    $totalPrice -= $voucher_result['discount_amount'];
+                    $voucher = $voucher_result['voucher'];
+                    // Cập nhật voucher_id và voucher_discount cho order
+                    $order->update([
+                        'voucher_id' => $voucher['id'],
+                        'voucher_discount' => $voucher_result['discount_amount'],
+                    ]);
+                    Voucher::findOrFail($voucher['id'])->update([
+                        'limit'=> $voucher['limit']-1,
+                    ]);
+                }
+                $totalPrice +=30000;
                 $order->update([
                     'total_quantity' => $totalQuantity,
                     'total' => max($totalPrice, $order->shipping_fee),
                 ]);
+                // Thực hiện thanh toán nếu chọn phương thức online (VNPay)
+                if ($data['payment_method_id'] == 2) {
+                    $payment = new PaymentController();
+                    $response = $payment->createPayment($order);
+
+                    // Chuyển hướng người dùng đến trang thanh toán
+                    $redirectResponse = redirect($response['payment_url']);
+                    return $redirectResponse;
+                }
                 $redirectResponse =  redirect('thank');
+                
             });
-            // dd($redirectResponse);
+            
             if ($redirectResponse) {
                 return $redirectResponse;
             }
@@ -292,7 +314,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Hàm áp dụng voucher
+    // Hàm áp dụng voucher call api
     public function apply(Request $request)
     {
         $request->validate([
@@ -319,9 +341,7 @@ class OrderController extends Controller
 
         // Tính giảm giá
         $discountAmount = 0;
-        if ($voucher->voucher_type === 'freeship') {
-            $discountAmount = 30;
-        } elseif ($voucher->voucher_type === 'discount') {
+        if ($voucher->voucher_type === 'discount') {
             if ($voucher->discount_type === 'percent') {
                 $discountAmount = $request->order_total * ($voucher->value / 100);
                 if ($voucher->max_discount_value && $discountAmount > $voucher->max_discount_value) {
@@ -346,56 +366,53 @@ class OrderController extends Controller
             ]
         ]);
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Order $order)
+
+    //hàm áp dụng voucher trên server
+    public function applyVoucher($code,$order_total)
     {
-        try {
-            if (!auth('sanctum')->check()) {
-                return response()->json(['message' => 'Người dùng chưa được xác thực'], 401);
+        $voucher = Voucher::where([
+            ['code', '=', $code],
+            ['is_active', '=', 1],
+            ['limit', '>', 0],
+            ['start_date', '<=', Carbon::now()],
+            ['end_date', '>=', Carbon::now()],
+        ])->first();
+
+        // Tính giảm giá
+        $discountAmount = 0;
+        if ($voucher->voucher_type === 'discount') {
+            if ($voucher->discount_type === 'percent') {
+                $discountAmount = $order_total * ($voucher->value / 100);
+                if ($voucher->max_discount_value && $discountAmount > $voucher->max_discount_value) {
+                    $discountAmount = $voucher->max_discount_value;
+                }
+            } elseif ($voucher->discount_type === 'amount') {
+                $discountAmount = $voucher->value;
             }
-
-            $user_id = auth('sanctum')->id();
-
-            // Kiểm tra xem đơn hàng có thuộc về người dùng đã xác thực không
-            if ($order->user_id !== $user_id) {
-                return response()->json(['message' => 'Không có quyền truy cập'], 403);
-            }
-            // Thông tin chi tiết đơn hàng
-            $order->load(['orderDetails']);
-
-
-
-            // Kiểm tra kết quả
-            // dd($orderArray);
-
-
-            // Trả về dữ liệu đơn hàng cùng với chi tiết dưới dạng JSON
-            return response()->json([
-                'order' => $order,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Đã xảy ra lỗi khi lấy thông tin đơn hàng', 'error' => $e->getMessage()], 500);
         }
+        return [
+            'discount_amount' => $discountAmount,
+            'voucher' => [
+                'id' =>$voucher->id,
+                'limit' =>$voucher->limit,
+                'code' => $voucher->code,
+                'title' => $voucher->title,
+                'discount_type' => $voucher->discount_type,
+                'value' => $voucher->value,
+                'max_discount_value' => $voucher->max_discount_value,
+            ]
+        ];
     }
+    
     public function update(UpdateOrderRequest $request, Order $order)
     {
         try {
-            if (!auth('sanctum')->check()) {
-                return response()->json(['message' => 'Không có quyền truy cập'], 403);
-            }
-
-            $user_id = auth('sanctum')->id();
-
-            // Kiểm tra quyền sở hữu
-            if ($order->user_id !== $user_id) {
-                return response()->json(['message' => 'Không có quyền truy cập'], 403);
-            }
+            // dd($request->all());
+            $user_id = Auth::id();           
 
             // Kiểm tra trạng thái không hợp lệ
             if (in_array($order->order_status, [Order::STATUS_CANCELED, Order::STATUS_COMPLETED])) {
-                return response()->json(['message' => 'Đơn hàng không thể cập nhật vì đã hoàn thành hoặc đã bị hủy.'], 400);
+                return back()->with('error','Đơn hàng không thể cập nhật vì đã hoàn thành hoặc đã bị hủy.');
             }
 
             $order_status = $request->input('order_status');
@@ -404,47 +421,49 @@ class OrderController extends Controller
             switch ($order_status) {
                 case Order::STATUS_CANCELED:
                     if (!in_array($order->order_status, [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])) {
-                        return response()->json([
-                            'message' => 'Chỉ có thể hủy đơn hàng khi đơn hàng đang ở trạng thái Đang chờ xác nhận hoặc Đã xác nhận.'
-                        ], 400);
+                        // return response()->json([
+                        //     'message' => 'Chỉ có thể hủy đơn hàng khi đơn hàng đang ở trạng thái Đang chờ xác nhận hoặc Đã xác nhận.'
+                        // ], 400);
+                        return back()->with('error','Chỉ có thể hủy đơn hàng khi đơn hàng đang ở trạng thái Đang chờ xác nhận hoặc Đã xác nhận.');
                     }
 
                     $user_note = $request->input('user_note');
                     $this->handleOrderCancellation($order, $user_note);
 
                     // Cập nhật trạng thái voucher nếu cần
-                    $voucher_logs = VoucherLog::query()
-                        ->where('user_id', $user_id)
-                        ->where('order_id', $order->id)
-                        ->first();
+                    // $voucher_logs = VoucherLog::query()
+                    //     ->where('user_id', $user_id)
+                    //     ->where('order_id', $order->id)
+                    //     ->first();
 
-                    if ($voucher_logs) {
-                        $voucher_logs->update(['action' => 'reverted']);
-                    }
+                    // if ($voucher_logs) {
+                    //     $voucher_logs->update(['action' => 'reverted']);
+                    // }
                     $order->order_status = $order_status;
                     break;
 
                 case Order::STATUS_COMPLETED:
                     if ($order->order_status !== Order::STATUS_SUCCESS) {
-                        return response()->json([
-                            'message' => 'Chỉ có thể hoàn thành đơn hàng khi đơn hàng đang ở trạng thái giao hàng thành công.'
-                        ], 400);
+                        return back()->with('error','Chỉ có thể hoàn thành đơn hàng khi đơn hàng đang ở trạng thái giao hàng thành công.');
+                        // return response()->json([
+                        //     'message' => 'Chỉ có thể hoàn thành đơn hàng khi đơn hàng đang ở trạng thái giao hàng thành công.'
+                        // ], 400);
                     }
                     $order->order_status = $order_status;
                     break;
 
                 default:
-                    return response()->json(['message' => 'Trạng thái không hợp lệ.'], 400);
+                    // return response()->json(['message' => 'Trạng thái không hợp lệ.'], 400);
+                    return back()->with('error' , 'Trạng thái không hợp lệ.');
+
             }
 
             $order->save();
 
-            broadcast(new OrderStatusUpdated($order))->toOthers();
+            // broadcast(new OrderStatusUpdated($order))->toOthers();
 
-            return response()->json([
-                'message' => 'Trạng thái đơn hàng đã được cập nhật thành công.',
-                'order' => $order->load('orderDetails'),
-            ]);
+            return back()->with('success','Hủy đơn hàng thành công');
+
         } catch (\Exception $e) {
             return response()->json(['message' => 'Đã xảy ra lỗi khi lấy thông tin đơn hàng', 'error' => $e->getMessage()], 500);
         }
@@ -456,8 +475,8 @@ class OrderController extends Controller
         // Trả lại số lượng sản phẩm về kho
         foreach ($order->orderDetails as $detail) {
             // Kiểm tra nếu là sản phẩm có biến thể
-            if ($detail->product_variant_id) {
-                $variant = ProductVariant::find($detail->product_variant_id);
+            if ($detail->variant_id) {
+                $variant = Variant::find($detail->variant_id);
                 if ($variant) {
                     $variant->increment('quantity', $detail->quantity);
                 }
@@ -470,6 +489,33 @@ class OrderController extends Controller
             }
         }
     }
+
+    //  protected function handleOrderCancellation(Request $request)
+    // {
+    //     // dd($request->all(),$order->toArray());
+    //     $order = Order::findOrFail($request->order_id)->load('orderDetails');
+    //     // Lưu lý do hủy vào ghi chú
+    //     $order->return_notes = $request->reason;
+    //     // Trả lại số lượng sản phẩm về kho
+    //     foreach ($order->orderDetails as $detail) {
+    //         // Kiểm tra nếu là sản phẩm có biến thể
+    //         if ($detail->product_variant_id) {
+    //             $variant = Variant::find($detail->product_variant_id);
+    //             if ($variant) {
+    //                 $variant->increment('quantity', $detail->quantity);
+    //             }
+    //         }
+    //         //  else {
+    //         //     // Nếu là sản phẩm đơn
+    //         //     $product = Product::find($detail->product_id);
+    //         //     if ($product) {
+    //         //         $product->increment('quantity', $detail->quantity);
+    //         //     }
+    //         // }
+    //     }
+    //     $order->update();
+    //     return back()->with('success','Hủy đơn hàng thành công');
+    // }
     public function searchOrder(Request $request)
     {
         // Validate dữ liệu đầu vào
