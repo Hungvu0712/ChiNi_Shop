@@ -29,15 +29,13 @@ class DashboardController extends Controller
 
         $orderIdsThisMonth = Order::where('created_at', '>=', $startOfMonth)->pluck('id');
 
-        $monthlyRevenue = OrderItem::whereIn('order_id', $orderIdsThisMonth)->sum('total');
+        $monthlyRevenue = OrderItem::whereIn('order_id', $orderIdsThisMonth)->sum('total_price');
 
         $ordersToday = Order::whereDate('created_at', $today)->count();
-
         $activeProducts = Product::where('active', 1)->count();
-
         $userCount = User::count();
 
-        $monthlyRevenueChart = OrderItem::selectRaw('MONTH(orders.created_at) as month, SUM(order_items.total) as total')
+        $monthlyRevenueChart = OrderItem::selectRaw('MONTH(orders.created_at) as month, SUM(order_items.total_price) as total')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->whereYear('orders.created_at', $year)
             ->groupBy(DB::raw('MONTH(orders.created_at)'))
@@ -49,7 +47,6 @@ class DashboardController extends Controller
             $revenuePerMonth[] = $monthlyRevenueChart[$i] ?? 0;
         }
 
-        // 🔹 Đơn hàng theo ngày trong tháng
         $ordersPerDayChart = Order::selectRaw('DAY(created_at) as day, COUNT(*) as total')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
@@ -63,7 +60,6 @@ class DashboardController extends Controller
             $ordersPerDay[] = $ordersPerDayChart[$i] ?? 0;
         }
 
-        // 🔹 Thống kê theo trạng thái
         $statusMap = [
             'delivered'  => 'Đã giao',
             'processing' => 'Đang xử lý',
@@ -83,7 +79,6 @@ class DashboardController extends Controller
         $orderStatusLabels = $orderStatusData->keys();
         $orderStatusCounts = $orderStatusData->values();
 
-        // 🔹 Sản phẩm bán chạy
         $topSellingProducts = OrderItem::select('products.name', DB::raw('SUM(order_items.quantity) as total_quantity'))
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->groupBy('order_items.product_id', 'products.name')
@@ -94,9 +89,12 @@ class DashboardController extends Controller
         $topProductLabels = $topSellingProducts->pluck('name');
         $topProductQuantities = $topSellingProducts->pluck('total_quantity');
 
-        // 🔹 Đơn hàng theo tỉnh/thành
+        // ✅ Sửa JOIN: lấy địa chỉ mặc định theo user_id
         $orderAddresses = DB::table('orders')
-            ->join('addresses', 'orders.address_id', '=', 'addresses.id')
+            ->join('addresses', function ($join) {
+                $join->on('orders.user_id', '=', 'addresses.user_id')
+                    ->where('addresses.is_default', 1);
+            })
             ->select('addresses.address')
             ->get();
 
@@ -177,14 +175,12 @@ class DashboardController extends Controller
         }
 
         $totalOrdersCity = array_sum($cityStats);
-
         $orderPerCityLabels = array_keys($cityStats);
         $orderPerCityCounts = array_values($cityStats);
         $orderPerCityPercentages = array_map(function ($count) use ($totalOrdersCity) {
             return round(($count / $totalOrdersCity) * 100, 2);
         }, $orderPerCityCounts);
 
-        // 🔹 Thống kê sản phẩm theo danh mục
         $productPerCategory = DB::table('products')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->select('categories.name as category_name', DB::raw('COUNT(products.id) as total'))
@@ -213,7 +209,6 @@ class DashboardController extends Controller
             'orderPerCityPercentages',
             'productCategoryLabels',
             'productCategoryCounts',
-
         ));
     }
 }
