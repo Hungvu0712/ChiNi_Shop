@@ -19,26 +19,30 @@ class OrderItemsTableSeeder extends Seeder
 
             for ($i = 0; $i < $itemsCount; $i++) {
                 $product = Product::inRandomOrder()->first();
+                if (!$product) continue;
 
                 $variant = $product->variants()->inRandomOrder()->first();
 
                 $quantity = rand(1, 3);
-                $price = rand(10000, 300000); // Tối đa 300,000 để tránh vượt quá total
+                $price = rand(10000, 300000);
                 $total = $price * $quantity;
 
-                // Nếu vượt giới hạn decimal(8,2) thì skip
                 if ($total > 999999.99) {
                     $i--;
                     continue;
                 }
 
                 OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $product->id,
-                    'variant_id' => $variant?->id,
-                    'quantity'   => $quantity,
-                    'price'      => $price,
-                    'total'      => $total,
+                    'order_id'     => $order->id,
+                    'product_id'   => $product->id,
+                    'variant_id'   => $variant?->id,
+                    'product_name' => $product->name,
+                    'product_img'  => $product->image ?? '',
+                    'attributes'   => $variant ? json_encode($variant->attributes) : null,
+                    'quantity'     => $quantity,
+                    'price'        => $price,
+                    'total_price'  => $total,
+                    'discount'     => 0,
                 ]);
             }
         }
