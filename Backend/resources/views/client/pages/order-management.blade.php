@@ -134,12 +134,14 @@
                 @endforeach
 
                 <div class="order-footer d-flex justify-content-between align-items-center mt-2">
-                    @if (in_array($order->order_status, [\App\Models\Order::STATUS_PENDING, \App\Models\Order::STATUS_CONFIRMED]))
+                    <div>
+                        @if (in_array($order->order_status, [\App\Models\Order::STATUS_PENDING, \App\Models\Order::STATUS_CONFIRMED]))
                         <button class="btn btn-info text-white btn-sm" data-bs-toggle="modal"
                             data-bs-target="#orderCancel{{ $order->id }}">
                             Xác nhận hủy
                         </button>
                     @endif
+                    </div>
 
                     <div>Thành tiền: <span
                             class="total-price text-danger">{{ number_format($order->total, 0, ',', '.') }}₫</span></div>

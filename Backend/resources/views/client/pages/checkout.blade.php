@@ -53,7 +53,7 @@
                     <div class="pageBannerContent text-center">
                         <h2>Thanh toán</h2>
                         <div class="pageBannerPath">
-                            <a href="index.html">Trang chủ</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Thanh toán</span>
+                            <a href="/">Trang chủ</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Thanh toán</span>
                         </div>
                     </div>
                 </div>
@@ -362,8 +362,8 @@
             const cancelBtn = document.querySelector('.btn.btn-outline-secondary');
             const voucherSelect = document.getElementById('voucher_id');
             const subTotalEl = document.getElementById('sub_total');
-            const voucherDisplay = document.querySelector('ul li span:last-child');
-
+            // const voucherDisplay = document.querySelector('ul li span:last-child');
+            // console.log(voucherDisplay);
             let originalSubTotal = parseCurrency(subTotalEl.innerText); // Lưu tổng ban đầu
 
             applyBtn.addEventListener('click', async function(e) {
@@ -398,10 +398,10 @@
                     }
 
                     // Nếu áp dụng thành công
-                    voucherDisplay.innerText = `${formatCurrency(data.discount_amount)} đ`;
+                    // voucherDisplay.innerText = `${formatCurrency(data.discount_amount)} đ`;
                     const newTotal = originalSubTotal - data.discount_amount;
                     subTotalEl.innerText = `${formatCurrency(newTotal)} đ`;
-                    console.log(voucherDisplay.innerText );
+                    // console.log(voucherDisplay.innerText );
                     
                 } catch (err) {
                     alert("Có lỗi xảy ra khi áp dụng voucher.");
@@ -411,7 +411,7 @@
 
             cancelBtn.addEventListener('click', function() {
                 voucherSelect.selectedIndex = 0;
-                voucherDisplay.innerText = `0 đ`;
+                // voucherDisplay.innerText = `0 đ`;
                 subTotalEl.innerText = `${formatCurrency(originalSubTotal)} đ`;
             });
 
