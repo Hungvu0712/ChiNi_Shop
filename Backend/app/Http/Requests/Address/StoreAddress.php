@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Address;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreAddress extends FormRequest
 {
@@ -39,5 +41,14 @@ public function authorize()
             'address.required'          => 'Vui lòng chọn tỉnh/thành, quận/huyện, phường/xã.',
             'specific_address.required' => 'Vui lòng nhập địa chỉ cụ thể.',
         ];
+    }
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            redirect()
+                ->back()
+                ->withErrors($validator, 'addAddress') // Gán lỗi vào error bag addAddress
+                ->withInput()
+        );
     }
 }

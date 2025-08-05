@@ -17,4 +17,7 @@ class Address extends Model
         'specific_address',
         'is_default',
     ];
+    protected $casts = [
+        'is_default' => 'boolean',
+    ];
 }

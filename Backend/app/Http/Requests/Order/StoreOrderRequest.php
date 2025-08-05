@@ -16,27 +16,6 @@ class StoreOrderRequest extends FormRequest
     {
         return true;
     }
-    // public function prepareForValidation()
-    // {
-    //     // Lấy tất cả dữ liệu từ request
-    //     $data = $this->all();
-
-    //     // Loại bỏ các trường null hoặc rỗng (''), kể cả trong mảng con
-    //     $filteredData = array_filter($data, function ($value) {
-    //         if (is_array($value)) {
-    //             // Nếu là mảng, loại bỏ các giá trị null/rỗng trong mảng
-    //             return count(array_filter($value, function ($item) {
-    //                 return $item !== null && $item !== '';
-    //             })) > 0;
-    //         }
-    //         // Nếu không phải mảng, loại bỏ null hoặc chuỗi rỗng
-    //         return $value !== null && $value !== '';
-    //     });
-
-    //     // Ghi đè lại dữ liệu request
-    //     $this->replace($filteredData);
-    // }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -48,7 +27,12 @@ class StoreOrderRequest extends FormRequest
             'payment_method_id' => 'required|integer|exists:payment_methods,id',
             'user_note' => 'nullable|string|max:255',
             'ship_user_name' => 'required|string|max:255',
+            'user_name' => 'required|string|max:255',
             'ship_user_phonenumber' => [
+                'required',
+                'regex:/^0[3|5|7|8|9][0-9]{8}$/',
+            ],
+            'user_phonenumber' => [
                 'required',
                 'regex:/^0[3|5|7|8|9][0-9]{8}$/',
             ],
@@ -71,6 +55,13 @@ class StoreOrderRequest extends FormRequest
             'ship_user_name.required' => 'Vui lòng nhập tên người nhận.',
             'ship_user_name.string' => 'Tên người nhận phải là văn bản.',
             'ship_user_name.max' => 'Tên người nhận không được vượt quá 255 ký tự.',
+
+            'user_name.required' => 'Vui lòng nhập tên khách hàng.',
+            'user_name.string' => 'Tên khách hàng phải là văn bản.',
+            'user_name.max' => 'Tên khách hàng không được vượt quá 255 ký tự.',
+
+            'user_phonenumber.required' => 'Vui lòng nhập số điện thoại khách hàng.',
+            'user_phonenumber.regex' => 'Số điện thoại không đúng định dạng.',
 
             'ship_user_phonenumber.required' => 'Vui lòng nhập số điện thoại người nhận.',
             'ship_user_phonenumber.regex' => 'Số điện thoại không đúng định dạng.',

@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Helper\Product\GetUniqueAttribute;
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
+use App\Models\Address;
 
 class CheckoutController extends Controller
 {
@@ -162,6 +163,12 @@ class CheckoutController extends Controller
                     ['end_date', '>=', Carbon::now()],
                 ])->get();
                 $user = User::with('addresses')->findOrFail($user_id)->makeHidden(['email_verified_at', 'password', 'remember_toke']);
+                $addressDefault = Address::query()->where([
+                    'user_id'=>Auth::id(),
+                    'is_default'=>1
+                ])->first();
+                // dd($addressDefault->toArray());
+                // dd($user->toArray());
                 if ($isCartPurchase) {
                     $errors = [
                         'out_of_stock' => [], // Lỗi sản phẩm hết hàng
@@ -216,6 +223,7 @@ class CheckoutController extends Controller
                 // dd($sub_total1);
                 return view('client.pages.checkout', compact(
                     "user",
+                    'addressDefault',
                     "sub_total1",
                     "total_items",
                     "order_items",
