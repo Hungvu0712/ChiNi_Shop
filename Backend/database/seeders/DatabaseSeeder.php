@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             ProductWithVariantsSeeder::class,
             CartSeeder::class,
-            AddressesTableSeeder::class,
+            // AddressesTableSeeder::class,
             VoucherSeeder::class,
             // OrdersTableSeeder::class,
             // OrderItemsTableSeeder::class,

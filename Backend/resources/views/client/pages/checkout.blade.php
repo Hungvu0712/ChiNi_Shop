@@ -65,7 +65,7 @@
     <section class="checkoutPage">
         <div class="container">
             @php
-                $errorStocks = session('errorStocks');
+$errorStocks = session('errorStocks');
             @endphp
 
             @if (!empty($errorStocks))
@@ -114,22 +114,25 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <form action="{{ route('addAddressFromCheckout') }}" method="POST" class="modal-content p-3">
                                 @csrf
+                                <input type="hidden" name="to_district_id" id="to_district_id">
+                                <input type="hidden" name="to_ward_code" id="to_ward_code">
+
                                 <div class="modal-header">
                                     <h5 class="modal-title">Địa chỉ mới</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-2">
-                                        <input type="text" class="form-control @error('fullname','addAddress') is-invalid @enderror"
+                                        <input type="text" class="form-control @error('fullname', 'addAddress') is-invalid @enderror"
                                             name="fullname" placeholder="Họ và tên" value="{{ old('fullname') }}">
-                                        @error('fullname','addAddress')
+                                        @error('fullname', 'addAddress')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="mb-2">
-                                        <input type="text" class="form-control @error('phone','addAddress') is-invalid @enderror"
+                                        <input type="text" class="form-control @error('phone', 'addAddress') is-invalid @enderror"
                                             name="phone" placeholder="Số điện thoại" value="{{ old('phone') }}">
-                                        @error('phone','addAddress')
+                                        @error('phone', 'addAddress')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -151,17 +154,17 @@
                                         </div>
                                     </div>
                                     <input type="hidden" id="fullAddress" name="address"
-                                        class="form-control @error('address','addAddress') is-invalid @enderror" readonly
+                                        class="form-control @error('address', 'addAddress') is-invalid @enderror" readonly
                                         value="{{ old('address') }}">
-                                    @error('address','addAddress')
+                                    @error('address', 'addAddress')
                                         <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                     <div class="mb-2 mt-2">
                                         <input type="text"
-                                            class="form-control @error('specific_address','addAddress') is-invalid @enderror"
+                                            class="form-control @error('specific_address', 'addAddress') is-invalid @enderror"
                                             name="specific_address" placeholder="Địa chỉ cụ thể"
                                             value="{{ old('specific_address') }}">
-                                        @error('specific_address','addAddress')
+                                        @error('specific_address', 'addAddress')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -325,14 +328,10 @@
                             </div>
 
                             <ul class="list-unstyled">
-                                {{-- <li class="d-flex justify-content-between">
-                                    <span>Voucher:</span>
-                                    <span>0 đ</span>
-                                </li> --}}
                                 <li class="d-flex justify-content-between">
                                     <span>Phí ship:</span>
-                                    <span>30.000 đ</span>
-                                    <input type="hidden" value="30000" name="shipping_fee" id='shipping_fee'>
+                                    <span>{{ number_format($feeShipTotal) }} đ</span>
+                                    <input type="hidden" value="{{ number_format($feeShipTotal) }}" name="shipping_fee" id='shipping_fee'>
                                 </li>
                                 <li class="d-flex justify-content-between fw-bold fs-5">
                                     <span>Tổng tiền:</span>
@@ -353,7 +352,7 @@
 
 @endsection
 @section('script')
-    <script src="{{ asset('address/address.js') }}"></script>
+    <script src="{{ asset('address/addressghn.js') }}"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>

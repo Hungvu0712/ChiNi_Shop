@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('province');
-            $table->string('district');
+            $table->string('to_district_id')->nullable();
+            $table->string('to_ward_code')->nullable();
             $table->string('address');
             $table->string('specific_address');
             $table->longText('note')->nullable();

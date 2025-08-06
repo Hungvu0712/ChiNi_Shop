@@ -10,12 +10,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Helper\Product\GetUniqueAttribute;
 use App\Http\Requests\Checkout\StoreCheckoutRequest;
 use App\Models\Address;
 
 class CheckoutController extends Controller
 {
+    protected $api_key;
+    protected $shop_id;
+
+    public function __construct()
+    {
+        $this->api_key = env('API_KEY');
+        $this->shop_id = env('SHOP_ID');
+    }
     public function validateCartToCheckOut(StoreCheckoutRequest $request)
     {
         try {
@@ -109,7 +116,6 @@ class CheckoutController extends Controller
                         $total_price = $variant->price * $quantity;
                         $sub_total += $total_price;
                         $order_items[] = [
-                            // 'errors' => $errors ?? [],
                             'quantity' => $quantity,
                             'total_price' => $total_price,
                             'product' => $product,
@@ -148,6 +154,8 @@ class CheckoutController extends Controller
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
             // Khởi tạo biến cho tổng tiền và danh sách sản phẩm
             $sub_total1 = 0;
+            $weight = 0;
+            $feeShipTotal = 0;
             $total_items = 0;
             $order_items = [];
             $errors = [];
@@ -164,11 +172,11 @@ class CheckoutController extends Controller
                 ])->get();
                 $user = User::with('addresses')->findOrFail($user_id)->makeHidden(['email_verified_at', 'password', 'remember_toke']);
                 $addressDefault = Address::query()->where([
-                    'user_id'=>Auth::id(),
-                    'is_default'=>1
+                    'user_id' => Auth::id(),
+                    'is_default' => 1
                 ])->first();
-                // dd($addressDefault->toArray());
-                // dd($user->toArray());
+                // dd($addressDefault);
+
                 if ($isCartPurchase) {
                     $errors = [
                         'out_of_stock' => [], // Lỗi sản phẩm hết hàng
@@ -196,17 +204,16 @@ class CheckoutController extends Controller
                         $invalid_items = implode(',', $invalid_items);
                         return redirect()->route('cart.index')->with('error', "Sản phẩm có id=$invalid_items không tồn tại trong giỏ hàng");
                     }
-                    // dd($data);
+
                     foreach ($cart->cartitems as $cart_item) {
-                        // dd($cart_item->id);
                         $quantity = $cart_item->quantity;
                         $variant = $cart_item->productvariant;
                         $product = $cart_item->product;
-                        // dd(in_array($cart_item->id, $data));
                         if (in_array($cart_item->id, $data)) {
                             // Tính toán giá trị sản phẩm và thêm vào danh sách đơn hàng
                             $total_price = $variant->price * $quantity;
                             $sub_total1 += $total_price;
+                            $weight += $variant->weight;
                             $order_items[] = [
                                 'quantity' => $quantity,
                                 'total_price' => $total_price,
@@ -218,9 +225,18 @@ class CheckoutController extends Controller
                         }
                     }
                 }
+                if (!empty($addressDefault)) {
+                    // dd(14421);
+                    $feeShip = $this->calculateShippingFee(
+                        $addressDefault?->to_district_id,
+                        $addressDefault?->to_ward_code,
+                        $weight
+                    ); 
+                    $feeShipTotal = $feeShip['total'];
+                }
+
                 //thành tiền cộng thêm 30000k tiền ship
-                $sub_total1 +=30000;
-                // dd($sub_total1);
+                $sub_total1 += $feeShipTotal;
                 return view('client.pages.checkout', compact(
                     "user",
                     'addressDefault',
@@ -228,12 +244,86 @@ class CheckoutController extends Controller
                     "total_items",
                     "order_items",
                     'data',
-                    'vouchers'
+                    'vouchers',
+                    'feeShipTotal'
                 ));
-                // }
             }
         } catch (\Exception $ex) {
             return response()->json(["message" => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    // lấy ra các dịch vụ vận chuyển
+    public function getAvailableServices($request)
+    {
+        try {
+            $to_district_id = $request["to_district_id"];
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                'shop_id' => (int) $this->shop_id,  // Thay YOUR_SHOP_ID bằng mã shop GHN của bạn
+                'from_district' => 1447, //đan phượng
+                'to_district' => (int) $to_district_id,
+            ]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Token: ' . $this->api_key,
+                'Content-Type: application/json'
+            ]);
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            $services = json_decode($response, true)['data'][0];
+          
+            return  $services;
+        } catch (\Exception $ex) {
+            return response()->json([
+                "message" => $ex->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // tính phí ship vận chuyển
+    public function calculateShippingFee($to_district_id, $to_ward_code, $weight)
+    {
+        try {
+            $request = [
+                'to_district_id' => $to_district_id,
+                'to_ward_code' => $to_ward_code,
+                'weight' => $weight,
+            ];
+
+            $services = $this->getAvailableServices($request);
+          
+            $service_type_id = $services["service_type_id"];
+            $ch = curl_init();
+           
+            curl_setopt($ch, CURLOPT_URL, "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                "shop_id" => (int) $this->shop_id,
+                'service_type_id' => $service_type_id,
+                'to_district_id' => (int) $to_district_id,
+                "to_ward_code" => $to_ward_code,
+                'weight' => (int) $weight,
+            ]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Token: ' . $this->api_key,
+                'Content-Type: application/json'
+            ]);
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $fee = json_decode($response, true)['data'];
+            return  $fee;
+        } catch (\Exception $ex) {
+            return response()->json([
+                "message" => $ex->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

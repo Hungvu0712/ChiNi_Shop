@@ -14,6 +14,8 @@ class Address extends Model
         'fullname',
         'phone',
         'address',
+        'to_district_id',
+        'to_ward_code',
         'specific_address',
         'is_default',
     ];
