@@ -97,7 +97,9 @@
                                                 <img src="{{ $item['productvariant']['variant_image'] }}" style="width: 100px; height: 100px;">
                                             </td>
                                             <td class="product-name">
-                                                {{ $item['product']['name'] }}
+                                                <a href="{{ route('client.shop.show', $item->product->slug) }}">
+                                                    {{ $item['product']['name'] }}
+                                                </a>
                                             </td>
                                             <td>
                                                 @foreach ($item['productvariant']['attributes'] as $attribute)
