@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('addresses', function (Blueprint $table) {
-            $table->dropColumn(['email', 'province', 'district']);
+            $table->dropColumn(['email', 'province']);
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
         Schema::table('addresses', function (Blueprint $table) {
             $table->string('email');
             $table->string('province');
-            $table->string('district');
+            // $table->string('district');
         });
     }
 };

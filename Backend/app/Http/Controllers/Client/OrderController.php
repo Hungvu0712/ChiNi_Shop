@@ -421,39 +421,23 @@ class OrderController extends Controller
             switch ($order_status) {
                 case Order::STATUS_CANCELED:
                     if (!in_array($order->order_status, [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])) {
-                        // return response()->json([
-                        //     'message' => 'Chỉ có thể hủy đơn hàng khi đơn hàng đang ở trạng thái Đang chờ xác nhận hoặc Đã xác nhận.'
-                        // ], 400);
                         return back()->with('error','Chỉ có thể hủy đơn hàng khi đơn hàng đang ở trạng thái Đang chờ xác nhận hoặc Đã xác nhận.');
                     }
 
                     $user_note = $request->input('user_note');
                     $this->handleOrderCancellation($order, $user_note);
 
-                    // Cập nhật trạng thái voucher nếu cần
-                    // $voucher_logs = VoucherLog::query()
-                    //     ->where('user_id', $user_id)
-                    //     ->where('order_id', $order->id)
-                    //     ->first();
-
-                    // if ($voucher_logs) {
-                    //     $voucher_logs->update(['action' => 'reverted']);
-                    // }
                     $order->order_status = $order_status;
                     break;
 
                 case Order::STATUS_COMPLETED:
                     if ($order->order_status !== Order::STATUS_SUCCESS) {
                         return back()->with('error','Chỉ có thể hoàn thành đơn hàng khi đơn hàng đang ở trạng thái giao hàng thành công.');
-                        // return response()->json([
-                        //     'message' => 'Chỉ có thể hoàn thành đơn hàng khi đơn hàng đang ở trạng thái giao hàng thành công.'
-                        // ], 400);
                     }
                     $order->order_status = $order_status;
                     break;
 
                 default:
-                    // return response()->json(['message' => 'Trạng thái không hợp lệ.'], 400);
                     return back()->with('error' , 'Trạng thái không hợp lệ.');
 
             }
@@ -480,198 +464,7 @@ class OrderController extends Controller
                 if ($variant) {
                     $variant->increment('quantity', $detail->quantity);
                 }
-            } else {
-                // Nếu là sản phẩm đơn
-                $product = Product::find($detail->product_id);
-                if ($product) {
-                    $product->increment('quantity', $detail->quantity);
-                }
             }
-        }
-    }
-
-    //  protected function handleOrderCancellation(Request $request)
-    // {
-    //     // dd($request->all(),$order->toArray());
-    //     $order = Order::findOrFail($request->order_id)->load('orderDetails');
-    //     // Lưu lý do hủy vào ghi chú
-    //     $order->return_notes = $request->reason;
-    //     // Trả lại số lượng sản phẩm về kho
-    //     foreach ($order->orderDetails as $detail) {
-    //         // Kiểm tra nếu là sản phẩm có biến thể
-    //         if ($detail->product_variant_id) {
-    //             $variant = Variant::find($detail->product_variant_id);
-    //             if ($variant) {
-    //                 $variant->increment('quantity', $detail->quantity);
-    //             }
-    //         }
-    //         //  else {
-    //         //     // Nếu là sản phẩm đơn
-    //         //     $product = Product::find($detail->product_id);
-    //         //     if ($product) {
-    //         //         $product->increment('quantity', $detail->quantity);
-    //         //     }
-    //         // }
-    //     }
-    //     $order->update();
-    //     return back()->with('success','Hủy đơn hàng thành công');
-    // }
-    public function searchOrder(Request $request)
-    {
-        // Validate dữ liệu đầu vào
-        $request->validate([
-            'type' => 'required|in:phoneNumber,email',
-            'contact' => ['required', function ($attribute, $value, $fail) use ($request) {
-                if ($request->type === 'phoneNumber') {
-                    // Validate số điện thoại Việt Nam
-                    if (!preg_match('/^(0|\+84)[3|5|7|8|9][0-9]{8}$/', $value)) {
-                        $fail('Số điện thoại không hợp lệ.');
-                    }
-                } elseif ($request->type === 'email') {
-                    // Validate email
-                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        $fail('Email không hợp lệ.');
-                    }
-                }
-            }],
-            'order_code' => 'required_if:type,email|string',
-        ]);
-
-        // Nếu type là email, tìm đơn hàng với order_code và email
-        if ($request->type == "email") {
-            $order = Order::where('order_code', $request->order_code)
-                ->where('user_email', $request->contact)
-                ->first();
-        }
-
-        // Nếu type là phoneNumber, tìm đơn hàng với số điện thoại
-        if ($request->type == "phoneNumber") {
-            $order = Order::query()->with('orderDetails')
-                ->where('ship_user_phonenumber', $request->contact)->latest('id')
-                ->get();
-        }
-        // Nếu không tìm thấy đơn hàng
-        if (!$order) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Không tìm thấy đơn hàng, thông tin bạn cung cấp không đúng!',
-            ], 400);
-        }
-
-        // Nếu type là email, kiểm tra OTP
-        if ($request->type == "email") {
-            // Kiểm tra xem người dùng đã yêu cầu OTP trước đó chưa
-            $existingOtp = DB::table('order_otp_verifications')
-                ->where('contact', $request->contact)
-                ->orderBy('expires_at', 'desc')
-                ->first();
-
-            // Nếu đã có OTP trước đó và OTP chưa hết hạn
-            if ($existingOtp && Carbon::parse($existingOtp->expires_at)->isFuture()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Bạn đã yêu cầu mã OTP trước đó. Vui lòng đợi cho đến khi mã OTP cũ hết hiệu lực.',
-                ], 400);
-            }
-
-            // Tạo mã OTP ngẫu nhiên
-            $otpCode = rand(100000, 999999);
-            $otpExpiresAt = Carbon::now()->addMinutes(3); // Mã OTP hết hạn sau 3 phút
-
-            // Lưu mã OTP và thời gian hết hạn vào bảng order_otp_verifications
-            DB::table('order_otp_verifications')->insert([
-                'order_code' => $request->order_code ?? '',
-                'contact' => $request->contact,
-                'otp' => $otpCode,
-                'expires_at' => $otpExpiresAt,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-
-            // Đẩy việc gửi email OTP vào queue
-            SendOtpEmail::dispatch($request->contact, $otpCode);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Mã OTP đã được gửi đến email của bạn.',
-            ], 200);
-        }
-
-        // Trả về thông tin đơn hàng nếu không cần xác minh OTP
-        return response()->json([
-            'status' => 'success',
-            'order' => $order,
-        ], 200);
-    }
-    public function verifyOtp(Request $request)
-    {
-        // Validate dữ liệu đầu vào
-        $request->validate([
-            'contact' => 'required|email',
-            'order_code' => 'required|string',
-            'otp' => 'required|string',
-        ]);
-
-        // Kiểm tra mã OTP trong bảng order_otp_verifications
-        $otpVerification = DB::table('order_otp_verifications')
-            ->where('order_code', $request->order_code)
-            ->where('contact', $request->contact)
-            ->where('otp', $request->otp)
-            ->first();
-
-        // Nếu không tìm thấy OTP hoặc OTP đã hết hạn
-        if (!$otpVerification || Carbon::now()->gt(Carbon::parse($otpVerification->expires_at))) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
-            ], 400);
-        }
-
-        // Tìm đơn hàng sau khi xác minh OTP thành công
-        $order = Order::query()
-            ->with('orderDetails')
-            ->where("order_code", "=", $otpVerification->order_code)
-            ->first();
-
-        // Xác minh OTP thành công
-        return response()->json([
-            'status' => 'success',
-            'order' => $order,
-        ], 200);
-    }
-    // thanh toán lại(chưa xong)
-    function handlePayment(Request $request)
-    {
-        try {
-            // Validate orderId là số và tồn tại trong bảng orders
-            $request->validate([
-                'orderId' => 'required|numeric|exists:orders,id',
-            ]);
-            $user_id = auth('sanctum')->id() ?? null;
-
-            // Tìm đơn hàng dựa vào ID
-            $order = Order::query()
-                ->where('user_id', $user_id)
-                ->where('id', $request->orderId)
-                ->where('payment_method_id', 2)
-                ->where('payment_status', Order::PAYMENT_PENDING)
-                ->first();
-            // Kiểm tra xem đơn hàng có tồn tại không
-            if (!$order) {
-                return response()->json([
-                    'message' => 'Đơn hàng không tồn tại hoặc không thể xử lý thanh toán.'
-                ], Response::HTTP_NOT_FOUND);
-            }
-            // Xử lý thanh toán COD
-            $order->update([
-                'payment_method_id' => 1, // Cập nhật phương thức thanh toán thành COD
-            ]);
-
-            return response()->json([
-                'message' => 'Phương thức thanh toán đã được chuyển sang COD.',
-            ], Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

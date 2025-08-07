@@ -149,6 +149,7 @@ Route::prefix('client')->group(function () {
 Route::controller(AddressController::class)->group(function () {
     Route::get('diachi' ,  'danhsachdiachi')->name('address');
     Route::post('add-address' , 'addAddress')->name('add-address');
+    Route::post('addAddressFromCheckout' , 'addAddressFromCheckout')->name('addAddressFromCheckout');
     Route::put('/update-address/{id}', 'update')->name('update-address');
 });
 
@@ -167,6 +168,7 @@ Route::resource('cart', CartController::class)->middleware('auth');
 Route::post('checkout', [CheckoutController::class,'validateCartToCheckOut'])->name('checkout.validateCartToCheckOut')->middleware('auth');
 Route::get('checkout', [CheckoutController::class,'show'])->name('checkout.show')->middleware('auth');
 Route::resource('order', OrderController::class)->middleware('auth');
+Route::post('addressDefault',[AddressController::class,'addressDefault'])->name('addressDefault');
 // Route::post('order-cancel/{id}', [OrderController::class,'handleOrderCancellation'])->name('order-cancel')->middleware('auth');
 
 Route::post('apply-voucher', [OrderController::class, 'apply'])->name('apply-voucher');
