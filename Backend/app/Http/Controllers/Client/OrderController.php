@@ -412,7 +412,7 @@ class OrderController extends Controller
 
             // Kiểm tra trạng thái không hợp lệ
             if (in_array($order->order_status, [Order::STATUS_CANCELED, Order::STATUS_COMPLETED])) {
-                return back()->with('error','Đơn hàng không thể cập nhật vì đã hoàn thành hoặc đã bị hủy.');
+                return back()->with('error','Đơn hàng không thể đổi trạng thái khi đơn hàng là đã hủy hoặc hoàn thành.');
             }
 
             $order_status = $request->input('order_status');
