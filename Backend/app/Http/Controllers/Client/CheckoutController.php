@@ -225,12 +225,12 @@ class CheckoutController extends Controller
                         }
                     }
                 }
+
                 if (!empty($addressDefault)) {
-                    // dd(14421);
                     $feeShip = $this->calculateShippingFee(
                         $addressDefault?->to_district_id,
                         $addressDefault?->to_ward_code,
-                        $weight
+                        $weight < 1 ? 1 : $weight
                     ); 
                     $feeShipTotal = $feeShip['total'];
                 }
