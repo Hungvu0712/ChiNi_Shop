@@ -252,7 +252,7 @@ $errorStocks = session('errorStocks');
                             </div>
                             <div class="mb-3">
                                 <label for="ship_user_address" class="form-label">Địa chỉ người nhận</label>
-                                <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2">{{ $address->specific_address ?? '' }}  {{ $address->address ?? '' }}</textarea>
+                                <textarea class="form-control" name="ship_user_address" id="ship_user_address" rows="2">{{ $addressDefault->specific_address ?? '' }}  {{ $addressDefault->address ?? '' }}</textarea>
                                 @error('ship_user_address')
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
