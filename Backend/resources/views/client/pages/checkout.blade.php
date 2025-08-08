@@ -67,7 +67,7 @@
             @php
 $errorStocks = session('errorStocks');
             @endphp
-
+            {{-- @dd($errors); --}}
             @if (!empty($errorStocks))
                 <div class="alert alert-danger">
                     <ul>
@@ -331,7 +331,7 @@ $errorStocks = session('errorStocks');
                                 <li class="d-flex justify-content-between">
                                     <span>Phí ship:</span>
                                     <span>{{ number_format($feeShipTotal) }} đ</span>
-                                    <input type="hidden" value="{{ number_format($feeShipTotal) }}" name="shipping_fee" id='shipping_fee'>
+                                    <input type="hidden" value="{{ $feeShipTotal}}" name="shipping_fee" id='shipping_fee'>
                                 </li>
                                 <li class="d-flex justify-content-between fw-bold fs-5">
                                     <span>Tổng tiền:</span>
@@ -401,7 +401,7 @@ $errorStocks = session('errorStocks');
                     const newTotal = originalSubTotal - data.discount_amount;
                     subTotalEl.innerText = `${formatCurrency(newTotal)} đ`;
                     // console.log(voucherDisplay.innerText );
-                    
+
                 } catch (err) {
                     alert("Có lỗi xảy ra khi áp dụng voucher.");
                     console.error(err);

@@ -23,6 +23,7 @@ class StoreOrderRequest extends FormRequest
      */
     public function rules(): array
     {
+        // dd($this->all());
         return [
             'payment_method_id' => 'required|integer|exists:payment_methods,id',
             'user_note' => 'nullable|string|max:255',
@@ -37,7 +38,7 @@ class StoreOrderRequest extends FormRequest
                 'regex:/^0[3|5|7|8|9][0-9]{8}$/',
             ],
             'ship_user_address' => 'required|string|max:255',
-            'shipping_fee' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,2})?$/',
+            'shipping_fee' => 'required',
             'cart_item_ids' => 'required|array',
             'cart_item_ids.*' => 'integer|exists:cart_items,id',
         ];
@@ -74,9 +75,9 @@ class StoreOrderRequest extends FormRequest
             'shipping_method.max' => 'Phương thức vận chuyển không được vượt quá 50 ký tự.',
 
             'shipping_fee.required' => 'Vui lòng nhập phí vận chuyển.',
-            'shipping_fee.numeric' => 'Phí vận chuyển phải là số.',
-            'shipping_fee.min' => 'Phí vận chuyển không được nhỏ hơn 0.',
-            'shipping_fee.regex' => 'Phí vận chuyển không hợp lệ.',
+            // 'shipping_fee.numeric' => 'Phí vận chuyển phải là số.',
+            // 'shipping_fee.min' => 'Phí vận chuyển không được nhỏ hơn 0.',
+            // 'shipping_fee.regex' => 'Phí vận chuyển không hợp lệ.',
 
             'cart_item_ids.required' => 'Vui lòng chọn sản phẩm trong giỏ hàng.',
             'cart_item_ids.array' => 'Giỏ hàng không hợp lệ.',
