@@ -231,7 +231,7 @@ class CheckoutController extends Controller
                         $addressDefault?->to_district_id,
                         $addressDefault?->to_ward_code,
                         $weight < 1 ? 1 : $weight
-                    ); 
+                    );
                     $feeShipTotal = $feeShip['total'];
                 }
 
@@ -274,9 +274,9 @@ class CheckoutController extends Controller
 
             $response = curl_exec($ch);
             curl_close($ch);
-            
+
             $services = json_decode($response, true)['data'][0];
-          
+
             return  $services;
         } catch (\Exception $ex) {
             return response()->json([
@@ -296,10 +296,10 @@ class CheckoutController extends Controller
             ];
 
             $services = $this->getAvailableServices($request);
-          
+
             $service_type_id = $services["service_type_id"];
             $ch = curl_init();
-           
+
             curl_setopt($ch, CURLOPT_URL, "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);

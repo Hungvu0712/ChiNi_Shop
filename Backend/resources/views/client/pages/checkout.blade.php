@@ -332,7 +332,14 @@ $errorStocks = session('errorStocks');
                                     <span>Phí ship:</span>
                                     <span>{{ number_format($feeShipTotal) }} đ</span>
                                     <input type="hidden" value="{{ $feeShipTotal}}" name="shipping_fee" id='shipping_fee'>
+
                                 </li>
+                                @error('shipping_fee')
+                                <li>
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                </li>
+
+                                    @enderror
                                 <li class="d-flex justify-content-between fw-bold fs-5">
                                     <span>Tổng tiền:</span>
                                     <span id="sub_total">{{ number_format($sub_total1) }} đ</span>

@@ -32,6 +32,8 @@ public function addAddress(StoreAddress $request)
         'address' => $request->address,
         'specific_address' => $request->specific_address,
         'is_default' => $isDefault,
+        'to_ward_code'=>$request->to_ward_code,
+        'to_district_id'=>$request->to_district_id,
     ];
 
     Address::create($address);

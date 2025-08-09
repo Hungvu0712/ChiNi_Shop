@@ -288,6 +288,8 @@
         <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <form action="{{ route('add-address') }}" method="POST" class="modal-content p-3">
+                     <input type="hidden" name="to_district_id" id="to_district_id">
+                    <input type="hidden" name="to_ward_code" id="to_ward_code">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title">Địa chỉ mới</h5>
@@ -389,7 +391,7 @@
     </div>
 </div>
 
-<script src="{{ asset('address/address.js') }}"></script>
+<script src="{{ asset('address/addressghn.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn-edit-address').forEach(btn => {
@@ -411,4 +413,4 @@
         });
     });
 </script>
-@endsection 
+@endsection
