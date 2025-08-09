@@ -50,229 +50,87 @@
     <section class="shopPageSection shopPageHasSidebar">
         <div class="container">
             <div class="row">
+                <!-- Sidebar -->
                 <div class="col-lg-4 col-xl-3">
                     <div class="shopSidebar">
+                        {{-- Item Categories --}}
                         <aside class="widget">
                             <h3 class="widgetTitle">Item Categories</h3>
                             <ul>
-                                <li class="menu-item-has-children">
-                                    <a href="javascript:void(0);">Accessories</a>
-                                    <ul>
-                                        <li><a href="shop_full_width.html">Bag</a></li>
-                                        <li><a href="shop_left_sidebar.html">wallet</a></li>
-                                        <li><a href="shop_right_sidebar.html">Hat</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a href="javascript:void(0);">Fashions</a>
-                                    <ul>
-                                        <li><a href="shop_full_width.html">Men</a></li>
-                                        <li><a href="shop_left_sidebar.html">Women</a></li>
-                                        <li><a href="shop_right_sidebar.html">Kids</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="javascript:void(0);">Electronics</a></li>
-                                <li class="menu-item-has-children">
-                                    <a href="javascript:void(0);">Furniture</a>
-                                    <ul>
-                                        <li><a href="shop_full_width.html">Living</a></li>
-                                        <li><a href="shop_left_sidebar.html">Kitchen</a></li>
-                                        <li><a href="shop_right_sidebar.html">Office</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="javascript:void(0);">Shoes</a></li>
-                                <li class="menu-item-has-children">
-                                    <a href="javascript:void(0);">Jewellary</a>
-                                    <ul>
-                                        <li><a href="shop_full_width.html">Gold</a></li>
-                                        <li><a href="shop_left_sidebar.html">Diamond</a></li>
-                                        <li><a href="shop_right_sidebar.html">Imitation</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children">
-                                    <a href="javascript:void(0);">Others</a>
-                                    <ul>
-                                        <li><a href="shop_full_width.html">Electronics</a></li>
-                                        <li><a href="shop_left_sidebar.html">Phone</a></li>
-                                    </ul>
-                                </li>
+                                @foreach ($categories as $category)
+                                    <li>
+                                        <label>
+                                            <input type="radio" name="category_id" class="filter-option"
+                                                value="{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </label>
+                                    </li>
+                                @endforeach
                             </ul>
                         </aside>
+
+                        {{-- Price Range --}}
                         <aside class="widget priceFilter">
                             <h3 class="widgetTitle">Price Range</h3>
                             <div class="shopWidgetWraper">
-                                <div class="priceFilterSlider">
-                                    <form action="#" method="get" class="clearfix">
-                                        <div id="sliderRange"></div>
-                                        <div class="pfsWrap">
-                                            <label>Price</label>
-                                            <span id="amount"></span>
+                                <div id="sliderRange"></div>
+                                <div class="pfsWrap mt-2">
+                                    <label>Giá:</label>
+                                    <span id="amount" class="fw-bold text-danger"></span>
+                                    <input type="hidden" id="min_price" class="filter-option"
+                                        value="{{ request('min_price', 0) }}">
+                                    <input type="hidden" id="max_price" class="filter-option"
+                                        value="{{ request('max_price', 100000000) }}">
+                                </div>
+                            </div>
+                        </aside>
+
+                        {{-- Dynamic Attributes --}}
+                        @foreach ($attributes as $attribute)
+                            <aside class="widget">
+                                <h3 class="widgetTitle">{{ $attribute->name }}</h3>
+                                <div>
+                                    @foreach ($attribute->attributeValues as $value)
+                                        <div class="filterItem">
+                                            <label>
+                                                <input type="checkbox" name="attributes[{{ $attribute->id }}][]"
+                                                    class="filter-option" value="{{ $value->id }}">
+                                                {{ $value->value }}
+                                            </label>
                                         </div>
-                                    </form>
+                                    @endforeach
                                 </div>
-                            </div>
-                        </aside>
-                        <aside class="widget sizeFilter">
-                            <h3 class="widgetTitle">Size</h3>
-                            <div class="productSizeWrap">
-                                <div class="pswItem">
-                                    <input checked type="radio" name="ws_1" value="S" id="ws_1sdfsdf_s">
-                                    <label for="ws_1sdfsdf_s">S</label>
-                                </div>
-                                <div class="pswItem">
-                                    <input type="radio" name="ws_1" value="M" id="ws_1tst_m">
-                                    <label for="ws_1tst_m">M</label>
-                                </div>
-                                <div class="pswItem">
-                                    <input type="radio" name="ws_1" value="L" id="ws_1234_l">
-                                    <label for="ws_1234_l">L</label>
-                                </div>
-                                <div class="pswItem">
-                                    <input type="radio" name="ws_1" value="XL" id="ws_1_xl">
-                                    <label for="ws_1_xl">XL</label>
-                                </div>
-                            </div>
-                        </aside>
-                        <aside class="widget colorFilter">
-                            <h3 class="widgetTitle">Color</h3>
-                            <div class="productColorWrap">
-                                <div class="pcwItem">
-                                    <input type="radio" checked name="wc_1" value="S" id="wc_1_1">
-                                    <label for="wc_1_1"></label>
-                                </div>
-                                <div class="pcwItem pcwi2">
-                                    <input type="radio" name="wc_1" value="M" id="wc_1_2">
-                                    <label for="wc_1_2"></label>
-                                </div>
-                                <div class="pcwItem pcwi3">
-                                    <input type="radio" name="wc_1" value="L" id="wc_1_3">
-                                    <label for="wc_1_3"></label>
-                                </div>
-                                <div class="pcwItem pcwi4">
-                                    <input type="radio" name="wc_1" value="XL" id="wc_1_4">
-                                    <label for="wc_1_4"></label>
-                                </div>
-                                <div class="pcwItem pcwi5">
-                                    <input type="radio" name="wc_1" value="XL" id="wc_1_5">
-                                    <label for="wc_1_5"></label>
-                                </div>
-                            </div>
-                        </aside>
+                            </aside>
+                        @endforeach
+
+                        {{-- Brand Name --}}
                         <aside class="widget">
                             <h3 class="widgetTitle">Brand Name</h3>
                             <ul>
-                                <li><a href="javascript:void(0);">Sony</a></li>
-                                <li><a href="javascript:void(0);">Lenovo</a></li>
-                                <li><a href="javascript:void(0);">Jonson & Handson</a></li>
-                                <li><a href="javascript:void(0);">Apple</a></li>
-                                <li><a href="javascript:void(0);">Google</a></li>
-                                <li><a href="javascript:void(0);">Hp</a></li>
-                                <li><a href="javascript:void(0);">Uniliver</a></li>
+                                @foreach ($brands as $brand)
+                                    <li>
+                                        <label>
+                                            <input type="radio" name="brand_id" class="filter-option" value="{{ $brand->id }}">
+                                            {{ $brand->name }}
+                                        </label>
+                                    </li>
+                                @endforeach
                             </ul>
                         </aside>
                     </div>
                 </div>
+
+                <!-- Product List -->
                 <div class="col-lg-8 col-xl-9">
-                    <div class="row shopProductRow">
-                        <div class="col-lg-12">
-                            <div class="tab-content productViewTabContent" id="productViewTabContent">
-                                <div class="tab-pane show active" id="grid-tab-pane" role="tabpanel"
-                                    aria-labelledby="grid-tab" tabindex="0">
-                                    <div class="row">
-                                        @foreach ($products as $product)
-                                            <div class="col-sm-6 col-xl-4">
-                                                <div class="productItem01" data-product-id="{{ $product->id }}">
-                                                    <div
-                                                        class="pi01Thumb ratio ratio-1x1 position-relative overflow-hidden">
-                                                        <img class="main-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
-                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                                            alt="{{ $product->name }}">
-                                                        <img class="hover-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
-                                                            src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                                            alt="{{ $product->name }}">
-                                                    </div>
-
-
-                                                    <div class="pi01Details">
-                                                        <h3 class="product-name h5 mb-2"><a
-                                                                href="{{ route('client.shop.show', $product->slug) }}">{{ $product->name }}</a>
-                                                        </h3>
-
-
-
-                                                        <div class="d-flex flex-column mt-2 gap-2">
-                                                            <div
-                                                                class="variant-row d-flex flex-wrap justify-content-between align-items-center mb-3">
-                                                                {{-- Màu sắc --}}
-                                                                @if (!empty($product->colorData))
-                                                                    <div
-                                                                        class="color-options d-flex flex-wrap gap-2 align-items-center mb-2 mb-sm-0">
-                                                                        @foreach ($product->colorData as $color)
-                                                                            <span
-                                                                                class="color-picker rounded-circle border border-light shadow-sm"
-                                                                                style="width: 24px; height: 24px; cursor: pointer; background-color: {{ $color['hex'] }};"
-                                                                                data-image="{{ asset($color['image']) }}"
-                                                                                data-name="{{ $color['variant_name'] }}"
-                                                                                data-price="{{ number_format($color['price']) }} VNĐ"
-                                                                                title="{{ ucfirst($color['name']) }}"
-                                                                                data-bs-toggle="tooltip">
-                                                                            </span>
-                                                                        @endforeach
-                                                                    </div>
-                                                                @endif
-
-                                                                {{-- Các thuộc tính khác --}}
-                                                                <div class="attribute-options d-flex flex-wrap gap-2">
-                                                                    @foreach ($product->attributesGroup as $name => $values)
-                                                                        @if ($name != 'Màu sắc')
-                                                                            @foreach ($values as $value)
-                                                                                <span
-                                                                                    class="attribute-item badge bg-light text-dark border border-1">
-                                                                                    {{ $value }}
-                                                                                </span>
-                                                                            @endforeach
-                                                                        @endif
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row g-2">
-                                                            <div class="col-sm-6">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-center h-100 p-2 border rounded bg-light">
-                                                                    <span class="fw-bold fs-5 text-danger">
-                                                                        {{ number_format($product->price ?? 0) }} VNĐ
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <a href="{{ route('client.shop.show', $product->slug) }}"
-                                                                    class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
-                                                                    <i class="fas fa-eye me-2"></i>
-                                                                    Chi tiết
-                                                                </a>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-
-                                        <div class="mt-4 d-flex justify-content-center">
-                                            {{ $products->links() }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+                    <div id="product-list">
+                        @include('client.pages.product_list', ['products' => $products])
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+
     <!-- END: Shop Page Section -->
 @endsection
 @section('script')
@@ -281,7 +139,7 @@
 
         // === Chọn MÀU ===
         document.querySelectorAll('.color-picker').forEach(picker => {
-            picker.addEventListener('click', function() {
+            picker.addEventListener('click', function () {
                 const productId = this.dataset.productId;
                 const color = this.dataset.color;
                 const map = JSON.parse(this.dataset.map || '{}');
@@ -299,7 +157,7 @@
 
         // === Chọn SIZE ===
         document.querySelectorAll('.size-picker').forEach(sizeInput => {
-            sizeInput.addEventListener('change', function() {
+            sizeInput.addEventListener('change', function () {
                 const productId = this.dataset.productId;
                 const size = this.value;
 
@@ -367,5 +225,98 @@
 
             console.log('🎉 DONE UPDATE for', key);
         }
+    </script>
+    <script>
+        $(function () {
+            // --- CÀI ĐẶT THANH TRƯỢT GIÁ ---
+            $("#sliderRange").slider({
+                range: true,
+                min: {{ $priceMin ?? 0 }},
+                max: {{ $priceMax ?? 100000000 }},
+                step: 50000,
+                values: [$("#min_price").val(), $("#max_price").val()],
+                slide: function (event, ui) {
+                    $("#amount").text(
+                        ui.values[0].toLocaleString('vi-VN') + " VND - " +
+                        ui.values[1].toLocaleString('vi-VN') + " VND"
+                    );
+                },
+                stop: function (event, ui) {
+                    // Chỉ cập nhật giá trị và lọc khi người dùng đã kéo xong
+                    $("#min_price").val(ui.values[0]);
+                    $("#max_price").val(ui.values[1]);
+                    fetchProducts();
+                }
+            });
+
+            // Hiển thị giá ban đầu
+            $("#amount").text(
+                $("#sliderRange").slider("values", 0).toLocaleString('vi-VN') + " VND - " +
+                $("#sliderRange").slider("values", 1).toLocaleString('vi-VN') + " VND"
+            );
+
+            // --- HÀM LỌC SẢN PHẨM CHÍNH ---
+            function fetchProducts() {
+                // Gom nhóm các thuộc tính được chọn
+                let attributes = {};
+                $('input[name^="attributes"]:checked').each(function () {
+                    // Trích xuất ID thuộc tính từ name="attributes[3][]"
+                    let attributeId = $(this).attr('name').match(/\[(\d+)\]/)[1];
+
+                    // Khởi tạo mảng nếu chưa có
+                    if (!attributes[attributeId]) {
+                        attributes[attributeId] = [];
+                    }
+
+                    // Thêm giá trị ID vào mảng
+                    attributes[attributeId].push($(this).val());
+                });
+
+                // Gửi request AJAX
+                $.ajax({
+                    url: "{{ route('client.shop.filter') }}",
+                    method: "GET",
+                    data: {
+                        min_price: $("#min_price").val(),
+                        max_price: $("#max_price").val(),
+                        category_id: $('input[name="category_id"]:checked').val() || '',
+                        brand_id: $('input[name="brand_id"]:checked').val() || '',
+                        attributes: attributes // Gửi dưới dạng object
+                    },
+                    beforeSend: function () {
+                        // Tùy chọn: Thêm hiệu ứng loading ở đây
+                        $("#product-list").addClass('loading');
+                    },
+                    success: function (res) {
+                        $("#product-list").html(res);
+                    },
+                    error: function (xhr) {
+                        console.error('Lỗi khi lọc sản phẩm:', xhr.responseText);
+                        alert('Đã có lỗi xảy ra, vui lòng thử lại.');
+                    },
+                    complete: function () {
+                        // Tùy chọn: Bỏ hiệu ứng loading
+                        $("#product-list").removeClass('loading');
+                    }
+                });
+            }
+
+            // --- GỌI HÀM LỌC KHI CÓ THAY ĐỔI ---
+            // Bắt sự kiện thay đổi của tất cả các lựa chọn filter
+            $(document).on("change", ".filter-option", fetchProducts);
+
+            // Xử lý cho phép bỏ chọn radio button
+            $(document).on('click', 'input[type="radio"].filter-option', function () {
+                const name = $(this).attr('name');
+                if ($(this).data('waschecked') == true) {
+                    $(this).prop('checked', false);
+                    $(this).data('waschecked', false);
+                    fetchProducts(); // Lọc lại khi bỏ chọn
+                } else {
+                    $(this).data('waschecked', true);
+                    // Sự kiện "change" đã được gọi ở trên nên không cần gọi fetchProducts() ở đây
+                }
+            });
+        });
     </script>
 @endsection
