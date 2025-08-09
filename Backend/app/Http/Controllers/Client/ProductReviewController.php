@@ -4,42 +4,51 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductReview;
-use App\Models\Product;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ProductReviewController extends Controller
 {
-   public function store(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'rating'     => 'required|integer|min:1|max:5',
-        'review'     => 'required|string|max:1000',
-        'comAttachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-    ]);
+public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'review' => 'required|string|max:1000',
+            'rating' => 'nullable|integer|min:1|max:5',
+        ]);
 
-    // Lưu đánh giá
-    $review = ProductReview::create([
-        'product_id' => $request->product_id,
-        'user_id'    => auth()->id(),
-        'rating'     => $request->rating,
-        'review'     => $request->review,
-    ]);
+        $userId = Auth::id();
+        $productId = $request->product_id;
 
-    // Lưu hình ảnh đính kèm nếu có
-    if ($request->hasFile('comAttachments')) {
-        foreach ($request->file('comAttachments') as $image) {
-            $uploaded = cloudinary()->upload($image->getRealPath())->getSecurePath();
+        $hasPurchased = OrderItem::where('product_id', $productId)
+            ->whereHas('order', function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->where('order_status', 'Hoàn thành')
+                    ->where('payment_status', 'Đã thanh toán');
+            })
+            ->exists();
 
-            $review->images()->create([
-                'image_url' => $uploaded,
-            ]);
+        if (!$hasPurchased) {
+            return back()->with('error', 'Bạn cần mua và thanh toán sản phẩm này để bình luận.');
         }
-    }
 
-    return redirect()
-        ->route('client.shop.show', Product::find($request->product_id)->slug)
-        ->with('success', 'Cảm ơn bạn đã đánh giá sản phẩm!');
-}
+        $alreadyReviewed = ProductReview::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->exists();
+
+        if ($alreadyReviewed) {
+            return back()->with('error', 'Bạn đã bình luận sản phẩm này rồi.');
+        }
+
+        ProductReview::create([
+            'user_id' => $userId,
+            'product_id' => $productId,
+            'review' => $request->review, 
+            'rating' => $request->rating ?? 5,
+        ]);
+
+        return back()->with('success', 'Cảm ơn bạn đã đánh giá sản phẩm!');
+    }
 
 }
