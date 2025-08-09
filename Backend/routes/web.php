@@ -138,6 +138,7 @@ Route::controller(HomeController::class)->group(function () {
 Route::prefix('client')->group(function () {
     Route::get('/products', [ClientProductController::class, 'index'])->name('client.products.index');
     Route::get('/shop', [ShopController::class, 'index'])->name('client.shop.index'); // ✅ Đúng
+    Route::get('/shop/filter', [ShopController::class, 'filter'])->name('client.shop.filter');
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('client.shop.show');
     Route::post('/review', [ProductReviewController::class, 'store'])->name('client.shop.review');
 });
