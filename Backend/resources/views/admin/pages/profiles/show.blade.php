@@ -59,11 +59,9 @@
                 <div class="col-12">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="{{ $user->profile->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}"
-                            alt="Profile Avatar" class="profile-avatar" id="avatar-preview" style="height: 100px">
+                            alt="Profile Avatar" class="profile-avatar" id="avatar-preview" style="height: 100px: border-radius: 50%;">
                         <h1 class="h3 mb-1">{{ $user->name }}</h1>
                         <div class="d-flex">
-                            <span class="badge bg-light text-dark me-2"><i class="bi bi-person-check me-1"></i> Đã xác
-                                thực</span>
                             <span class="badge bg-success"><i class="bi bi-shield-check me-1"></i> Hoạt động</span>
                         </div>
                     </div>
@@ -76,14 +74,14 @@
                     <div class="card stat-card mb-4">
                         <div class="card-body text-center">
                             <h5 class="card-title text-muted">Tổng đơn hàng</h5>
-                            <h2 class="mb-0">42</h2>
+                            <h2 class="mb-0">{{ $totalOrders }}</h2>
                         </div>
                     </div>
 
                     <div class="card stat-card mb-4">
                         <div class="card-body text-center">
                             <h5 class="card-title text-muted">Tổng chi tiêu</h5>
-                            <h2 class="mb-0">12,450,000 ₫</h2>
+                            <h2 class="mb-0">{{ number_format($totalSpent, 0, ',', '.') }}</h2>
                         </div>
                     </div>
                 </div>
@@ -144,32 +142,6 @@
                                 <div class="tab-pane fade" id="activity" role="tabpanel">
                                     <h5 class="mb-4">Lịch sử hoạt động</h5>
                                     <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Thời gian</th>
-                                                    <th>Hoạt động</th>
-                                                    <th>Chi tiết</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>10/06/2023 14:30</td>
-                                                    <td>Đăng nhập</td>
-                                                    <td>IP: 192.168.1.1</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>09/06/2023 10:15</td>
-                                                    <td>Đặt hàng</td>
-                                                    <td>Đơn hàng #DH12345</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>05/06/2023 16:45</td>
-                                                    <td>Cập nhật thông tin</td>
-                                                    <td>Thay đổi địa chỉ</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
                                     </div>
                                 </div>
                             </div>

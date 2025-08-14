@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductAttachmentController extends Controller
 {
+    public function __construct(){
+        
+    }
     public function destroy($id)
     {
         $attachment = ProductAttachment::findOrFail($id);

@@ -15,6 +15,14 @@ use Illuminate\Http\Request;
 
 class OrderAdminController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware('permission.404:order-list')->only('index', 'show');
+        // $this->middleware('permission.404:order-create')->only('create', 'store');
+        // $this->middleware('permission.404:order-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:order-delete')->only('destroy');
+        $this->middleware('permission.404:crudorder')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -198,7 +206,7 @@ class OrderAdminController extends Controller
                 if ($variant) {
                     $variant->increment('quantity', $detail->quantity);
                 }
-            } 
+            }
             // else {
             //     // Nếu là sản phẩm đơn
             //     $product = Product::find($detail->product_id);

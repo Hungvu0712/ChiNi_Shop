@@ -11,6 +11,13 @@ use Illuminate\Http\Request;
 
 class AttributeValueController extends Controller
 {
+    public function __construct(){
+        // $this->middleware('permission.404:attributevalue-list')->only('index', 'show');
+        // $this->middleware('permission.404:attributevalue-create')->only('create', 'store');
+        // $this->middleware('permission.404:attributevalue-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:attributevalue-delete')->only('destroy');
+        $this->middleware('permission.404:crudattributevalue')->only('index', 'show', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */

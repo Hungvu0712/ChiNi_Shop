@@ -42,7 +42,20 @@ class ProfileController extends Controller
     {
         $user = User::with('profile')->findOrFail($id); // Eager load profile
         $roles = $user->roles()->get();
-    return view('admin.pages.profiles.show', compact('user', 'roles'));
+
+        // Lấy đơn hàng của user
+    $orders = \App\Models\Order::where('user_id', $id)
+        ->where('order_status', 'Hoàn thành')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Tính tổng đơn hàng và tổng chi tiêu
+    $totalOrders = $orders->count();
+    $totalSpent  = $orders->sum('total');
+
+    return view('admin.pages.profiles.show', compact('user', 'roles', 'orders',
+        'totalOrders',
+        'totalSpent'));
     }
 
     /**

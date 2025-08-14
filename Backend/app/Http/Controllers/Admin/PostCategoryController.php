@@ -9,6 +9,14 @@ use App\Models\PostCategory;
 
 class PostCategoryController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware('permission.404:postcategory-list')->only('index', 'show');
+        // $this->middleware('permission.404:postcategory-create')->only('create', 'store');
+        // $this->middleware('permission.404:postcategory-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:postcategory-delete')->only('destroy');
+        $this->middleware('permission.404:crudpostcategory')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */
