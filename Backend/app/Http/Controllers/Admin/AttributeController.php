@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class AttributeController extends Controller
 {
+    public function __construct(){
+        $this->middleware('permission.404:attribute-list')->only('index', 'show');
+        $this->middleware('permission.404:attribute-create')->only('create', 'store');
+        $this->middleware('permission.404:attribute-edit')->only('edit', 'update');
+        $this->middleware('permission.404:attribute-delete')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */

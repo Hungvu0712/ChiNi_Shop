@@ -10,6 +10,13 @@ use App\Http\Requests\Banner\UpdateRequest;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 class BannerController extends Controller
 {
+    public function __construct(){
+        // $this->middleware('permission.404:banner-list')->only('index', 'show');
+        // $this->middleware('permission.404:banner-create')->only('create', 'store');
+        // $this->middleware('permission.404:banner-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:banner-delete')->only('destroy');
+        $this->middleware('permission.404:crudbaner')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */

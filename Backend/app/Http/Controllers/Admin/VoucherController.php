@@ -9,6 +9,14 @@ use App\Models\Voucher;
 
 class VoucherController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware('permission.404:voucher-list')->only('index', 'show');
+        // $this->middleware('permission.404:voucher-create')->only('create', 'store');
+        // $this->middleware('permission.404:voucher-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:voucher-delete')->only('destroy');
+        $this->middleware('permission.404:crudvoucher')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */

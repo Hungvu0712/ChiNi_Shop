@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware('permission.404:post-list')->only('index', 'show');
+        // $this->middleware('permission.404:post-create')->only('create', 'store');
+        // $this->middleware('permission.404:post-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:post-delete')->only('destroy');
+        $this->middleware('permission.404:crudpost')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */

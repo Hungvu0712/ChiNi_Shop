@@ -7,6 +7,9 @@ use App\Models\ProductReview;
 
 class ReviewController extends Controller
 {
+    public function __contruct(){
+        $this->middleware('permission.404:review')->only('index', 'destroy');
+    }
     public function index()
     {
         $reviews = ProductReview::with(['product', 'user'])

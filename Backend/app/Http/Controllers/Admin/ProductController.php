@@ -21,6 +21,14 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware('permission.404:product-list')->only('index', 'show');
+        // $this->middleware('permission.404:product-create')->only('create', 'store');
+        // $this->middleware('permission.404:product-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:product-delete')->only('destroy');
+        $this->middleware('permission.404:crudproduct')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     public function index()
     {
         $products = Product::withCount('attachments')->paginate(10);
@@ -96,13 +104,13 @@ class ProductController extends Controller
             $validAttributeItems = collect($request->input("attributeValues"))
                 ->flatMap(fn($items) => $items)
                 ->toArray();
-          
+
             // Duyệt qua từng product_variants
             foreach ($validated['product_variants'] as $variant) {
                 // Kiểm tra tất cả `attribute_item_id` trong biến thể có hợp lệ không
                 $isValidVariant = collect($variant["attribute_item_id"])
                     ->every(fn($item) => in_array($item['id'], $validAttributeItems));
-                
+
                 // Nếu biến thể không hợp lệ, bỏ qua
                 if (!$isValidVariant) {
                     continue;
@@ -208,7 +216,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, $id)
     {
         try {
-            DB::transaction(function () use ($request, $id) {   
+            DB::transaction(function () use ($request, $id) {
                 $product = Product::with('variants')->findOrFail($id);
 
                 $product->update([
@@ -267,7 +275,7 @@ class ProductController extends Controller
                     }
                     // Kiểm tra xem biến thể có tồn tại trong DB không, nếu có thì update, nếu không thì tạo mới
                     if (isset($existingVariants[$keys])) {
-                  
+
                         $productVariant = Variant::findOrFail($existingVariants[$keys]["id"]);
                         // Cập nhật biến thể hiện có
                         Variant::where('id', $existingVariants[$keys]["id"])
@@ -309,7 +317,7 @@ class ProductController extends Controller
                                 break;
                             }
                         }
-                      
+
                         if ($attribute_id !== null) {
 
                             $syncVariant[$attribute_id] = [
@@ -318,21 +326,21 @@ class ProductController extends Controller
                             ];
                         }
                     }
-            
+
                     // Đồng bộ hóa thuộc tính
                     $productVariant->attributes()->sync($syncVariant);
                 }
 
                 // Sau khi xử lý tất cả các biến thể từ yêu cầu, xóa các biến thể không được xử lý
                 if (!empty($existingVariants)) {
-                    
+
                     // Lấy tất cả ID của biến thể hiện có
                     $existingVariantIds = array_column($existingVariants, 'id');
                     // dd($existingVariantIds,$processedVariantIds);
 
                     // Xác định các ID cần xóa
                     $variantIdsToDelete = array_diff($existingVariantIds, $processedVariantIds);
-                    
+
                     if (!empty($variantIdsToDelete)) {
                         // Tách các thuộc tính liên kết trước khi xóa
                         Variant::whereIn('id', $variantIdsToDelete)->each(function ($variant) {

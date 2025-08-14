@@ -9,6 +9,13 @@ use App\Models\Menu;
 
 class MenuController extends Controller
 {
+    public function __construct(){
+        // $this->middleware('permission.404:menu-list')->only('index', 'show');
+        // $this->middleware('permission.404:menu-create')->only('create', 'store');
+        // $this->middleware('permission.404:menu-edit')->only('edit', 'update');
+        // $this->middleware('permission.404:menu-delete')->only('destroy');
+        $this->middleware('permission.404:crudmenu')->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    }
     /**
      * Display a listing of the resource.
      */
