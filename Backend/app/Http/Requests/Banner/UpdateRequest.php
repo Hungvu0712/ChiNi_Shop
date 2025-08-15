@@ -30,7 +30,7 @@ class UpdateRequest extends FormRequest
             ],
             'banner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'link' => 'required|string|max:255',
-            'content' => 'nullable|string',
+            'content' => 'required|string',
             'active' => 'nullable|in:true,false,1,0,on,off',
         ];
     }
@@ -49,7 +49,7 @@ class UpdateRequest extends FormRequest
             'link.required' => 'Link là bắt buộc',
             'link.string' => 'Link phải là chuỗi',
             'link.max' => 'Link không được vượt quá 255 ký tự',
-            
+            'content.required' => 'Nội dung là bắt buộc',
             'content.string' => 'Nội dung phải là chuỗi',
 
             'active.in' => 'Trạng thái không hợp lệ',
