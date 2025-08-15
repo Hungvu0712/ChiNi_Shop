@@ -3,29 +3,133 @@
 @section('title', 'Shop')
 @section('css')
     <style>
-        .color-picker {
-            width: 20px;
-            height: 20px;
-            display: inline-block;
-            border-radius: 50%;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
+         .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
 
-        .color-picker:hover {
-            transform: scale(1.2);
-            border-color: #333;
-        }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
 
-        .color-picker.active {
-            outline: 2px solid black;
-            outline-offset: 1px;
-        }
+    .product-img-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 100%; /* Tỉ lệ 1:1 */
+    }
 
-        .main-img,
-        .hover-img {
-            transition: opacity 0.3s ease;
-        }
+    .product-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-img.hover-img {
+        opacity: 0;
+    }
+
+    .product-card:hover .main-img {
+        opacity: 0;
+    }
+
+    .product-card:hover .hover-img {
+        opacity: 1;
+    }
+
+    /* Nút action */
+    .product-actions a {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: white;
+        color: #333;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .product-actions a:hover {
+        background: #7b9691;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* Màu sắc */
+    .color-option {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: transform 0.2s ease;
+    }
+
+    .color-option:hover {
+        transform: scale(1.2);
+    }
+
+    .color-option.active {
+        border-color: #000;
+    }
+
+    /* Thuộc tính sản phẩm */
+    .attribute-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .attribute-badge:hover {
+        background: #000 !important;
+        color: white !important;
+    }
+
+    /* Section tiêu đề */
+    .section-title {
+        position: relative;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: #7b9691;
+    }
+
+    /* Feature boxes */
+    .feature-box {
+        padding: 2rem 1.5rem;
+        border-radius: 0.5rem;
+        height: 100%;
+        transition: transform 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .feature-box i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #7b9691;
+    }
     </style>
 @endsection
 @section('content')
