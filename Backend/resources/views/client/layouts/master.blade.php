@@ -66,6 +66,10 @@
 
     @include('client.partials.footer')
 
+    <!-- Dialogflow chatbot -->
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger intent="WELCOME" chat-title="Bot Tư Vấn" agent-id="0fc7ed94-b173-499d-852f-d4cb8410ce77" language-code="vi"></df-messenger>
+
     <!-- BEGIN: JS -->
     <!-- jQuery (toastr cần) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -10,7 +10,7 @@
                         </a>
                     </div>
                     <div class="aboutWidContent">
-                        Quis nostrud exercitatin ullamc boris nisi ut aliquip ex ea commodo conse.
+                        {{-- Quis nostrud exercitatin ullamc boris nisi ut aliquip ex ea commodo conse. --}}
                     </div>
                 </aside>
             </div>
@@ -33,40 +33,19 @@
                     </div>
                 </aside>
             </div>
-            <div class="col-lg-2 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <aside class="widget">
-                    <h3 class="widgetTitle">Useful Links</h3>
+                    <h3 class="widgetTitle">Liên hệ với chúng tôi</h3>
                     <ul>
-                        <li><a href="javascript:void(0);">Trang chủ</a></li>
-                        <li><a href="#">Tin tức</a></li>
-                    </ul>
-                </aside>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <aside class="widget twoColMenu">
-                    <h3 class="widgetTitle">Danh mục</h3>
-                    <ul>
-                        <li><a href="#">Men</a></li>
-                        <li><a href="#">Bags</a></li>
-                        <li><a href="#">Women</a></li>
-                        <li><a href="#">Jewellery</a></li>
-                        <li><a href="#">Kids</a></li>
-                        <li><a href="#">Cloths</a></li>
-                        <li><a href="#">Accesories</a></li>
-                        <li><a href="#">Beauty Items</a></li>
+                        <li><a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i> Facebook</a></li>
+                        <li><a href="https://twitter.com/"><i class="fa-brands fa-twitter"></i></a> Twitter</li>
+                        <li><a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin-in"></i> Linkedin</a></li>
+                        <li><a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
                     </ul>
                 </aside>
             </div>
         </div>
         <div class="row footerAccessRow">
-            <div class="col-md-6">
-                <div class="footerSocial">
-                    <a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://twitter.com/"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-lg-12">

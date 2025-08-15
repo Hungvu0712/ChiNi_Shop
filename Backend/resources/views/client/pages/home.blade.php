@@ -3,390 +3,368 @@
 @section('title', 'Trang chủ')
 @section('css')
 <style>
-    /* Nút hành động sản phẩm */
-    .pi01Actions a {
-        width: 40px;
-        height: 40px;
-        background-color: #fff;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #333;
-        transition: all 0.3s ease;
-        font-size: 16px;
-        margin: 0 5px;
+    /* Tối ưu hover sản phẩm */
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 0.5rem;
+        overflow: hidden;
     }
 
-    .pi01Actions a:hover {
-        background-color: #7b9691;
-        color: #fffeff;
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
-    /* Nút mạng xã hội ở footer */
-    .footerSocial a {
-        width: 40px;
-        height: 40px;
-        background-color: #fff;
-        color: #333;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
+    .product-img-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 100%; /* Tỉ lệ 1:1 */
+    }
+
+    .product-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-img.hover-img {
+        opacity: 0;
+    }
+
+    .product-card:hover .main-img {
+        opacity: 0;
+    }
+
+    .product-card:hover .hover-img {
+        opacity: 1;
+    }
+
+    /* Nút action */
+    .product-actions a {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
         align-items: center;
-        font-size: 16px;
-        margin: 0 5px;
+        justify-content: center;
+        border-radius: 50%;
+        background: white;
+        color: #333;
         transition: all 0.3s ease;
         text-decoration: none;
     }
 
-    .footerSocial a:hover {
-        background-color: #7b9691;
-        color: #fffeff;
+    .product-actions a:hover {
+        background: #7b9691;
+        color: white;
+        transform: scale(1.1);
     }
 
-    /* Ảnh sản phẩm chính */
-    .product-preview,
-    .main-image {
-        transition: opacity 0.3s ease-in-out;
-    }
-
-    /* Chấm màu */
-    .color-picker {
-        width: 16px;
-        height: 16px;
-        display: inline-block;
+    /* Màu sắc */
+    .color-option {
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
-        border: 1px solid #dee2e6;
-        cursor: pointer;
-        transition: transform 0.2s ease-in-out;
-    }
-
-    .color-picker:hover {
-        transform: scale(1.2);
-        border-color: #333;
-    }
-
-    .color-picker.active {
-        outline: 2px solid black;
-        outline-offset: 1px;
-    }
-
-    /* Nút thuộc tính (size, chất liệu,...) */
-    .attribute-item {
         display: inline-block;
-        padding: 4px 12px;
-        font-size: 14px;
-        background-color: #f8f8f8;
-        border: 1px solid #ccc;
-        border-radius: 4px;
         cursor: pointer;
-        transition: all 0.2s ease-in-out;
+        border: 2px solid transparent;
+        transition: transform 0.2s ease;
     }
 
-    .attribute-item:hover {
-        background-color: #000;
-        color: #fff;
+    .color-option:hover {
+        transform: scale(1.2);
+    }
+
+    .color-option.active {
         border-color: #000;
     }
 
-    /* Layout hiển thị màu + thuộc tính cùng dòng */
-    .variant-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        /* để xuống dòng nếu không đủ */
-        gap: 0.5rem;
+    /* Thuộc tính sản phẩm */
+    .attribute-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
     }
 
-    .variant-right {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+    .attribute-badge:hover {
+        background: #000 !important;
+        color: white !important;
     }
 
-    /* Responsive fix cho mobile nếu cần */
-    @media (max-width: 576px) {
-        .variant-row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+    /* Section tiêu đề */
+    .section-title {
+        position: relative;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: #7b9691;
+    }
+
+    /* Feature boxes */
+    .feature-box {
+        padding: 2rem 1.5rem;
+        border-radius: 0.5rem;
+        height: 100%;
+        transition: transform 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .feature-box i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #7b9691;
     }
 </style>
-
 @endsection
+
 @include('client.partials.banner')
+
 @section('content')
-<!-- BEGIN: Feature Section -->
-<section class="featureSection">
+<!-- Feature Section - Bootstrap 5 -->
+<section class="py-5 bg-light">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 col-xl-3">
-                <div class="iconBox01">
-                    <i class="ulina-fast-delivery"></i>
-                    <h3>Miễn phí vận chuyển</h3>
-                    <p>
-                        Giao hàng nhanh chóng và hoàn toàn miễn phí cho mọi đơn hàng.
-                    </p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box text-center">
+                    <i class="fas fa-truck"></i>
+                    <h3 class="h5 mb-3">Miễn phí vận chuyển</h3>
+                    <p class="mb-0">Giao hàng nhanh chóng và hoàn toàn miễn phí cho mọi đơn hàng.</p>
                 </div>
             </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="iconBox01">
-                    <i class="ulina-credit-card tm5"></i>
-                    <h3>Thanh toán an toàn</h3>
-                    <p>
-                        Hỗ trợ nhiều phương thức thanh toán bảo mật và tiện lợi.
-                    </p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box text-center">
+                    <i class="fas fa-credit-card"></i>
+                    <h3 class="h5 mb-3">Thanh toán an toàn</h3>
+                    <p class="mb-0">Hỗ trợ nhiều phương thức thanh toán bảo mật và tiện lợi.</p>
                 </div>
             </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="iconBox01">
-                    <i class="ulina-refund tm1"></i>
-                    <h3>Đổi trả dễ dàng</h3>
-                    <p>
-                        Đổi trả sản phẩm nhanh chóng trong vòng 7 ngày nếu có lỗi.
-                    </p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box text-center">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3 class="h5 mb-3">Đổi trả dễ dàng</h3>
+                    <p class="mb-0">Đổi trả sản phẩm nhanh chóng trong vòng 7 ngày nếu có lỗi.</p>
                 </div>
             </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="iconBox01">
-                    <i class="ulina-hours-support t1"></i>
-                    <h3>Hỗ trợ 24/7</h3>
-                    <p>
-                        Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn mọi lúc.
-                    </p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box text-center">
+                    <i class="fas fa-headset"></i>
+                    <h3 class="h5 mb-3">Hỗ trợ 24/7</h3>
+                    <p class="mb-0">Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn mọi lúc.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-
-<!-- END: Feature Section -->
-
-<!-- BEGIN: Latest Arrival Section -->
-<section class="latestArrivalSection">
+<!-- Latest Arrival Section -->
+<section class="py-5">
     <div class="container">
-        {{-- ... --}}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="productCarousel owl-carousel">
-                    @foreach ($products as $product)
-                    <div class="productItem01 card h-100 border-0 shadow-sm">
-                        <div class="pi01Thumb ratio ratio-1x1 position-relative overflow-hidden">
-                            <img class="main-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
-                                src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                alt="{{ $product->name }}">
-                            <img class="hover-img img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
-                                src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
-                                alt="{{ $product->name }}" style="opacity: 0; transition: opacity 0.3s ease;">
-                        </div>
-                        <div class="pi01Details">
-                            <h3 class="product-name h5 mb-2"><a
-                                    href="{{ route('client.shop.show', $product->slug) }}">{{ $product->name }}</a>
-                            </h3>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="section-title">Sản phẩm mới</h2>
+            </div>
+        </div>
 
-                            <div class="d-flex flex-column mt-2 gap-2">
-                                <div
-                                    class="variant-row d-flex flex-wrap justify-content-between align-items-center mb-3">
-                                    {{-- Màu sắc --}}
-                                    @if (!empty($product->colorData))
-                                    <div class="color-options d-flex flex-wrap gap-2 align-items-center mb-2 mb-sm-0">
-                                        @foreach ($product->colorData as $color)
-                                        <span class="color-picker rounded-circle border border-light shadow-sm"
-                                            style="width: 24px; height: 24px; cursor: pointer; background-color: {{ $color['hex'] }};"
-                                            data-image="{{ asset($color['image']) }}"
-                                            data-name="{{ $color['variant_name'] }}"
-                                            data-price="{{ number_format($color['price']) }} VNĐ"
-                                            title="{{ ucfirst($color['name']) }}" data-bs-toggle="tooltip">
-                                        </span>
-                                        @endforeach
-                                    </div>
-                                    @endif
+        <div class="row g-4">
+            @foreach ($products as $product)
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="product-card card h-100 border-0">
+                    <div class="product-img-container position-relative">
+                        <img class="product-img main-img"
+                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
+                             alt="{{ $product->name }}">
+                        <img class="product-img hover-img position-absolute top-0 start-0"
+                             src="{{ asset($product->product_image ?? 'images/no-image.jpg') }}"
+                             alt="{{ $product->name }}">
+                    </div>
 
-                                    {{-- Các thuộc tính khác --}}
-                                    <div class="attribute-options d-flex flex-wrap gap-2">
-                                        @foreach ($product->attributesGroup as $name => $values)
-                                        @if ($name != 'Màu sắc')
-                                        @foreach ($values as $value)
-                                        <span class="attribute-item badge bg-light text-dark border border-1">
-                                            {{ $value }}
-                                        </span>
-                                        @endforeach
-                                        @endif
-                                        @endforeach
-                                    </div>
-                                </div>
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">
+                            <a href="{{ route('client.shop.show', $product->slug) }}" class="text-decoration-none text-dark">{{ $product->name }}</a>
+                        </h5>
 
-                                <div class="row g-2">
-                                    <div class="col-sm-6">
-                                        <div
-                                            class="d-flex align-items-center justify-content-center h-100 p-2 border rounded bg-light">
-                                            <span class="fw-bold fs-5 text-danger">
-                                                {{ number_format($product->price ?? 0) }} VNĐ
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <a href="{{ route('client.shop.show', $product->slug) }}"
-                                            class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-eye me-2"></i>
-                                            Chi tiết
-                                        </a>
-                                    </div>
-                                </div>
-
+                        <div class="mb-3">
+                            @if (!empty($product->colorData))
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @foreach ($product->colorData as $color)
+                                <span class="color-option"
+                                      style="background-color: {{ $color['hex'] }};"
+                                      data-image="{{ asset($color['image']) }}"
+                                      data-name="{{ $color['variant_name'] }}"
+                                      data-price="{{ number_format($color['price']) }} VNĐ"
+                                      title="{{ ucfirst($color['name']) }}"
+                                      data-bs-toggle="tooltip"></span>
+                                @endforeach
                             </div>
+                            @endif
 
+                            @foreach ($product->attributesGroup as $name => $values)
+                                @if ($name != 'Màu sắc')
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    @foreach ($values as $value)
+                                    <span class="attribute-badge bg-light text-dark border">{{ $value }}</span>
+                                    @endforeach
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-danger fw-bold">{{ number_format($product->price ?? 0) }} VNĐ</span>
+                            <a href="{{ route('client.shop.show', $product->slug) }}" class="btn btn-sm btn-outline-dark">
+                                <i class="fas fa-eye me-1"></i> Xem
+                            </a>
                         </div>
                     </div>
-                    @endforeach
                 </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<!-- Deal Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="pe-lg-5">
+                    <h2 class="mb-4">Enjoy Your Youth!</h2>
+                    <p class="lead">Không chỉ là thời trang, CHINISHOP còn là "phòng thí nghiệm" của tuổi trẻ - nơi nghiên cứu và cho ra đời nguồn năng lượng mang tên "Youth".</p>
+                    <p>Chúng mình luôn muốn tạo nên những trải nghiệm vui vẻ, năng động và trẻ trung.</p>
+                    <a href="#" class="btn btn-dark mt-3">Khám phá ngay</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ asset('client/images/home1/7.png') }}" alt="Enjoy Your Youth" class="img-fluid rounded-3 shadow">
             </div>
         </div>
     </div>
 </section>
-<!-- END: Latest Arrival Section -->
 
-
-<!-- BEGIN: Deal Product Section -->
-<section class="dealProductSection">
+<!-- Blog Section -->
+<section class="py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="dealProductContent">
-                    <h2>Enjoy Your Youth!</h2>
-                    <p>Không chỉ là thời trang, CHINISHOP còn là “phòng thí nghiệm” của tuổi trẻ - nơi nghiên cứu và cho
-                        ra đời nguồn năng lượng mang tên “Youth”. Chúng mình luôn muốn tạo nên những trải nghiệm vui vẻ,
-                        năng động và trẻ trung. </p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="dealProductImage">
-                    <img src="{{ asset('client/images/home1/7.png') }}" alt="Ulima Fashionable Jeans" />
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- END: Deal Product Section -->
-
-
-<!-- BEGIN: Blog Section -->
-<section class="blogSection">
-    <div class="container">
-        <div class="row">
+        <div class="row mb-4 align-items-center">
             <div class="col-md-6">
-                <h2 class="secTitle">Tin Tức</h2>
+                <h2 class="section-title">Tin Tức</h2>
             </div>
-            <div class="col-md-6 text-end pdt34">
-                <a href="{{ route('blog') }}" class="ulinaBTN2"><span>Xem tất cả</span></a>
+            <div class="col-md-6 text-md-end">
+                <a href="{{ route('blog') }}" class="btn btn-outline-dark">Xem tất cả</a>
             </div>
         </div>
-        <div class="row masonryGrid mt-3" id="masonryGrid2">
 
-
+        <div class="row g-4">
             @foreach ($blogs as $blog)
             @if ($blog->status == 'published')
-            <div class="col-md-6 col-lg-4 col-xl-3 shafItem">
-                <div class="blogItem02">
-                    <div class="bi01Meta clearfix">
-                        <span><i class="fa-solid fa-folder-open"></i>{{ $blog->postCategory->name }}</span>
-                        <span><i class="fa-solid fa-clock"></i>{{ $blog->created_at->format('d/m/Y') }}</span>
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <img src="{{ $blog->featured_image }}" class="card-img-top" alt="{{ $blog->title }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-secondary">{{ $blog->postCategory->name }}</span>
+                            <small class="text-muted">{{ $blog->created_at->format('d/m/Y') }}</small>
+                        </div>
+                        <h5 class="card-title">
+                            <a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}" class="text-decoration-none text-dark">{{ Str::limit($blog->title, 50) }}</a>
+                        </h5>
+                        <p class="card-text">{{ Str::limit(strip_tags($blog->content), 100) }}</p>
                     </div>
-                    <h3><a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}">{{ $blog->title }}</a>
-                    </h3>
-                    <img src="{{ $blog->featured_image }}" alt=""
-                        style="width: 200px; height: 130px; object-fit: cover; border-radius: 8px;">
-                    <a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}" class="ulinaLink"><i
-                            class="fa-solid fa-angle-right"></i>Chi tiết</a>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="{{ route('blog_detail', ['slug' => $blog->slug]) }}" class="btn btn-sm btn-outline-dark">Đọc tiếp</a>
+                    </div>
                 </div>
             </div>
             @endif
             @endforeach
-
-
-            <div class="col-lg-1 col-sm-1 shafSizer"></div>
         </div>
     </div>
 </section>
-<!-- END: Blog Section -->
 
-<!-- BEGIN: Instagram Section -->
-<section class="instagramSection">
+<!-- Brands Section -->
+<section class="py-5 bg-light">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="secTitle">BRAND HỢP TÁC CHINISHOP</h2>
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>BRAND HỢP TÁC CHINISHOP</h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
 
-                <div class="instagramSlider owl-carousel">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4">
                     @foreach ($brands as $brand)
-                    <a href="#" class="instagramPhoto">
-                        <img src="{{ $brand->brand_image }}" alt="Ulina Instagram" /
-                            style="width: 200px; height: 200px;">
-                    </a>
+                    <div class="brand-item p-3 bg-white rounded shadow-sm">
+                        <img src="{{ $brand->brand_image }}" alt="{{ $brand->name }}" style="height: 80px; width: auto; object-fit: contain;">
+                    </div>
                     @endforeach
                 </div>
-
-
             </div>
         </div>
     </div>
 </section>
-<!-- END: Instagram Section -->
 
 
-
-<!-- BEGIN: Back To Top -->
-<a href="javascript:void(0);" id="backtotop"><i class="fa-solid fa-angles-up"></i></a>
-<!-- END: Back To Top -->
 @endsection
+
 @section('script')
 <script>
+    // Color picker functionality
     document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.color-picker').forEach(picker => {
-                picker.addEventListener('click', function() {
-                    const imageUrl = this.dataset.image;
-                    const name = this.dataset.name;
-                    const price = this.dataset.price;
+        document.querySelectorAll('.color-option').forEach(picker => {
+            picker.addEventListener('click', function() {
+                const imageUrl = this.dataset.image;
+                const name = this.dataset.name;
+                const price = this.dataset.price;
 
-                    const container = this.closest('.productItem01');
+                const card = this.closest('.product-card');
 
-                    const mainImg = container.querySelector('.main-img');
-                    const hoverImg = container.querySelector('.hover-img');
-                    const nameEl = container.querySelector('.product-name a');
-                    const priceEl = container.querySelector('.product-price');
+                // Update images
+                if (imageUrl) {
+                    card.querySelector('.main-img').src = imageUrl;
+                    card.querySelector('.hover-img').src = imageUrl;
+                }
 
-                    if (mainImg && imageUrl) {
-                        mainImg.src = imageUrl;
-                    }
+                // Update name if available
+                if (name && card.querySelector('.card-title a')) {
+                    card.querySelector('.card-title a').innerText = name;
+                }
 
-                    if (hoverImg && imageUrl) {
-                        hoverImg.src = imageUrl;
-                    }
+                // Update price if available
+                if (price && card.querySelector('.text-danger')) {
+                    card.querySelector('.text-danger').innerText = price;
+                }
 
-                    if (nameEl && name) {
-                        nameEl.innerText = name;
-                    }
-
-                    if (priceEl && price) {
-                        priceEl.innerText = price;
-                    }
-
-                    // toggle selected class
-                    container.querySelectorAll('.color-picker').forEach(el => el.classList.remove(
-                        'selected'));
-                    this.classList.add('selected');
-                });
+                // Update active state
+                card.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
             });
         });
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
 
-<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-<df-messenger intent="WELCOME" chat-title="Bot Tư Vấn" agent-id="0fc7ed94-b173-499d-852f-d4cb8410ce77"
-    language-code="vi"></df-messenger>
+
 @endsection
