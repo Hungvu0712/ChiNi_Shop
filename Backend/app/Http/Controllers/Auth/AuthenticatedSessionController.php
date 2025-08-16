@@ -35,6 +35,14 @@ class AuthenticatedSessionController extends Controller
         // Lấy thông tin người dùng mới nhất từ cơ sở dữ liệu
         $user = Auth::user()->fresh();
 
+        // 🚨 Check tài khoản có bị khóa không
+        if (! $user->is_active) {
+            Auth::logout(); // đăng xuất ngay
+            return back()->withErrors([
+                'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!',
+            ]);
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Đăng nhập thành công');
     }
 
@@ -59,4 +67,6 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+
 }

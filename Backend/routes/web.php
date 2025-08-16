@@ -61,6 +61,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin|staff']]
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::get('/users/{user}/roles', [UserController::class, 'edit'])->name('users.roles.edit');
     Route::put('/users/{user}/roles', [UserController::class, 'update'])->name('users.roles.update');
+    Route::put('/users/{id}/block', [UserController::class, 'block'])->name('users.block');
+    Route::put('/users/{id}/unblock', [UserController::class, 'unblock'])->name('users.unblock');
+
     //roles
     Route::resource('roles', RoleController::class);
     Route::get('/roles/{id}/permissions', [RoleController::class, 'editPermissions'])->name('roles.editPermissions');

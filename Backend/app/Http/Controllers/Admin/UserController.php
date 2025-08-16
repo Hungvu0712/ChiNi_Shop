@@ -93,4 +93,23 @@ class UserController extends Controller
     {
         //
     }
+
+    public function block($id)
+{
+    $user = User::findOrFail($id);
+    $user->is_active = false;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Đã khóa tài khoản!');
+}
+
+public function unblock($id)
+{
+    $user = User::findOrFail($id);
+    $user->is_active = true;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Đã mở khóa tài khoản!');
+}
+
 }
