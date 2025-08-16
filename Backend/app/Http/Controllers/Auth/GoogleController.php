@@ -27,10 +27,17 @@ class GoogleController extends Controller
                     'name' => $googleUser->getName(),
                     'google_id' => $googleUser->getId(),
                     'password' => bcrypt("Vuhung@2206"),  // Mật khẩu tự động cho người dùng mới
+                    'is_active' => 1,
                 ]
             );
+            // 🚨 Check user có bị khóa không
+    if (! $user->is_active) {
+        return redirect()->route('login')->withErrors([
+            'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!',
+        ]);
+    }
             $user->assignRole('user');
-            
+
             // Đăng nhập người dùng
             Auth::login($user);
 
