@@ -54,7 +54,7 @@
                     <div class="accessNav">
                         <a href="javascript:void(0);" class="menuToggler"><i class="fa-solid fa-bars"></i>
                             <span>Menu</span></a>
-                        <div class="anSelects">
+                        {{-- <div class="anSelects">
                             <div class="anSelect">
                                 <select name="languages">
                                     <option value="ENG">EN</option>
@@ -63,7 +63,7 @@
                                     <option value="SPA">SP</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="anItems">
                             <div class="anCart">
                                 <a href="{{ route('cart.index')}}"><i

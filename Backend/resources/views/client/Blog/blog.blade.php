@@ -63,9 +63,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="pageBannerContent text-center">
-                        <h2>Latest News</h2>
+                        <h2>Tin tức</h2>
                         <div class="pageBannerPath">
-                            <a href="index.html">Home</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Blog</span>
+                            <a href="index.html">Trang chủ</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Tin tức</span>
                         </div>
                     </div>
                 </div>

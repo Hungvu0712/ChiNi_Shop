@@ -246,7 +246,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="pe-lg-5">
-                    <h2 class="mb-4">Enjoy Your Youth!</h2>
+                    <h2 class="mb-4">Hãy tận hưởng tuổi trẻ của bạn!</h2>
                     <p class="lead">Không chỉ là thời trang, CHINISHOP còn là "phòng thí nghiệm" của tuổi trẻ - nơi nghiên cứu và cho ra đời nguồn năng lượng mang tên "Youth".</p>
                     <p>Chúng mình luôn muốn tạo nên những trải nghiệm vui vẻ, năng động và trẻ trung.</p>
                     <a href="#" class="btn btn-dark mt-3">Khám phá ngay</a>

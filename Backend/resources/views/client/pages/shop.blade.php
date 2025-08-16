@@ -139,9 +139,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="pageBannerContent text-center">
-                        <h2>Shop with Chini</h2>
+                        <h2>Sản phẩm nhà Chini</h2>
                         <div class="pageBannerPath">
-                            <a href="/">Home</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Shop</span>
+                            <a href="/">Trang chủ</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>Sản phẩm</span>
                         </div>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
                     <div class="shopSidebar">
                         {{-- Item Categories --}}
                         <aside class="widget">
-                            <h3 class="widgetTitle">Item Categories</h3>
+                            <h3 class="widgetTitle">Danh mục</h3>
                             <ul>
                                 @foreach ($categories as $category)
                                     <li>
@@ -175,7 +175,7 @@
 
                         {{-- Price Range --}}
                         <aside class="widget priceFilter">
-                            <h3 class="widgetTitle">Price Range</h3>
+                            <h3 class="widgetTitle">Giá</h3>
                             <div class="shopWidgetWraper">
                                 <div id="sliderRange"></div>
                                 <div class="pfsWrap mt-2">
