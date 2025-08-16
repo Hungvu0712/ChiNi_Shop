@@ -40,8 +40,6 @@
             font-size: 1.1rem;
         }
     </style>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
 @section('content')
@@ -360,8 +358,7 @@ $errorStocks = session('errorStocks');
 @endsection
 @section('script')
     <script src="{{ asset('address/addressghn.js') }}"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const applyBtn = document.querySelector('.btn.btn-outline-primary');

@@ -47,26 +47,25 @@ public function addAddress(StoreAddress $request)
 {
     $address = Address::findOrFail($id);
 
-    // Nếu là địa chỉ mặc định mới → cập nhật lại tất cả địa chỉ khác
-    if ($request->has('is_default')) {
-        Address::where('user_id', auth()->id())->update(['is_default' => false]);
-        $address->is_default = true;
-    } else {
-        $address->is_default = false;
-    }
-
-    // Lấy dữ liệu đã được validate
     $data = $request->validated();
 
-    $address->fullname = $data['fullname'];
-    $address->phone = $data['phone'];
-    $address->address = $data['address'];
-    $address->specific_address = $data['specific_address'];
+    // Nếu tick "mặc định"
+    if ($request->boolean('is_default')) {
+        // reset tất cả địa chỉ khác về false
+        Address::where('user_id', auth()->id())
+            ->where('id', '!=', $address->id)
+            ->update(['is_default' => false]);
 
-    $address->save();
+        $data['is_default'] = true;
+    } else {
+        $data['is_default'] = false;
+    }
 
-    return redirect()->route('address');
+    $address->update($data);
+
+    return redirect()->route('address')->with('success', 'Cập nhật địa chỉ thành công');
 }
+
 
     public function addressDefault(Request $request)
     {
