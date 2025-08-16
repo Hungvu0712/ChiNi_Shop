@@ -3,7 +3,7 @@
     <div class="sidebar-logo">
         <div class="logo-header" data-background-color="dark">
             <a href="#" class="logo">
-                <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand" height="20" />
+                <img src="{{ asset('admin/assets/img/logoshop.png') }}" alt="navbar brand" class="navbar-brand" width="100px" style="margin-left: 50px;margin-top:10px"  />
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button>
@@ -78,7 +78,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#orders"
                        aria-expanded="{{ request()->routeIs('orders.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-box"></i>
+                        <i class="fas fa-shopping-cart"></i>
                         <p>Quản lý đơn hàng</p>
                         <span class="caret"></span>
                     </a>
@@ -97,7 +97,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#categories"
                        aria-expanded="{{ request()->routeIs('categories.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-th-large"></i>
+                        <i class="fas fa-list-ol"></i>
                         <p>Quản lý danh mục</p>
                         <span class="caret"></span>
                     </a>
@@ -177,7 +177,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#menu"
                        aria-expanded="{{ request()->routeIs('menus.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-list"></i>
+                        <i class="fas fa-bars"></i>
                         <p>Quản lý Menus</p>
                         <span class="caret"></span>
                     </a>
@@ -197,7 +197,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attributes"
                        aria-expanded="{{ request()->routeIs('attributes.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-tags"></i>
                         <p>Quản lý Attributes</p>
                         <span class="caret"></span>
                     </a>
@@ -217,7 +217,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#attribute_values"
                        aria-expanded="{{ request()->routeIs('attribute_values.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-sliders-h"></i>
+                        <i class="fas fa-cubes"></i>
                         <p>Attribute Values</p>
                         <span class="caret"></span>
                     </a>
@@ -237,7 +237,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#banners"
                        aria-expanded="{{ request()->routeIs('banners.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-sliders-h"></i>
+                        <i class="fas fa-images"></i>
                         <p>Banners</p>
                         <span class="caret"></span>
                     </a>
@@ -258,7 +258,7 @@
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#vouchers"
                        aria-expanded="{{ request()->routeIs('vouchers.*') ? 'true' : 'false' }}">
-                        <i class="fas fa-sliders-h"></i>
+                        <i class="fas fa-ticket-alt"></i>
                         <p>vouchers</p>
                         <span class="caret"></span>
                     </a>
@@ -278,7 +278,7 @@
                 {{-- QL Bình luận --}}
                 <li class="nav-item">
                     <a class="nav-link text-primary fw-semibold" href="{{ route('admin.reviews.index') }}">
-                        <i class="fas fa-comments me-2"></i> Quản lý bình luận
+                        <i class="fas fa-comment-dots"></i> Quản lý bình luận
                     </a>
                 </li>
 

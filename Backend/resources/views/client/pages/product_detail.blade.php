@@ -284,7 +284,7 @@
                                                 <div class="postReview d-flex gap-3 mb-4">
                                                     {{-- Avatar --}}
                                                     <div>
-                                                        <img src="{{ $review->user->avatar ?? asset('images/author/default.jpg') }}"
+                                                        <img src="{{ $review->user->profile->avatar ?? asset('images/author/default.jpg') }}"
                                                             alt="{{ $review->user->name ?? 'Ẩn danh' }}"
                                                             class="rounded-circle" width="60" height="60"
                                                             style="object-fit: cover;">
