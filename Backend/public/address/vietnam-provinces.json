@@ -1,0 +1,33 @@
+{
+  "01": {
+    "name": "Hà Nội",
+    "districts": {
+      "001": {
+        "name": "Ba Đình",
+        "wards": {
+          "00001": "Phúc Xá",
+          "00002": "Trúc Bạch"
+        }
+      },
+      "002": {
+        "name": "Hoàn Kiếm",
+        "wards": {
+          "00003": "Hàng Bạc",
+          "00004": "Hàng Đào"
+        }
+      }
+    }
+  },
+  "79": {
+    "name": "TP. Hồ Chí Minh",
+    "districts": {
+      "760": {
+        "name": "Quận 1",
+        "wards": {
+          "26734": "Bến Nghé",
+          "26737": "Bến Thành"
+        }
+      }
+    }
+  }
+}

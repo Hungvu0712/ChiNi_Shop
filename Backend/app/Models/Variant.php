@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Variant extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'product_id',
+        'sku',
+        'price',
+        'quantity',
+        'weight',
+        'variant_image',
+        'public_variant_image_id',
+        'active',
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+
+    public function attributeValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values', 'variant_id', 'attribute_value_id')
+            ->withPivot('attribute_id');
+    }
+    public function variantAttributeValues()
+    {
+        return $this->hasMany(VariantAttributeValue::class);
+    }
+    
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, "variant_attribute_values")->withPivot("attribute_value_id", 'value');
+    }
+}

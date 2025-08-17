@@ -1,300 +1,159 @@
-<div class="main-header-logo">
-    <!-- Logo Header -->
-    <div class="logo-header" data-background-color="dark">
-        <a href="index.html" class="logo">
-            <img src="{{ asset('admin/assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand"
-                class="navbar-brand" height="20" />
-        </a>
-        <div class="nav-toggle">
-            <button class="btn btn-toggle toggle-sidebar">
-                <i class="gg-menu-right"></i>
-            </button>
-            <button class="btn btn-toggle sidenav-toggler">
-                <i class="gg-menu-left"></i>
-            </button>
-        </div>
-        <button class="topbar-toggler more">
-            <i class="gg-more-vertical-alt"></i>
-        </button>
-    </div>
-    <!-- End Logo Header -->
-</div>
-<!-- Navbar Header -->
-<nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+<nav class="admin-navbar navbar navbar-expand-lg border-bottom">
     <div class="container-fluid">
-        <nav
-            class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <button type="submit" class="btn btn-search pe-1">
-                        <i class="fa fa-search search-icon"></i>
-                    </button>
-                </div>
-                <input type="text" placeholder="Search ..." class="form-control" />
+        <!-- Brand/Home Link -->
+        <div class="navbar-brand">
+            <a href="{{ route('home.index') }}" class="home-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Trang khách hàng">
+                <i class="fas fa-external-link-alt"></i>
+                <span class="d-none d-sm-inline">Về trang khách hàng</span>
+            </a>
+        </div>
+
+        <!-- User Info & Logout Button -->
+        <div class="d-flex align-items-center ms-auto">
+            <div class="user-info me-3">
+                <span class="welcome-text d-none d-md-inline">Xin chào,</span>
+                <span class="username">{{ Auth::user()->name }}</span>
+                <img src="{{ Auth::user()->profile->avatar ?? 'https://via.placeholder.com/40' }}" alt="User Avatar" class="user-avatar rounded-circle ms-2">
             </div>
-        </nav>
 
-        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-            <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                    role="button" aria-expanded="false" aria-haspopup="true">
-                    <i class="fa fa-search"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-search animated fadeIn">
-                    <form class="navbar-left navbar-form nav-search">
-                        <div class="input-group">
-                            <input type="text" placeholder="Search ..." class="form-control" />
-                        </div>
-                    </form>
-                </ul>
-            </li>
-            <li class="nav-item topbar-icon dropdown hidden-caret">
-                <a class="nav-link dropdown-toggle" href="#" id="messageDropdown"
-                    role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                    <i class="fa fa-envelope"></i>
-                </a>
-                <ul class="dropdown-menu messages-notif-box animated fadeIn"
-                    aria-labelledby="messageDropdown">
-                    <li>
-                        <div class="dropdown-title d-flex justify-content-between align-items-center">
-                            Messages
-                            <a href="#" class="small">Mark all as read</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="message-notif-scroll scrollbar-outer">
-                            <div class="notif-center">
-                                <a href="#">
-                                    <div class="notif-img">
-                                        <img src="{{ asset('admin/assets/img/jm_denis.jpg') }}"
-                                            alt="Img Profile" />
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="subject">Jimmy Denis</span>
-                                        <span class="block"> How are you ? </span>
-                                        <span class="time">5 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-img">
-                                        <img src="{{ asset('admin/assets/img/chadengle.jpg') }}"
-                                            alt="Img Profile" />
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="subject">Chad</span>
-                                        <span class="block"> Ok, Thanks ! </span>
-                                        <span class="time">12 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-img">
-                                        <img src="{{ asset('admin/assets/img/mlane.jpg') }}"
-                                            alt="Img Profile" />
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="subject">Jhon Doe</span>
-                                        <span class="block">
-                                            Ready for the meeting today...
-                                        </span>
-                                        <span class="time">12 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-img">
-                                        <img src="{{ asset('admin/assets/img/talha.jpg') }}"
-                                            alt="Img Profile" />
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="subject">Talha</span>
-                                        <span class="block"> Hi, Apa Kabar ? </span>
-                                        <span class="time">17 minutes ago</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <a class="see-all" href="javascript:void(0);">See all messages<i
-                                class="fa fa-angle-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item topbar-icon dropdown hidden-caret">
-                <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-bell"></i>
-                    <span class="notification">4</span>
-                </a>
-                <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
-                    <li>
-                        <div class="dropdown-title">
-                            You have 4 new notification
-                        </div>
-                    </li>
-                    <li>
-                        <div class="notif-scroll scrollbar-outer">
-                            <div class="notif-center">
-                                <a href="#">
-                                    <div class="notif-icon notif-primary">
-                                        <i class="fa fa-user-plus"></i>
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="block"> New user registered </span>
-                                        <span class="time">5 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-icon notif-success">
-                                        <i class="fa fa-comment"></i>
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="block">
-                                            Rahmad commented on Admin
-                                        </span>
-                                        <span class="time">12 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-img">
-                                        <img src="{{ asset('admin/assets/img/profile2.jpg') }}"
-                                            alt="Img Profile" />
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="block">
-                                            Reza send messages to you
-                                        </span>
-                                        <span class="time">12 minutes ago</span>
-                                    </div>
-                                </a>
-                                <a href="#">
-                                    <div class="notif-icon notif-danger">
-                                        <i class="fa fa-heart"></i>
-                                    </div>
-                                    <div class="notif-content">
-                                        <span class="block"> Farrah liked Admin </span>
-                                        <span class="time">17 minutes ago</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <a class="see-all" href="javascript:void(0);">See all notifications<i
-                                class="fa fa-angle-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item topbar-icon dropdown hidden-caret">
-                <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                    <i class="fas fa-layer-group"></i>
-                </a>
-                <div class="dropdown-menu quick-actions animated fadeIn">
-                    <div class="quick-actions-header">
-                        <span class="title mb-1">Quick Actions</span>
-                        <span class="subtitle op-7">Shortcuts</span>
-                    </div>
-                    <div class="quick-actions-scroll scrollbar-outer">
-                        <div class="quick-actions-items">
-                            <div class="row m-0">
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-danger rounded-circle">
-                                            <i class="far fa-calendar-alt"></i>
-                                        </div>
-                                        <span class="text">Calendar</span>
-                                    </div>
-                                </a>
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-warning rounded-circle">
-                                            <i class="fas fa-map"></i>
-                                        </div>
-                                        <span class="text">Maps</span>
-                                    </div>
-                                </a>
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-info rounded-circle">
-                                            <i class="fas fa-file-excel"></i>
-                                        </div>
-                                        <span class="text">Reports</span>
-                                    </div>
-                                </a>
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-success rounded-circle">
-                                            <i class="fas fa-envelope"></i>
-                                        </div>
-                                        <span class="text">Emails</span>
-                                    </div>
-                                </a>
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-primary rounded-circle">
-                                            <i class="fas fa-file-invoice-dollar"></i>
-                                        </div>
-                                        <span class="text">Invoice</span>
-                                    </div>
-                                </a>
-                                <a class="col-6 col-md-4 p-0" href="#">
-                                    <div class="quick-actions-item">
-                                        <div class="avatar-item bg-secondary rounded-circle">
-                                            <i class="fas fa-credit-card"></i>
-                                        </div>
-                                        <span class="text">Payments</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </li>
-
-            <li class="nav-item topbar-user dropdown hidden-caret">
-                <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"
-                    aria-expanded="false">
-                    <div class="avatar-sm">
-                        <img src="{{ asset('admin/assets/img/profile.jpg') }}" alt="..."
-                            class="avatar-img rounded-circle" />
-                    </div>
-                    <span class="profile-username">
-                        <span class="op-7">Hi,</span>
-                        <span class="fw-bold">Hizrian</span>
-                    </span>
-                </a>
-                <ul class="dropdown-menu dropdown-user animated fadeIn">
-                    <div class="dropdown-user-scroll scrollbar-outer">
-                        <li>
-                            <div class="user-box">
-                                <div class="avatar-lg">
-                                    <img src="{{ asset('admin/assets/img/profile.jpg') }}"
-                                        alt="image profile" class="avatar-img rounded" />
-                                </div>
-                                <div class="u-text">
-                                    <h4>Hizrian</h4>
-                                    <p class="text-muted">hello@example.com</p>
-                                    <a href="profile.html"
-                                        class="btn btn-xs btn-secondary btn-sm">View Profile</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">My Profile</a>
-                            <a class="dropdown-item" href="#">My Balance</a>
-                            <a class="dropdown-item" href="#">Inbox</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Account Setting</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Logout</a>
-                        </li>
-                    </div>
-                </ul>
-            </li>
-        </ul>
+            <form method="POST" action="{{ route('logout') }}" class="logout-form">
+                @csrf
+                <button type="submit" class="btn logout-btn" data-bs-toggle="tooltip" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="d-none d-md-inline ms-1">Đăng xuất</span>
+                </button>
+            </form>
+        </div>
     </div>
 </nav>
-<!-- End Navbar -->
+
+<style>
+    /* Navbar Container */
+    .admin-navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 1rem;
+    }
+
+    /* Home Link Styling */
+    .home-link {
+        color: #4e73df;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .home-link:hover {
+        background-color: #f8f9fa;
+        color: #2e59d9;
+    }
+
+    .home-link i {
+        font-size: 1.1rem;
+    }
+
+    /* User Info */
+    .user-info {
+        display: flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .user-info:hover {
+        background-color: #e9ecef;
+    }
+
+    .welcome-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .username {
+        color: #343a40;
+        font-weight: 600;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border: 2px solid #dee2e6;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+        color: #dc3545;
+        background-color: transparent;
+        border: none;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .logout-btn:hover {
+        background-color: #f8d7da;
+        color: #dc3545;
+    }
+
+    .logout-btn:focus {
+        box-shadow: none;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .username {
+            max-width: 100px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .welcome-text {
+            display: none;
+        }
+
+        .username {
+            max-width: 80px;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+        }
+
+        .logout-btn {
+            padding: 0.5rem;
+        }
+
+        .logout-btn span {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Required Libraries -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    })
+</script>
