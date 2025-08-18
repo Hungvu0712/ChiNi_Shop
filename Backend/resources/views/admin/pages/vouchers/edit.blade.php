@@ -44,9 +44,6 @@
                         <option value="discount"
                             {{ old('voucher_type', $voucher->voucher_type) == 'discount' ? 'selected' : '' }}>Discount
                         </option>
-                        <option value="freeship"
-                            {{ old('voucher_type', $voucher->voucher_type) == 'freeship' ? 'selected' : '' }}>Freeship
-                        </option>
                     </select>
                     @error('voucher_type')
                         <div style="color: red">{{ $message }}</div>
@@ -73,9 +70,6 @@
                             <option value="percent"
                                 {{ old('discount_type', $voucher->discount_type) == 'percent' ? 'selected' : '' }}>Phần
                                 trăm</option>
-                            <option value="other"
-                                {{ old('discount_type', $voucher->discount_type) == 'other' ? 'selected' : '' }}>Loại khác
-                            </option>
                         </select>
                         @error('discount_type')
                             <div style="color: red">{{ $message }}</div>
@@ -162,6 +156,7 @@
                 var type = $('#voucher_type').val();
                 if (type === 'discount') {
                     $('#discount_fields').show();
+                    toggleMaxDiscount(); // gọi luôn khi đổi loại
                 } else {
                     $('#discount_fields').hide();
                 }
@@ -172,22 +167,20 @@
                 var $maxDiscountGroup = $('#max-discount-group');
                 var $maxDiscountInput = $('#max_discount_value');
 
-                if (discountType === 'amount' || discountType === 'percent') {
+                if (discountType === 'percent') {
+                    $maxDiscountGroup.show();
+                } else {
                     $maxDiscountGroup.hide();
                     $maxDiscountInput.val(0);
-                } else {
-                    $maxDiscountGroup.show();
                 }
             }
 
             // Gọi khi load trang
             toggleVoucherFields();
-            toggleMaxDiscount();
 
             // Gọi khi thay đổi
             $('#voucher_type').change(toggleVoucherFields);
             $('#discount_type').change(toggleMaxDiscount);
         });
     </script>
-
 @endsection
