@@ -3,25 +3,20 @@
 namespace App\Http\Requests\Vouchers;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
 
-    // Các quy tắc kiểm tra dữ liệu nhập vào
     public function rules()
     {
         $rules = [
             'code' => 'required|unique:vouchers,code,' . $this->id,
             'title' => 'required|string|max:255',
-            'voucher_type' => 'required|in:discount,freeship',
+            'voucher_type' => 'required|in:discount', // ✅ Chỉ còn discount
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'limit' => 'required|integer|min:1',
@@ -29,17 +24,14 @@ class StoreRequest extends FormRequest
         ];
 
         if ($this->voucher_type === 'discount') {
-            $rules['discount_type'] = 'required|in:amount,percent,other'; // Cho phép "other" nếu bạn có
+            $rules['discount_type'] = 'required|in:amount,percent';
             $rules['value'] = 'required|numeric|min:1';
 
             if ($this->discount_type === 'percent') {
-                $rules['value'] .= '|max:100';
-                $rules['max_discount_value'] = 'nullable|numeric|min:0'; // không required
-            } elseif ($this->discount_type === 'amount') {
-                $rules['max_discount_value'] = 'nullable|numeric|min:0'; // cũng không required
+                $rules['value'] .= '|max:100'; // % không vượt quá 100
+                $rules['max_discount_value'] = 'required|numeric|min:0'; // ✅ bắt buộc khi % 
             } else {
-                // Chỉ bắt buộc nếu là loại discount_type khác (ví dụ: "custom")
-                $rules['max_discount_value'] = 'required|numeric|min:0|gte:value';
+                $rules['max_discount_value'] = 'nullable|numeric|min:0'; // ✅ không bắt buộc khi amount
             }
 
             $rules['min_order_value'] = 'nullable|numeric|min:0';
@@ -48,8 +40,6 @@ class StoreRequest extends FormRequest
         return $rules;
     }
 
-
-    // Tùy chỉnh thông báo lỗi bằng tiếng Việt
     public function messages()
     {
         return [
@@ -63,12 +53,12 @@ class StoreRequest extends FormRequest
             'value.required' => 'Vui lòng nhập giá trị giảm.',
             'value.numeric' => 'Giá trị giảm phải là số.',
             'value.min' => 'Giá trị giảm phải lớn hơn 0.',
-            'value.max' => 'Giá trị phần trăm tối đa là 100%.', // ✅ Thêm dòng này!
+            'value.max' => 'Giá trị phần trăm tối đa là 100%.',
             'min_order_value.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
             'min_order_value.min' => 'Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0.',
+            'max_discount_value.required' => 'Vui lòng nhập mức giảm tối đa khi chọn giảm theo phần trăm.',
             'max_discount_value.numeric' => 'Mức giảm tối đa phải là số.',
             'max_discount_value.min' => 'Mức giảm tối đa phải lớn hơn hoặc bằng 0.',
-            'max_discount_value.gte' => 'Mức giảm tối đa phải lớn hơn hoặc bằng giá trị giảm.',
             'start_date.required' => 'Vui lòng chọn ngày bắt đầu.',
             'start_date.date' => 'Ngày bắt đầu không hợp lệ.',
             'end_date.required' => 'Vui lòng chọn ngày kết thúc.',

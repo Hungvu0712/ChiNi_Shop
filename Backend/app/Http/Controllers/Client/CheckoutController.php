@@ -255,6 +255,7 @@ class CheckoutController extends Controller
     // lấy ra các dịch vụ vận chuyển
     public function getAvailableServices($request)
     {
+        // dd(1233121);
         try {
             $to_district_id = $request["to_district_id"];
 
