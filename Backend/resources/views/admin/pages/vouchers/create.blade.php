@@ -41,7 +41,6 @@
                     <label class="form-label">Loại voucher:</label>
                     <select name="voucher_type" id="voucher_type" class="form-select">
                         <option value="discount" {{ old('voucher_type') == 'discount' ? 'selected' : '' }}>Discount</option>
-                        <option value="freeship" {{ old('voucher_type') == 'freeship' ? 'selected' : '' }}>Freeship</option>
                     </select>
                     @error('voucher_type')
                         <div style="color: red">{{ $message }}</div>
@@ -64,8 +63,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Giá trị giảm:</label>
-                        <input type="number" step="0.01" name="value" class="form-control"
-                            value="{{ old('value') }}" placeholder="Giá trị giảm">
+                        <input type="number" step="0.01" name="value" class="form-control" value="{{ old('value') }}"
+                            placeholder="Giá trị giảm">
                         @error('value')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
@@ -80,7 +79,7 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3" id="max-discount-group">
+                    <div class="mb-3 d-none" id="max-discount-group">
                         <label class="form-label">Mức giảm tối đa:</label>
                         <input type="number" step="0.01" name="max_discount_value" id="max_discount_value"
                             class="form-control" value="{{ old('max_discount_value') }}">
@@ -88,7 +87,6 @@
                             <div style="color: red">{{ $message }}</div>
                         @enderror
                     </div>
-
                 </div>
 
                 <div class="mb-3">
@@ -116,8 +114,7 @@
                 </div>
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" name="is_active" value="1"
-                        {{ old('is_active', 1) ? 'checked' : '' }}>
+                    <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
                     <label class="form-check-label">Kích hoạt</label>
                     @error('is_active')
                         <div style="color: red">{{ $message }}</div>
@@ -139,7 +136,7 @@
 
 @section('script')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Summernote khởi tạo
             $('#summernote').summernote({
                 height: 300
@@ -161,11 +158,11 @@
                 var $maxDiscountGroup = $('#max-discount-group');
                 var $maxDiscountInput = $('#max_discount_value');
 
-                if (discountType === 'amount' || discountType === 'percent') {
-                    $maxDiscountGroup.hide();
-                    $maxDiscountInput.val(0);
+                if (discountType === 'percent') {
+                    $maxDiscountGroup.removeClass('d-none');
                 } else {
-                    $maxDiscountGroup.show();
+                    $maxDiscountGroup.addClass('d-none');
+                    $maxDiscountInput.val('');
                 }
             }
 
@@ -174,14 +171,13 @@
             toggleMaxDiscount();
 
             // Gọi khi thay đổi
-            $('#voucher_type').change(function() {
+            $('#voucher_type').change(function () {
                 toggleVoucherFields();
             });
 
-            $('#discount_type').change(function() {
+            $('#discount_type').change(function () {
                 toggleMaxDiscount();
             });
         });
     </script>
-
 @endsection
