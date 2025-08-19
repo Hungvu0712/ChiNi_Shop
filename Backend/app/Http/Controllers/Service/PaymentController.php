@@ -16,7 +16,6 @@ class PaymentController extends Controller
     public function createPayment($request)
     {
         try {
-            // dd($request->toArray());
             $vnp_TmnCode = $this->vnp_TmnCode;
             $vnp_HashSecret = $this->vnp_HashSecret;
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
