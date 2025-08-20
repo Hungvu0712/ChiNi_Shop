@@ -79,7 +79,6 @@ class OrderController extends Controller
 
                 if ($isCartPurchase && Auth::check()) {
                     list($quantity, $price, $errorStocks) = $this->addCartItemsToOrder($data, $user, $order);
-                    // dd($this->addCartItemsToOrder($data, $user, $order));
                     $totalQuantity += $quantity;
                     $totalPrice += $price;
                 }
@@ -152,10 +151,12 @@ class OrderController extends Controller
                         'limit'=> $voucher['limit']-1,
                     ]);
                 }
-                $totalPrice +=30000;
+                // dd($order->toArray());
+                $totalPrice +=$order->shipping_fee;
+                // dd(max($totalPrice, $order->shipping_fee));
                 $order->update([
                     'total_quantity' => $totalQuantity,
-                    'total' => max($totalPrice, $order->shipping_fee),
+                    'total' => $totalPrice,
                 ]);
                 // Thực hiện thanh toán nếu chọn phương thức online (VNPay)
                 if ($data['payment_method_id'] == 2) {
