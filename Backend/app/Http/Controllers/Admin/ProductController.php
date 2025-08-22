@@ -31,7 +31,7 @@ class ProductController extends Controller
     }
     public function index()
     {
-        $products = Product::withCount('attachments')->paginate(10);
+        $products = Product::withCount('attachments')->get();
         return view('admin.pages.products.index', compact('products'));
     }
 

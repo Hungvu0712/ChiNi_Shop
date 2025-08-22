@@ -24,7 +24,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'tags' => 'required|string|max:255',
-            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:5120',
             'removed_attachments' => 'nullable|string',

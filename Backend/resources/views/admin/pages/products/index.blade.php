@@ -30,7 +30,7 @@
             <tbody>
                 @foreach ($products as $index => $product)
                 <tr>
-                    <td>{{ $products->firstItem() + $index }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>
                         @if ($product->product_image)
                         <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px"
@@ -73,7 +73,7 @@
             </tbody>
 
         </table>
-        {{ $products->links() }}
+        {{-- {{ $products->links() }} --}}
         <!-- Pagination -->
     </div>
 </div>
