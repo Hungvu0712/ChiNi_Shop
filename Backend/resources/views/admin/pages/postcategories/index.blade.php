@@ -63,26 +63,23 @@
 <script>
     new DataTable('#listPostCategories');
 
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const slug = this.getAttribute('data-slug');
-                console.log(slug);
+         $('#listPostCategories').on('click', '.delete-button', function () {
+    const id = $(this).data('id');
 
-                Swal.fire({
-                    title: 'Bạn có chắc chắn?',
-                    text: "Thông tin này xã bị xóa!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Có, xóa nó!',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${slug}`).submit();
-                    }
-                });
-            });
-        });
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xoá?',
+        text: 'Thao tác này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xoá',
+        cancelButtonText: 'Huỷ bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    });
+});
 </script>
 @endsection

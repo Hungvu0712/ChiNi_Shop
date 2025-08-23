@@ -473,7 +473,7 @@
     </script>
 
     {{-- Product variant --}}
-    <script> 
+    <script>
         var attributeValues = @json($attributeValues);
         var attributeNames = @json($attributeNames);
         document.addEventListener('DOMContentLoaded', function () {
@@ -534,7 +534,7 @@
                                                                         <th>SKU</th>
                                                                         <th>Giá</th>
                                                                         <th>Số lượng</th>
-                                                                        <th>Cân nặng</th>
+                                                                        <th>Trọng lượng</th>
                                                                         <th>Ảnh</th>
                                                                         <th>Xóa</th>
                                                                     </tr>
@@ -558,7 +558,7 @@
                                                                     <td><input type="text" class="form-control" name="product_variants[${rowIndex}][sku]" placeholder="SKU"></td>
                                                                     <td><input type="text" class="form-control" name="product_variants[${rowIndex}][price]" placeholder="Giá"></td>
                                                                     <td><input type="text" class="form-control" name="product_variants[${rowIndex}][quantity]" placeholder="Số lượng"></td>
-                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" placeholder="Cân nặng"></td>
+                                                                    <td><input type="text" class="form-control" name="product_variants[${rowIndex}][weight]" placeholder="gram"></td>
                                                                     <td><input type="file" class="form-control" name="product_variants[${rowIndex}][variant_image]"></td>
                                                                     <td><button type="button" class="btn btn-danger btn-sm delete-variant">Xóa</button></td>
                                                                 </tr>
