@@ -29,6 +29,8 @@ class HomeController extends Controller
             'variants.variantAttributeValues.attributeValue.attribute'
         ])
         ->where('active', 1)
+        ->orderBy('created_at', 'desc')
+        ->limit(12)
         ->get();
 
         $colorMap = config('custom.color_map', []);

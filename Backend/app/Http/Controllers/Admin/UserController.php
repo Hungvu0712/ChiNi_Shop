@@ -97,6 +97,9 @@ class UserController extends Controller
     public function block($id)
 {
     $user = User::findOrFail($id);
+    if ($user->hasRole('admin')) {
+        return redirect()->back()->with('error', 'Không thể khóa tài khoản admin!');
+    }
     $user->is_active = false;
     $user->save();
 

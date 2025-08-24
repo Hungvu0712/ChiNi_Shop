@@ -30,7 +30,7 @@
             <tbody>
                 @foreach ($products as $index => $product)
                 <tr>
-                    <td>{{ $products->firstItem() + $index }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>
                         @if ($product->product_image)
                         <img src="{{ asset($product->product_image ?? 'images/default.jpg') }}" width="100px"
@@ -73,7 +73,7 @@
             </tbody>
 
         </table>
-        {{ $products->links() }}
+        {{-- {{ $products->links() }} --}}
         <!-- Pagination -->
     </div>
 </div>
@@ -90,25 +90,24 @@
     new DataTable('#listproduct');
 </script>
 <script>
-    document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
+    $('#listproduct').on('click', '.delete-button', function () {
+    const id = $(this).data('id');
 
-                Swal.fire({
-                    title: 'Bạn có chắc chắn muốn xoá?',
-                    text: 'Thao tác này không thể hoàn tác!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Xoá',
-                    cancelButtonText: 'Huỷ bỏ'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${id}`).submit();
-                    }
-                });
-            });
-        });
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xoá?',
+        text: 'Thao tác này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xoá',
+        cancelButtonText: 'Huỷ bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    });
+});
+
 </script>
 @endsection

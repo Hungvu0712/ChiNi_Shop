@@ -204,7 +204,7 @@
                                 <button type="button" class="qtyBtn btnPlus">+</button>
                             </div>
                             <button type="button" class="ulinaBTN add-to-cart-btn" data-product-id="{{ $product->id }}">
-                                <span>Add to Cart</span>
+                                <span>Thêm giỏ hàng</span>
                             </button>
 
                         </div>
@@ -406,12 +406,7 @@
                                                                     style="max-height: 280px; object-fit: cover;" />
                                                                 <img src="{{ $product->product_image }}" alt="{{ $product->name }}"
                                                                     style="max-height: 280px; object-fit: cover;" />
-                                                                <div class="pi01Actions">
-                                                                    <a href="#" class="pi01Cart"><i class="fa-solid fa-shopping-cart"></i></a>
-                                                                    <a href="#" class="pi01QuickView"><i
-                                                                            class="fa-solid fa-arrows-up-down-left-right"></i></a>
-                                                                    <a href="#" class="pi01Wishlist"><i class="fa-solid fa-heart"></i></a>
-                                                                </div>
+
                                                                 <div class="productLabels clearfix">
                                                                     <span class="plSale">{{ $product->brand->name ?? '' }}</span>
                                                                 </div>

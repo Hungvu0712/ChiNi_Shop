@@ -50,18 +50,7 @@
                     @enderror
                 </div>
 
-                {{-- 🔥 BỌC KHỐI CÁC TRƯỜNG GIẢM GIÁ --}}
-                <div id="discount_fields">
-                    <div class="mb-3">
-                        <label class="form-label">Giá trị giảm:</label>
-                        <input type="number" step="0.01" name="value" class="form-control"
-                            value="{{ old('value', $voucher->value) }}" placeholder="Giá trị giảm">
-                        @error('value')
-                            <div style="color: red">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
+                <div class="mb-3">
                         <label class="form-label">Kiểu giảm:</label>
                         <select name="discount_type" id="discount_type" class="form-select">
                             <option value="amount"
@@ -72,6 +61,16 @@
                                 trăm</option>
                         </select>
                         @error('discount_type')
+                            <div style="color: red">{{ $message }}</div>
+                        @enderror
+                    </div>
+                {{-- 🔥 BỌC KHỐI CÁC TRƯỜNG GIẢM GIÁ --}}
+                <div id="discount_fields">
+                    <div class="mb-3">
+                        <label class="form-label">Giá trị giảm:</label>
+                        <input type="number" step="0.01" name="value" class="form-control"
+                            value="{{ old('value', $voucher->value) }}" placeholder="Giá trị giảm">
+                        @error('value')
                             <div style="color: red">{{ $message }}</div>
                         @enderror
                     </div>

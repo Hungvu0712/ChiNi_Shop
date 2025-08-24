@@ -217,9 +217,9 @@ class ShopController extends Controller
         // ======================= LOGIC LỌC BIẾN THỂ VỚI ĐIỀU KIỆN IF MỚI =======================
         // Kiểm tra xem 'attributes' có tồn tại và có phải là một mảng không rỗng hay không
         if ($request->has('attributes') && is_array($request->input('attributes')) && !empty($request->input('attributes'))) {
-            
+
             Log::info('--> [THÀNH CÔNG] Đã đi vào khối lệnh IF để lọc thuộc tính.');
-            
+
             $attributes = array_filter($request->input('attributes'));
 
             if (!empty($attributes)) {
@@ -262,7 +262,7 @@ class ShopController extends Controller
         }
         // ======================= KẾT THÚC LOGIC MỚI =======================
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(12)->appends(($request->query()));
         Log::info('==================== KẾT THÚC YÊU CẦU LỌC. TÌM THẤY ' . $products->total() . ' SẢN PHẨM ====================');
 
         $this->attachProductAttributes($products);

@@ -16,7 +16,7 @@
 
     <div class="card-body">
         <a href="{{ route('banners.create') }}" class="btn btn-success mb-5">Thêm Banners</a>
-        <table id="listattribute" class="display" style="width:100%">
+        <table id="listbanner" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th>STT</th>
@@ -71,27 +71,26 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    new DataTable('#listattribute');
+    new DataTable('#listbanner');
 
 
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const userId = this.getAttribute('data-id');
-                Swal.fire({
-                    title: 'Bạn có chắc chắn?',
-                    text: "Thông tin này sẽ bị xóa!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Có, xóa nó!',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${userId}`).submit();
-                    }
-                });
-            });
-        });
+         $('#listbanner').on('click', '.delete-button', function () {
+    const id = $(this).data('id');
+
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xoá?',
+        text: 'Thao tác này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xoá',
+        cancelButtonText: 'Huỷ bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    });
+});
 </script>
 @endsection

@@ -53,3 +53,6 @@
             </div>
             @endforeach
         </div>
+<div class="mb-3" style="margin-top: 50px">
+    {{ $products->links() }}
+</div>
