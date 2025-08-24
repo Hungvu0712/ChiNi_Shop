@@ -110,8 +110,7 @@
                                                     @endphp
 
                                                     @if (mb_strtolower($attribute['name']) === 'color' || mb_strtolower($attribute['name']) === 'màu')
-                                                    <span class="color-dot"
-                                                        style="display:inline-block;width:15px;height:15px;border-radius:50%;background-color:{{ $colorMap[$value] ?? '#ccc' }};border:1px solid #000;">
+                                                    <span class="color-dot">
                                                     </span>
                                                     <span>{{ $attribute['pivot']['value'] }}</span>
                                                     @else
@@ -383,7 +382,7 @@
                     if (data.errors.insufficient_stock) {
                         data.errors.insufficient_stock.forEach(item => {
                             toastr.warning(item.message || 'Số lượng sản phẩm không đủ.');
-                            
+
                             // Cập nhật lại số lượng
                             const qtyInput = document.getElementById(`qty_${item.cart_id}`);
                             if (qtyInput) qtyInput.value = item.max_quantity;
@@ -397,7 +396,7 @@
                             };
                             const subtotalDisplay = document.getElementById('subtotal_display');
                             console.log(subtotalDisplay,item.sub_total);
-                            
+
                             if (subtotalDisplay) {
                                 subtotalDisplay.textContent = data.sub_total.toLocaleString() + ' VND';
                             }

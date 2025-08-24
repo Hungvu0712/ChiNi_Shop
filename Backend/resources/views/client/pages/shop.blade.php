@@ -336,8 +336,8 @@
             $("#sliderRange").slider({
                 range: true,
                 min: {{ $priceMin ?? 0 }},
-                max: {{ $priceMax ?? 100000000 }},
-                step: 50000,
+                max: {{ $priceMax ?? 1000000 }},
+                step: 10000,
                 values: [$("#min_price").val(), $("#max_price").val()],
                 slide: function (event, ui) {
                     $("#amount").text(
@@ -381,6 +381,7 @@
                     url: "{{ route('client.shop.filter') }}",
                     method: "GET",
                     data: {
+                        
                         min_price: $("#min_price").val(),
                         max_price: $("#max_price").val(),
                         category_id: $('input[name="category_id"]:checked').val() || '',

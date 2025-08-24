@@ -27,7 +27,7 @@ class UpdateProductRequest extends FormRequest
         'category_id' => 'required|exists:categories,id',
         'brand_id' => 'required|exists:brands,id',
         'tags' => 'required|string|max:255',
-        'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg,avif|max:2048',
         'attachments' => 'nullable|array',
         'attachments.*' => 'file|max:5120',
         'removed_attachments' => 'nullable|string',
@@ -48,7 +48,7 @@ class UpdateProductRequest extends FormRequest
         'product_variants.*.price' => 'required|numeric|min:0',
         'product_variants.*.quantity' => 'required|integer|min:0',
         'product_variants.*.weight' => 'nullable|string|max:50',
-        'product_variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'product_variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg,avif|max:2048',
 
         'variant_keys' => 'nullable|array',
         'variant_keys.*' => 'nullable|string',

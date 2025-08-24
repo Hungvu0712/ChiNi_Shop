@@ -64,7 +64,7 @@
     new DataTable('#listPostCategories');
 
          $('#listPostCategories').on('click', '.delete-button', function () {
-    const id = $(this).data('id');
+    const slug = $(this).data('slug');
 
     Swal.fire({
         title: 'Bạn có chắc chắn muốn xoá?',
@@ -77,9 +77,10 @@
         cancelButtonText: 'Huỷ bỏ'
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById(`delete-form-${id}`).submit();
+            document.getElementById(`delete-form-${slug}`).submit();
         }
     });
 });
+
 </script>
 @endsection

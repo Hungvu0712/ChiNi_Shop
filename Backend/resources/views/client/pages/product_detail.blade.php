@@ -204,7 +204,7 @@
                                 <button type="button" class="qtyBtn btnPlus">+</button>
                             </div>
                             <button type="button" class="ulinaBTN add-to-cart-btn" data-product-id="{{ $product->id }}">
-                                <span>Add to Cart</span>
+                                <span>Thêm giỏ hàng</span>
                             </button>
 
                         </div>
