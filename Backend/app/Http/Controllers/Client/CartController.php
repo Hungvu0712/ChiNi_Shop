@@ -29,7 +29,7 @@ class CartController extends Controller
                 "cartitems.product",
                 "cartitems.productvariant.attributes",
             ])->first();
-            if (!$cart) {
+            if ( $cart->cartitems->isEmpty()) {
                 return view('client.pages.cart', ['message' => "Hiện tại bạn không có sản phẩm nào"]);
             } else {
                 $cart->toArray();

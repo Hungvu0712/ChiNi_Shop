@@ -150,6 +150,9 @@ class CheckoutController extends Controller
     {
         try {
             $idString = $request->all();
+            if (empty($idString)) {
+                return redirect()->route('home.index')->with('error','Lỗi query string id cart không tồn tại');
+            }
             $data = explode(',', $idString['cart_item_ids']);
             $isCartPurchase = isset($idString['cart_item_ids']) && is_array($data) && count($data) > 0;
             // Khởi tạo biến cho tổng tiền và danh sách sản phẩm
