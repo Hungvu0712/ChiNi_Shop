@@ -2,36 +2,24 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Events\OrderStatusUpdated;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
-use App\Mail\OtpEmail;
-use App\Models\Product;
 use App\Models\Voucher;
 use App\Models\CartItem;
-use App\Jobs\SendOtpEmail;
-use App\Models\VoucherLog;
-use App\Models\OrderDetail;
-use App\Models\VoucherMeta;
-use App\Models\VoucherUser;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
-use App\Notifications\OrderConfirmationNotification;
 use App\Http\Controllers\Service\PaymentController;
 use App\Models\OrderItem;
 use App\Models\Variant;
-use Cloudinary\Transformation\Argument\Range\Range;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -65,7 +53,6 @@ class OrderController extends Controller
     {
         try {
             $data = $request->all();
-            // dd($data);
             $isCartPurchase = isset($data['cart_item_ids']) && is_array($data['cart_item_ids']) && count($data['cart_item_ids']) > 0;
             $user = $this->getUser($data);
 
@@ -137,9 +124,7 @@ class OrderController extends Controller
                 if (isset($data['voucher_code']) && Auth::check()) {
                     // dd(142412);
                     $voucher_result = $this->applyVoucher($data['voucher_code'], $totalPrice);
-                    // if (isset($voucher_result['error'])) {
-                    //     return response()->json(['message' => $voucher_result['error']], Response::HTTP_BAD_REQUEST);
-                    // }
+                 
                     $totalPrice -= $voucher_result['discount_amount'];
                     $voucher = $voucher_result['voucher'];
                     // Cập nhật voucher_id và voucher_discount cho order
@@ -176,7 +161,12 @@ class OrderController extends Controller
             }
         } catch (\Exception $ex) {
             DB::rollBack();
-            return response()->json(['message' => $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Lỗi xảy ra khi xử lý thêm sản phẩm', [
+                'message' => $ex->getMessage(),
+                'file'    => $ex->getFile(),
+                'line'    => $ex->getLine(),
+                'trace'   => $ex->getTraceAsString(),
+            ]);
         }
     }
 
@@ -185,7 +175,7 @@ class OrderController extends Controller
     {
         if (Auth::check()) {
             $user_id = Auth::id();
-            $user = User::findOrFail($user_id)->load('addresses');
+            $user = User::findOrFail($user_id)->load(['addresses','profile']);
         } else {
             $user = [
                 'id' => null,
@@ -201,7 +191,6 @@ class OrderController extends Controller
     // Hàm tạo đơn hàng
     protected function createOrder($data, $user)
     {
-        // dd($user->toArray());
         return Order::create([
             'order_code' => "CHINI_SHOP". Str::upper(Str::random(6)),
             'user_id' => $user['id'],
@@ -210,8 +199,8 @@ class OrderController extends Controller
             'total' => 0.00,
             'user_name' => $user['name'],
             'user_email' => $user['email'],
-            'user_phonenumber' => $user['addresses'][0]['phone'],
-            'user_address' => $user['addresses'][0]['address'],
+            'user_phonenumber' =>$data['user_phonenumber'] ?? $user['profile']['phone'],
+            'user_address' => $user['profile']['address'] ?? 'Chưa có địa chỉ',
             'user_note' => $data['user_note'] ?? '',
             'ship_user_name' => $data['ship_user_name'],
             'ship_user_phonenumber' => $data['ship_user_phonenumber'],
@@ -444,9 +433,6 @@ class OrderController extends Controller
             }
 
             $order->save();
-
-            // broadcast(new OrderStatusUpdated($order))->toOthers();
-
             return back()->with('success','Hủy đơn hàng thành công');
 
         } catch (\Exception $e) {

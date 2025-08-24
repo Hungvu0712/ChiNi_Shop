@@ -69,8 +69,7 @@
                                 <a href="{{ route('cart.index')}}"><i class="fa-solid fa-shopping-cart"></i>
                                     <span id='cart-count'>{{ isset($countCart) ? $countCart : 0 }}</span>
                                 </a>
-
-                                @if (isset($cart['cartitems']))
+                                @if (isset($cart['cartitems']) && !$cart['cartitems']->isEmpty())
                                 <div class="cartWidgetArea">
                                     @foreach ($cart['cartitems']->take(2) as $item)
                                     <div class="cartWidgetProduct">
