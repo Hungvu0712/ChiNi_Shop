@@ -213,13 +213,17 @@ class ShopController extends Controller
         if ($request->filled('brand_id')) {
             $query->where('brand_id', $request->brand_id);
         }
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+
 
         // ======================= LOGIC LỌC BIẾN THỂ VỚI ĐIỀU KIỆN IF MỚI =======================
         // Kiểm tra xem 'attributes' có tồn tại và có phải là một mảng không rỗng hay không
         if ($request->has('attributes') && is_array($request->input('attributes')) && !empty($request->input('attributes'))) {
-            
+
             Log::info('--> [THÀNH CÔNG] Đã đi vào khối lệnh IF để lọc thuộc tính.');
-            
+
             $attributes = array_filter($request->input('attributes'));
 
             if (!empty($attributes)) {
@@ -255,10 +259,10 @@ class ShopController extends Controller
                     $query->where('id', -1);
                 }
             } else {
-                 Log::info('--> Mảng attributes rỗng sau khi dùng array_filter.');
+                Log::info('--> Mảng attributes rỗng sau khi dùng array_filter.');
             }
         } else {
-             Log::info('--> [THẤT BẠI] Không đi vào được khối lệnh IF. Kiểm tra điều kiện has(), is_array(), !empty().');
+            Log::info('--> [THẤT BẠI] Không đi vào được khối lệnh IF. Kiểm tra điều kiện has(), is_array(), !empty().');
         }
         // ======================= KẾT THÚC LOGIC MỚI =======================
 
