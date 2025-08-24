@@ -67,47 +67,47 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-    document.querySelectorAll('.delete-button-menu').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.getAttribute('data-id');
-            Swal.fire({
-                title: 'Bạn có chắc chắn?',
-                text: "Menu này sẽ bị xóa",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Có, xóa nó!',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(`delete-form-${menuId}`).submit();
-                }
-            });
+
+    <script>
+document.addEventListener('click', function (e) {
+    // Xoá menu cha
+    if (e.target.classList.contains('delete-button-menu')) {
+        const menuId = e.target.getAttribute('data-id');
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Menu này sẽ bị xóa",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Có, xóa nó!',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${menuId}`).submit();
+            }
         });
-    });
+    }
+
+    // Xoá menu con
+    if (e.target.classList.contains('delete-button')) {
+        const childId = e.target.getAttribute('data-id');
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Menu con này sẽ bị xóa",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Có, xóa nó!',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${childId}`).submit();
+            }
+        });
+    }
+});
 </script>
 
-<script>
-    document.querySelectorAll('.delete-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const childId = this.getAttribute('data-id');
-            Swal.fire({
-                title: 'Bạn có chắc chắn?',
-                text: "Menu con này sẽ bị xóa",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Có, xóa nó!',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(`delete-form-${childId}`).submit();
-                }
-            });
-        });
-    });
-</script>
 @endsection

@@ -266,7 +266,7 @@ class ShopController extends Controller
         }
         // ======================= KẾT THÚC LOGIC MỚI =======================
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(12)->appends(($request->query()));
         Log::info('==================== KẾT THÚC YÊU CẦU LỌC. TÌM THẤY ' . $products->total() . ' SẢN PHẨM ====================');
 
         $this->attachProductAttributes($products);

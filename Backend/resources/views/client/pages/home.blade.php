@@ -178,7 +178,7 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="section-title">Sản phẩm</h2>
+                <h2 class="section-title">Sản phẩm mới nhất</h2>
             </div>
         </div>
 

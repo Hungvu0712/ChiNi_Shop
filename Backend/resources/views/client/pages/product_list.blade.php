@@ -47,9 +47,11 @@
                 </div>
             </div>
         </div>
+
     @endforeach
 </div>
 <div class="mb-3" style="margin-top: 50px">
     {{-- Thay vì chỉ gọi links() --}}
     {{ $products->appends(request()->query())->withPath(route('client.shop.index'))->links() }}
 </div>
+

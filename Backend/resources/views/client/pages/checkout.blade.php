@@ -94,7 +94,7 @@ $errorStocks = session('errorStocks');
                                     <input class="form-check-input" type="radio" name="address_id"
                                         value="{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }}>
                                     <label class="form-check-label w-100">
-                                        <strong>Nhà riêng</strong> <br>
+                                        {{-- <strong>Nhà riêng</strong> <br> --}}
                                         {{ $address->specific_address }} - {{ $address->address }} <br>
                                         <small>Người nhận: {{ $address->fullname }} - {{ $address->phone }}</small>
                                     </label>
@@ -358,7 +358,7 @@ $errorStocks = session('errorStocks');
 @endsection
 @section('script')
     <script src="{{ asset('address/addressghn.js') }}"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const applyBtn = document.querySelector('.btn.btn-outline-primary');

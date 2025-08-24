@@ -12,7 +12,7 @@
 <div class="container mt-4">
     <h2 class="mb-4"><i class="fas fa-comments text-primary"></i> Danh sách bình luận</h2>
 
-    <table class="table table-bordered" id="listattribute">
+    <table class="table table-bordered" id="listreview">
         <thead>
             <tr>
                 <th>ID</th>
@@ -64,26 +64,25 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    new DataTable('#listattribute');
+    new DataTable('#listreview');
 
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function () {
-                const reviewId = this.getAttribute('data-id');
-                Swal.fire({
-                    title: 'Bạn có chắc chắn?',
-                    text: "Bình luận này sẽ bị xóa vĩnh viễn!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Có, xóa!',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${reviewId}`).submit();
-                    }
-                });
-            });
-        });
+         $('#listPosts').on('click', '.delete-button', function () {
+    const id = $(this).data('id');
+
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xoá?',
+        text: 'Thao tác này không thể hoàn tác!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Xoá',
+        cancelButtonText: 'Huỷ bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    });
+});
 </script>
 @endsection
