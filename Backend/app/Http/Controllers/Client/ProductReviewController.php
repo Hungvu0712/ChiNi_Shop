@@ -16,6 +16,7 @@ public function store(Request $request)
             'product_id' => 'required|exists:products,id',
             'review' => 'required|string|max:1000',
             'rating' => 'nullable|integer|min:1|max:5',
+            'comAttachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $userId = Auth::id();
@@ -41,12 +42,25 @@ public function store(Request $request)
             return back()->with('error', 'Bạn đã bình luận sản phẩm này rồi.');
         }
 
-        ProductReview::create([
+
+
+       $review =  ProductReview::create([
             'user_id' => $userId,
             'product_id' => $productId,
-            'review' => $request->review, 
+            'review' => $request->review,
             'rating' => $request->rating ?? 5,
         ]);
+
+        // Lưu hình ảnh đính kèm nếu có
+    if ($request->hasFile('comAttachments')) {
+        foreach ($request->file('comAttachments') as $image) {
+            $uploaded = cloudinary()->upload($image->getRealPath())->getSecurePath();
+
+            $review->images()->create([
+                'image_url' => $uploaded,
+            ]);
+        }
+    }
 
         return back()->with('success', 'Cảm ơn bạn đã đánh giá sản phẩm!');
     }

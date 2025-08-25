@@ -28,6 +28,6 @@ class ProductReview extends Model
 
     public function images()
     {
-        return $this->hasMany(\App\Models\ReviewImage::class, 'review_id');
+        return $this->hasMany(\App\Models\ReviewImage::class, 'review_id', 'id');
     }
 }
