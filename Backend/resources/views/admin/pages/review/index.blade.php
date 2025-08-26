@@ -66,7 +66,7 @@
 <script>
     new DataTable('#listreview');
 
-         $('#listPosts').on('click', '.delete-button', function () {
+         $('#listreview').on('click', '.delete-button', function () {
     const id = $(this).data('id');
 
     Swal.fire({

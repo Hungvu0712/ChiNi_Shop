@@ -95,6 +95,7 @@ class VoucherController extends Controller
         // Gán các trường khác
         $voucher->code = $request->input('code', $voucher->code);
         if ($request->has('name')) $voucher->name = $request->input('name');
+        if ($request->has('title')) $voucher->title = $request->input('title');
         if ($request->has('description')) $voucher->description = $request->input('description');
 
         if ($request->has('start_date')) $voucher->start_date = $request->input('start_date');
