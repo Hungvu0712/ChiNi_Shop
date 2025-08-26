@@ -52,7 +52,7 @@
                             method="post">
                             @csrf
                             @method('delete')
-                            <button type="submit" data-slug="{{ $post->id }}" class="btn btn-danger delete-button"><i
+                            <button type="button" data-slug="{{ $post->id }}" class="btn btn-danger delete-button"><i
                                     class="fa-solid fa-trash"></i>
                             </button>
                         </form>
