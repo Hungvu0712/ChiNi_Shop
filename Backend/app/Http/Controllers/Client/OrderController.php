@@ -119,10 +119,10 @@ class OrderController extends Controller
                         return $redirectResponse;  // Dừng transaction callback
                     }
                 }
-
+                $totalPrice +=$order->shipping_fee;
                 // Áp dụng voucher nếu có
                 if (isset($data['voucher_code']) && Auth::check()) {
-                    // dd(142412);
+              
                     $voucher_result = $this->applyVoucher($data['voucher_code'], $totalPrice);
                  
                     $totalPrice -= $voucher_result['discount_amount'];
@@ -136,9 +136,9 @@ class OrderController extends Controller
                         'limit'=> $voucher['limit']-1,
                     ]);
                 }
-                // dd($order->toArray());
-                $totalPrice +=$order->shipping_fee;
-                // dd(max($totalPrice, $order->shipping_fee));
+               
+               
+                // dd($totalPrice);
                 $order->update([
                     'total_quantity' => $totalQuantity,
                     'total' => $totalPrice,
