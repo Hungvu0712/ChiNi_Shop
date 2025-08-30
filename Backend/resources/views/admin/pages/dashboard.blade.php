@@ -38,11 +38,12 @@
                     <div class="col-sm-6 col-lg-3 mb-4">
                         <div class="card shadow-sm border-0 bg-primary text-white">
                             <div class="card-body d-flex flex-column align-items-start">
-                                <h6 class="mb-1">💰 Doanh thu tháng này</h6>
-                                <h4 class="mb-0">{{ number_format($monthlyRevenue, 0, ',', '.') }} ₫</h4>
+                                <h6 class="mb-1">💰 Tổng doanh thu</h6>
+                                <h4 class="mb-0">{{ number_format($totalRevenue, 0, ',', '.') }} ₫</h4>
                             </div>
                         </div>
                     </div>
+
 
                     <div class="col-sm-6 col-lg-3 mb-4">
                         <div class="card shadow-sm border-0 bg-success text-white">
@@ -73,28 +74,72 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <form method="GET" action="{{ route('dashboard') }}" class="d-flex gap-2 align-items-center mb-3">
-                            <select name="year" class="form-select w-auto">
-                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
-                                    <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}
-                                    </option>
-                                @endfor
-                            </select>
-                            <select name="month" class="form-select w-auto">
-                                @for ($m = 1; $m <= 12; $m++)
-                                    <option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>Tháng
-                                        {{ $m }}</option>
-                                @endfor
-                            </select>
-                            <button class="btn btn-sm btn-primary">Lọc</button>
+                        <form method="GET" action="{{ route('dashboard') }}" class="row g-3 align-items-end mb-3">
+                            {{-- Từ ngày --}}
+                            <div class="col-md-3">
+                                <label for="start_date" class="form-label">Từ ngày</label>
+                                <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                                    class="form-control">
+                            </div>
+
+                            {{-- Đến ngày --}}
+                            <div class="col-md-3">
+                                <label for="end_date" class="form-label">Đến ngày</label>
+                                <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}"
+                                    class="form-control">
+                            </div>
+
+                            {{-- Tháng --}}
+                            <div class="col-md-2">
+                                <label for="month" class="form-label">Tháng</label>
+                                <select name="month" id="month" class="form-select">
+                                    <option value="">-- Chọn tháng --</option>
+                                    @for ($m = 1; $m <= 12; $m++)
+                                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
+                                            Tháng {{ $m }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            {{-- Năm --}}
+                            <div class="col-md-2">
+                                <label for="year" class="form-label">Năm</label>
+                                <select name="year" id="year" class="form-select">
+                                    <option value="">-- Chọn năm --</option>
+                                    @for ($y = date('Y'); $y >= 2000; $y--)
+                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
+                                            {{ $y }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            {{-- Nút lọc --}}
+                            <div class="col-md-2 d-grid">
+                                <button type="submit" class="btn btn-primary">Lọc</button>
+                            </div>
                         </form>
+
 
                         <div class="card card-round mb-4">
                             <div class="card-header">
-                                <div class="card-title">📊 Doanh thu theo tháng ({{ $year }})</div>
+                                <div class="card-title">
+                                    📊 Doanh thu
+                                    @if ($startDate && $endDate)
+                                        theo ngày (
+                                        {{ \Carbon\Carbon::parse($startDate)->format('d-m-Y') }}
+                                        →
+                                        {{ \Carbon\Carbon::parse($endDate)->format('d-m-Y') }}
+                                        )
+                                    @else
+                                        theo tháng ({{ $year }})
+                                    @endif
+                                </div>
                             </div>
+
                             <div class="card-body">
-                                <canvas id="monthlyRevenueChart" height="100"></canvas>
+                                <canvas id="revenueChart" height="100"></canvas>
                             </div>
                         </div>
 
@@ -212,6 +257,8 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="{{ asset('admin/assets/js/demo.js') }}"></script>
+
+    <!-- Sparkline mini charts -->
     <script>
         $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
             type: "line",
@@ -240,37 +287,70 @@
             fillColor: "rgba(255, 165, 52, .14)",
         });
     </script>
+
+    <!-- Doanh thu theo tháng hoặc theo khoảng ngày -->
     <script>
-        const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
-        new Chart(monthlyRevenueCtx, {
-            type: 'bar',
-            data: {
-                labels: [
-                    'Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6',
-                    'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'
-                ],
-                datasets: [{
-                    label: 'Doanh thu',
-                    data: @json($revenuePerMonth),
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        const revenueCanvas = document.getElementById('revenueChart');
+        if (revenueCanvas) {
+            const monthlyRevenueCtx = revenueCanvas.getContext('2d');
+            new Chart(monthlyRevenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($chartLabels),
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: @json($chartData),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                // Lấy lại đúng giá trị từ dataset
+                                const value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                return 'Doanh thu (VNĐ): ' + Number(value).toLocaleString('vi-VN');
+                            }
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: @json($chartTitle)
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {
+                                    return Number(value).toLocaleString('vi-VN') + ' ₫';
+                                }
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Doanh thu (VNĐ)'
+                            }
+                        }]
                     }
                 }
-            }
-        });
+            });
+        }
+    </script>
 
+
+
+
+    <!-- Số đơn hàng theo ngày trong tháng -->
+    <script>
         const ordersPerDayCtx = document.getElementById('ordersPerDayChart').getContext('2d');
         new Chart(ordersPerDayCtx, {
             type: 'bar',
             data: {
                 labels: [...Array({{ \Carbon\Carbon::create($year, $month)->daysInMonth }}).keys()].map(i =>
-                    `Ngày ${i+1}`),
+                    `Ngày ${i + 1}`),
                 datasets: [{
                     label: 'Số đơn hàng',
                     data: @json($ordersPerDay),
@@ -287,21 +367,17 @@
             }
         });
     </script>
+
+    <!-- Trạng thái đơn hàng -->
     <script>
         const ctxStatus = document.getElementById('orderStatusChart').getContext('2d');
-
-        const orderStatusChart = new Chart(ctxStatus, {
+        new Chart(ctxStatus, {
             type: 'doughnut',
             data: {
                 labels: @json($orderStatusLabels),
                 datasets: [{
                     data: @json($orderStatusCounts),
-                    backgroundColor: [
-                        '#28a745', // green - Đã giao
-                        '#ffc107', // yellow - Đang xử lý
-                        '#dc3545', // red - Đã huỷ
-                        '#6c757d' // grey - Chờ thanh toán
-                    ],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6c757d'],
                     borderWidth: 1
                 }]
             },
@@ -309,20 +385,12 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#000',
-                            font: {
-                                size: 14
-                            }
-                        }
+                        position: 'bottom'
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                const label = context.label || '';
-                                const value = context.parsed;
-                                return `${label}: ${value} đơn hàng`;
+                                return `${context.label}: ${context.parsed} đơn hàng`;
                             }
                         }
                     }
@@ -330,6 +398,9 @@
             }
         });
     </script>
+
+
+    <!-- Top sản phẩm bán chạy -->
     <script>
         const ctxTopSelling = document.getElementById('topSellingChart').getContext('2d');
         new Chart(ctxTopSelling, {
@@ -344,17 +415,40 @@
                 }]
             },
             options: {
-                indexAxis: 'y',
                 responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: true
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        title: function(tooltipItems, data) {
+                            // Dòng trên: tên sản phẩm
+                            return data.labels[tooltipItems[0].index];
+                        },
+                        label: function(tooltipItem, data) {
+                            // Dòng dưới: số lượng bán
+                            const value = data.datasets[0].data[tooltipItem.index];
+                            return 'Số lượng bán: ' + value;
+                        }
                     }
+                },
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            display: false // ❌ Ẩn tên sản phẩm dưới trục X
+                        },
+                        gridLines: {
+                            display: false // Ẩn luôn vạch chia dọc
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
                 }
             }
         });
     </script>
+
 @endsection
